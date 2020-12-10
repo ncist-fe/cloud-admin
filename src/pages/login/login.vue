@@ -21,9 +21,6 @@
 					<button class="uni-button uni-button-full" type="primary" :loading="loading" :disabled="loading" @click="submitForm">登录</button>
 				</view>
 			</uni-forms>
-			<view class="uni-tips">
-				<text class="uni-tips-text" @click="initAdmin">如无管理员账号，请先创建管理员...</text>
-			</view>
 		</view>
 	</view>
 </template>
@@ -131,11 +128,6 @@
 			submitForm() {
 				this.$refs.form.submit()
 			},
-			initAdmin() {
-				uni.redirectTo({
-					url: '/pages/demo/init/init'
-				})
-			},
 			changePassword: function() {
 				this.showPassword = !this.showPassword;
 			},
@@ -197,6 +189,6 @@
 	}
 
 	.admin-logo image {
-		height: 40px;
+		height: 60px;
 	}
 </style>

@@ -1,6 +1,6 @@
 {
-    "name" : "uniCloud Admin",
-    "appid" : "",
+    "name" : "网盘管理",
+    "appid" : "__UNI__B303A9F",
     "description" : "",
     "versionName" : "1.0.0",
     "versionCode" : "100",
@@ -69,6 +69,21 @@
         "enable" : false
     },
     "h5" : {
-        "template" : "template.h5.html"
+        "template" : "template.h5.html",
+        "router" : {
+            "mode" : "history"
+        },
+        "devServer" : {
+            "port" : 20000
+        },
+        "optimization" : {
+            "treeShaking" : {
+                "enable" : true
+            }
+        },
+        "title" : "网盘管理",
+        "uniStatistics" : {
+            "enable" : true
+        }
     }
 }
