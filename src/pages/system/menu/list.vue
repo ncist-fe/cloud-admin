@@ -29,9 +29,11 @@
 				<uni-table :loading="loading" :emptyText="errMsg || '没有更多数据'" border stripe>
 					<uni-tr>
 						<uni-th width="80" align="center">排序</uni-th>
-						<uni-th width="200" align="center">名称</uni-th>
-						<uni-th width="200" align="center">标识</uni-th>
+						<uni-th width="150" align="center">名称</uni-th>
+						<uni-th width="150" align="center">标识</uni-th>
 						<uni-th align="center">URL</uni-th>
+						<uni-th width="200" align="center">图标</uni-th>
+						<uni-th width="200" align="center">权限</uni-th>
 						<uni-th width="80" align="center">是否启用</uni-th>
 						<uni-th width="160" align="center">操作</uni-th>
 					</uni-tr>
@@ -40,6 +42,8 @@
 						<uni-td>{{item.title}}</uni-td>
 						<uni-td>{{item.menu_id}}</uni-td>
 						<uni-td>{{item.url}}</uni-td>
+						<uni-td>{{item.icon}}</uni-td>
+						<uni-td>{{item.permission}}</uni-td>
 						<uni-td align="center" :class="{'menu-disable':!item.enable}">{{item.enable?'已启用':'未启用'}}</uni-td>
 						<uni-td align="center">
 							<view class="uni-group">
