@@ -1,8 +1,8 @@
 <template>
-	<view class="uni-menu-group">
-		<view class="uni-menu-group__title" name="title" :style="{paddingLeft:paddingLeft}">{{title}}</view>
-		<slot></slot>
-	</view>
+  <view class="uni-menu-group">
+    <view class="uni-menu-group__title" name="title" :style="{paddingLeft:paddingLeft}">{{title}}</view>
+    <slot></slot>
+  </view>
 </template>
 
 <script>
@@ -39,11 +39,11 @@ export default {
 
 <style>
 .uni-menu-group {
-	/* border: 1px red solid; */
+  /* border: 1px red solid; */
 }
 .uni-menu-group__title {
-	line-height: 36px;
-	font-size: 12px;
-	color: #999;
+  line-height: 36px;
+  font-size: 12px;
+  color: #999;
 }
 </style>

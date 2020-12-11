@@ -1,26 +1,26 @@
 <template>
     <view>
-		<view class="uni-header">
-			<button @click="showCreateFolder" class="uni-button" type="primary">新增文件夹</button>
-			<view ref="input" class="input"></view>
-			<button @click="uploadFile" class="uni-button" type="primary">上传文件</button>
-			<uni-popup ref="folderPopup" type="dialog">
-				<uni-popup-dialog mode="input" title="新增文件夹" placeholder="请输入文件夹名称" @confirm="confirmCreate"></uni-popup-dialog>
-			</uni-popup>
-		</view>
+    <view class="uni-header">
+      <button @click="showCreateFolder" class="uni-button" type="primary">新增文件夹</button>
+      <view ref="input" class="input"></view>
+      <button @click="uploadFile" class="uni-button" type="primary">上传文件</button>
+      <uni-popup ref="folderPopup" type="dialog">
+        <uni-popup-dialog mode="input" title="新增文件夹" placeholder="请输入文件夹名称" @confirm="confirmCreate"></uni-popup-dialog>
+      </uni-popup>
+    </view>
         <view class="uni-header">
-			<view class="uni-group">
-				<view class="title-icon">
-					  <uni-icons size="16" type="home-filled"/>
-					  <span
-						v-for="(item, index) in pathStack"
-						:key="item"
-						@click="toPreviousFolder(index)">
-						<span class="folder-name">{{ item === "/" || item === "" ? " 首页 " : item }}</span>
-						<span v-if="item || item !== '/'">/</span>
-					  </span>
-				</view>
-			</view>
+      <view class="uni-group">
+        <view class="title-icon">
+            <uni-icons size="16" type="home-filled"/>
+            <span
+            v-for="(item, index) in pathStack"
+            :key="item"
+            @click="toPreviousFolder(index)">
+            <span class="folder-name">{{ item === "/" || item === "" ? " 首页 " : item }}</span>
+            <span v-if="item || item !== '/'">/</span>
+            </span>
+        </view>
+      </view>
         </view>
         <view class="uni-container">
             <uni-clientdb ref="dataQuery" :collection="collectionName" :options="options" :where="where" page-data="replace"
@@ -30,20 +30,20 @@
                     <uni-tr>
                         <uni-th min-width="50" align="left">文件名</uni-th>
                         <uni-th width="100" align="center">上传人</uni-th>
-						<uni-th width="100" align="center">文件大小</uni-th>
+            <uni-th width="100" align="center">文件大小</uni-th>
                         <uni-th width="160" align="center">添加时间</uni-th>
                         <uni-th width="160" align="center">操作</uni-th>
                     </uni-tr>
                     <uni-tr v-for="(item,index) in data" :key="index">
                         <uni-td align="left" v-if="item.isFolder">
-							<span class="iconfont file-icon icon-folder"></span><a class="folder-name" @click="enterFolder(item.name)">{{item.name}}</a>
-						</uni-td>
-						<uni-td align="left" v-else>
-							<span :class="['iconfont','file-icon', getFileType(item.name)]"></span>
-							<span @click="fileClick(item.name, item.link, index)">{{item.name}}</span>
-						</uni-td>
+              <span class="iconfont file-icon icon-folder"></span><a class="folder-name" @click="enterFolder(item.name)">{{item.name}}</a>
+            </uni-td>
+            <uni-td align="left" v-else>
+              <span :class="['iconfont','file-icon', getFileType(item.name)]"></span>
+              <span @click="fileClick(item.name, item.link, index)">{{item.name}}</span>
+            </uni-td>
                         <uni-td align="center">{{item.createBy}}</uni-td>
-						<uni-td align="center">{{item.isFolder ? '-': formatSize(item.size)}}</uni-td>
+            <uni-td align="center">{{item.isFolder ? '-': formatSize(item.size)}}</uni-td>
                         <uni-td align="center">
                             <uni-dateformat :date="item.createOn" :threshold = "[0,0]" format="yyyy-MM-dd hh:mm:ss"/>
                         </uni-td>
@@ -61,14 +61,14 @@
                 </view>
             </uni-clientdb>
         </view>
-		<!-- #ifndef H5 -->
-		<fix-window />
-		<!-- #endif -->
-		<D-Player v-on:closeVideo="closeV" ref="mydplayer" v-show="video.show"></D-Player>
-		<A-Player v-on:closeAudio="closeA" ref="myaplayer" v-show="audio.show"></A-Player>
-		<uni-popup ref="imagePopup">
-			<image :src="popUpImg" alt="" style="width:100%;height:100%" />
-		</uni-popup>
+    <!-- #ifndef H5 -->
+    <fix-window />
+    <!-- #endif -->
+    <D-Player v-on:closeVideo="closeV" ref="mydplayer" v-show="video.show"></D-Player>
+    <A-Player v-on:closeAudio="closeA" ref="myaplayer" v-show="audio.show"></A-Player>
+    <uni-popup ref="imagePopup">
+      <image :src="popUpImg" alt="" style="width:100%;height:100%" />
+    </uni-popup>
     </view>
 </template>
 
@@ -159,24 +159,24 @@ export default {
       fileObj.createOn = new Date().toISOString()
       fileObj.createBy = this.userInfo.username
       db.collection(dbCollectionName).add(fileObj).catch(err => {
-				    uni.showModal({
-				        content: err.message || '请求服务失败',
-				        showCancel: false
-				    })
+        uni.showModal({
+          content: err.message || '请求服务失败',
+          showCancel: false
+        })
       }).finally(() => {
         uni.hideLoading()
         this.loadData()
       })
     },
     loadData (clear = true) {
-			    this.$refs.dataQuery.loadData({
-			        clear
-			    })
+      this.$refs.dataQuery.loadData({
+        clear
+      })
     },
     onPageChanged (e) {
-			    this.$refs.dataQuery.loadData({
-			        current: e.current
-			    })
+      this.$refs.dataQuery.loadData({
+        current: e.current
+      })
     },
     uploadFile () {
       return document.getElementById('file').click()
@@ -224,46 +224,46 @@ export default {
       this.$refs.folderPopup.open()
     },
     toPreviousFolder (index) {
-			  if (index + 1 !== this.pathStack.length) {
+      if (index + 1 !== this.pathStack.length) {
         const target = this.pathStack.slice(0, index + 1)
         console.log('to target folder', target, 'index', index)
         this.pathStack = target
-			  } else {
+      } else {
         uni.showToast({
           title: '已在该目录',
           icon: 'none'
         })
-			  }
+      }
     },
     confirmDelete (file) {
       const tip = '确认删除' + (file.isFolder ? '文件夹' : '文件') + ':[' + file.name + ']?'
-			    uni.showModal({
-			        title: '提示',
-			        content: tip,
-			        success: (res) => {
-			            res.confirm && this.delete(file._id)
-			        }
-			    })
+      uni.showModal({
+        title: '提示',
+        content: tip,
+        success: (res) => {
+          res.confirm && this.delete(file._id)
+        }
+      })
     },
     async delete (id) {
-			    uni.showLoading({
+      uni.showLoading({
         title: '删除中',
-			        mask: true
-			    })
+        mask: true
+      })
       await db.collection(dbCollectionName).doc(id).remove()
-				    .then(res => {
+        .then(res => {
           uni.showToast({
             title: '删除成功'
           })
-				    }).catch(err => {
+        }).catch(err => {
           uni.showModal({
             content: err.message || '请求服务失败',
             showCancel: false
           })
         }).finally(err => {
-				        uni.hideLoading()
-				    })
-			    this.loadData(false)
+          uni.hideLoading()
+        })
+      this.loadData(false)
     },
     fileClick (fileName, downloadUrl, index) {
       const fileType = checkFileType(fileName)
@@ -319,21 +319,21 @@ export default {
 }
 </script>
 <style>
-	/* #ifndef H5 */
-	page {
-		padding-top: 85px;
-	}
-	/* #endif */
-	.folder-name {
-		padding-left: 2px;
-		padding-right: 2px;
-		font-weight: bold;
-	}
-	.folder-name:hover {
-		color: #007AFF;
-		cursor:pointer;
-	}
-	.file-icon {
-		margin-right: 5px;
-	}
+  /* #ifndef H5 */
+  page {
+    padding-top: 85px;
+  }
+  /* #endif */
+  .folder-name {
+    padding-left: 2px;
+    padding-right: 2px;
+    font-weight: bold;
+  }
+  .folder-name:hover {
+    color: #007AFF;
+    cursor:pointer;
+  }
+  .file-icon {
+    margin-right: 5px;
+  }
 </style>

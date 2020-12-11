@@ -1,31 +1,31 @@
 <template>
-	<view class="uni-data-checklist">
-		<checkbox-group v-if="multiple" class="checklist-group" :class="{'is-list':mode==='list','is-wrap':wrap}" @change="chagne">
-			<label class="checklist-box" :class="item.labelClass" v-for="(item,index) in dataList" :key="index">
-				<checkbox hidden :disabled="item.disable" :value="item.value+''" :checked="item.selected" />
-				<!-- mode !== 'list' && -->
-				<view v-if=" mode !=='tag' " class="checkbox__inner" :class="item.checkboxBgClass">
-					<view class="checkbox__inner-icon" :class="item.checkboxClass"></view>
-				</view>
-				<view class="checklist-content">
-					<text class="checklist-text" :class="item.textClass">{{item.text}}</text>
-					<view v-if="mode === 'list'" class="checkobx__list" :class="item.listClass"></view>
-				</view>
-			</label>
-		</checkbox-group>
-		<radio-group v-else class="checklist-group" :class="{'is-list':mode==='list','is-wrap':wrap}" @change="chagne">
-			<label class="checklist-box" :class="item.labelClass" v-for="(item,index) in dataList" :key="index">
-				<radio hidden :disabled="item.disable" :value="item.value+''" :checked="item.selected" />
-				<view v-if="mode !=='tag' " class="radio__inner" :class="item.checkboxBgClass">
-					<view class="radio__inner-icon" :class="item.checkboxClass"></view>
-				</view>
-				<view class="checklist-content">
-					<text class="checklist-text" :class="item.textClass">{{item.text}}</text>
-					<view v-if="mode === 'list'" class="checkobx__list" :class="item.listClass"></view>
-				</view>
-			</label>
-		</radio-group>
-	</view>
+  <view class="uni-data-checklist">
+    <checkbox-group v-if="multiple" class="checklist-group" :class="{'is-list':mode==='list','is-wrap':wrap}" @change="chagne">
+      <label class="checklist-box" :class="item.labelClass" v-for="(item,index) in dataList" :key="index">
+        <checkbox hidden :disabled="item.disable" :value="item.value+''" :checked="item.selected" />
+        <!-- mode !== 'list' && -->
+        <view v-if=" mode !=='tag' " class="checkbox__inner" :class="item.checkboxBgClass">
+          <view class="checkbox__inner-icon" :class="item.checkboxClass"></view>
+        </view>
+        <view class="checklist-content">
+          <text class="checklist-text" :class="item.textClass">{{item.text}}</text>
+          <view v-if="mode === 'list'" class="checkobx__list" :class="item.listClass"></view>
+        </view>
+      </label>
+    </checkbox-group>
+    <radio-group v-else class="checklist-group" :class="{'is-list':mode==='list','is-wrap':wrap}" @change="chagne">
+      <label class="checklist-box" :class="item.labelClass" v-for="(item,index) in dataList" :key="index">
+        <radio hidden :disabled="item.disable" :value="item.value+''" :checked="item.selected" />
+        <view v-if="mode !=='tag' " class="radio__inner" :class="item.checkboxBgClass">
+          <view class="radio__inner-icon" :class="item.checkboxClass"></view>
+        </view>
+        <view class="checklist-content">
+          <text class="checklist-text" :class="item.textClass">{{item.text}}</text>
+          <view v-if="mode === 'list'" class="checkobx__list" :class="item.listClass"></view>
+        </view>
+      </label>
+    </radio-group>
+  </view>
 </template>
 
 <script>
@@ -70,10 +70,10 @@ export default {
       default: false
     }
     // style:{
-    // 	type : Object,
-    // 	default(){
-    // 		return {}
-    // 	}
+    //   type : Object,
+    //   default(){
+    //     return {}
+    //   }
     // }
   },
   watch: {
@@ -197,9 +197,9 @@ export default {
     },
 
     /**
-			 * 获取渲染的新数组
-			 * @param {Object} value 选中内容
-			 */
+       * 获取渲染的新数组
+       * @param {Object} value 选中内容
+       */
     getDataList (value) {
       // 解除引用关系，破坏原引用关系，避免污染源数据
       const dataList = JSON.parse(JSON.stringify(this.range))
@@ -227,9 +227,9 @@ export default {
       return this.setRange(list)
     },
     /**
-			 * 处理最大最小值
-			 * @param {Object} list
-			 */
+       * 处理最大最小值
+       * @param {Object} list
+       */
     setRange (list) {
       const selectList = list.filter(item => item.selected)
       const min = Number(this.min) || 0
@@ -256,10 +256,10 @@ export default {
       return list
     },
     /**
-			 * 设置 class
-			 * @param {Object} item
-			 * @param {Object} index
-			 */
+       * 设置 class
+       * @param {Object} item
+       * @param {Object} index
+       */
     setClass (item, index) {
       // 设置 label 的 class
       item.labelClass = this.getLabelClass(item, index)
@@ -273,8 +273,8 @@ export default {
       item.listClass = this.getCheckboxClass(item, '-list')
     },
     /**
-			 * 获取 class
-			 */
+       * 获取 class
+       */
     getClasses (item, name, type = '') {
       const classes = []
       item.disable && classes.push('is-' + name + '-disabled' + type)
@@ -287,9 +287,9 @@ export default {
       return classes
     },
     /**
-			 * 获取选中值
-			 * @param {Object} range
-			 */
+       * 获取选中值
+       * @param {Object} range
+       */
     getSelectedValue (range) {
       if (!this.multiple) return this.value
       const selectedArr = []
@@ -305,297 +305,297 @@ export default {
 </script>
 
 <style>
-	.checklist-group {
-		display: flex;
-		flex-direction: row;
-		flex-wrap: wrap;
-	}
+  .checklist-group {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
 
-	.checklist-box {
-		display: flex;
-		flex-direction: row;
-		align-items: center;
-		margin: 5px 0;
-		margin-right: 25px;
-	}
+  .checklist-box {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin: 5px 0;
+    margin-right: 25px;
+  }
 
-	.checklist-text {
-		font-size: 14px;
-		color: #333;
-		margin-left: 5px;
-		transition: color 0.2s;
-	}
+  .checklist-text {
+    font-size: 14px;
+    color: #333;
+    margin-left: 5px;
+    transition: color 0.2s;
+  }
 
-	.is-button {
-		margin-right: 10px;
-		padding: 3px 15px;
-		border: 1px #DCDFE6 solid;
-		border-radius: 3px;
-		transition: border-color 0.2s;
-	}
+  .is-button {
+    margin-right: 10px;
+    padding: 3px 15px;
+    border: 1px #DCDFE6 solid;
+    border-radius: 3px;
+    transition: border-color 0.2s;
+  }
 
-	.is-list {
-		flex-direction: column;
-	}
+  .is-list {
+    flex-direction: column;
+  }
 
-	.is-list-box {
-		/* #ifndef APP-NVUE */
-		display: flex;
-		/* #endif */
-		padding: 10px 15px;
-		padding-left: 0;
-		margin: 0;
-	}
+  .is-list-box {
+    /* #ifndef APP-NVUE */
+    display: flex;
+    /* #endif */
+    padding: 10px 15px;
+    padding-left: 0;
+    margin: 0;
+  }
 
-	.checklist-content {
-		/* #ifndef APP-NVUE */
-		display: flex;
-		/* #endif */
-		flex: 1;
-		flex-direction: row;
-		align-items: center;
-		justify-content: space-between;
-	}
+  .checklist-content {
+    /* #ifndef APP-NVUE */
+    display: flex;
+    /* #endif */
+    flex: 1;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
 
-	.is-list-multiple-box {
-		/* #ifndef APP-NVUE */
-		display: flex;
-		/* #endif */
-		padding: 10px 15px;
-		padding-left: 0;
-		margin: 0;
-	}
+  .is-list-multiple-box {
+    /* #ifndef APP-NVUE */
+    display: flex;
+    /* #endif */
+    padding: 10px 15px;
+    padding-left: 0;
+    margin: 0;
+  }
 
-	.is-list-border {
-		border-top: 1px #eee solid;
-	}
+  .is-list-border {
+    border-top: 1px #eee solid;
+  }
 
-	.is-tag {
-		margin-right: 10px;
-		padding: 3px 10px;
-		border: 1px #eee solid;
-		border-radius: 3px;
-		background-color: #f5f5f5;
-		transition: border-color 0.2s;
-	}
+  .is-tag {
+    margin-right: 10px;
+    padding: 3px 10px;
+    border: 1px #eee solid;
+    border-radius: 3px;
+    background-color: #f5f5f5;
+    transition: border-color 0.2s;
+  }
 
-	.is-tag-text {
-		margin: 0;
-		color: #666;
-	}
+  .is-tag-text {
+    margin: 0;
+    color: #666;
+  }
 
-	.checkbox__inner {
-		flex-shrink: 0;
-		position: relative;
-		border: 1px solid #DCDFE6;
-		border-radius: 2px;
-		box-sizing: border-box;
-		width: 16px;
-		height: 16px;
-		background-color: #fff;
-		z-index: 1;
-		transition: border-color 0.1s;
-	}
+  .checkbox__inner {
+    flex-shrink: 0;
+    position: relative;
+    border: 1px solid #DCDFE6;
+    border-radius: 2px;
+    box-sizing: border-box;
+    width: 16px;
+    height: 16px;
+    background-color: #fff;
+    z-index: 1;
+    transition: border-color 0.1s;
+  }
 
-	.checkbox__inner-icon {
-		border: 1px solid #fff;
-		border-left: 0;
-		border-top: 0;
-		height: 8px;
-		left: 5px;
-		position: absolute;
-		top: 1px;
-		width: 3px;
-		opacity: 0;
-		transition: transform .1s;
-		transform-origin: center;
-		transform: rotate(40deg) scaleY(0.4);
-	}
+  .checkbox__inner-icon {
+    border: 1px solid #fff;
+    border-left: 0;
+    border-top: 0;
+    height: 8px;
+    left: 5px;
+    position: absolute;
+    top: 1px;
+    width: 3px;
+    opacity: 0;
+    transition: transform .1s;
+    transform-origin: center;
+    transform: rotate(40deg) scaleY(0.4);
+  }
 
-	.radio__inner {
-		flex-shrink: 0;
-		/* #ifndef APP-NVUE */
-		display: flex;
-		/* #endif */
-		justify-content: center;
-		align-items: center;
-		position: relative;
-		border: 1px solid #DCDFE6;
-		border-radius: 2px;
-		box-sizing: border-box;
-		width: 16px;
-		height: 16px;
-		border-radius: 16px;
-		background-color: #fff;
-		z-index: 1;
-		transition: border-color .3s;
-	}
+  .radio__inner {
+    flex-shrink: 0;
+    /* #ifndef APP-NVUE */
+    display: flex;
+    /* #endif */
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    border: 1px solid #DCDFE6;
+    border-radius: 2px;
+    box-sizing: border-box;
+    width: 16px;
+    height: 16px;
+    border-radius: 16px;
+    background-color: #fff;
+    z-index: 1;
+    transition: border-color .3s;
+  }
 
-	.radio__inner-icon {
-		width: 8px;
-		height: 8px;
-		border-radius: 10px;
-		opacity: 0;
-		transition: transform .3s;
-	}
+  .radio__inner-icon {
+    width: 8px;
+    height: 8px;
+    border-radius: 10px;
+    opacity: 0;
+    transition: transform .3s;
+  }
 
-	.checkobx__list {
-		border: 1px solid #fff;
-		border-left: 0;
-		border-top: 0;
-		height: 12px;
-		width: 6px;
-		transform-origin: center;
-		opacity: 0;
-		transition: all 0.2s;
-	}
+  .checkobx__list {
+    border: 1px solid #fff;
+    border-left: 0;
+    border-top: 0;
+    height: 12px;
+    width: 6px;
+    transform-origin: center;
+    opacity: 0;
+    transition: all 0.2s;
+  }
 
-	/* 禁用样式 */
-	.is-default-disabled-bg {
-		background-color: #F2F6FC;
-		border-color: #DCDFE6;
-		/* #ifdef H5 */
-		cursor: not-allowed;
-		/* #endif */
-	}
+  /* 禁用样式 */
+  .is-default-disabled-bg {
+    background-color: #F2F6FC;
+    border-color: #DCDFE6;
+    /* #ifdef H5 */
+    cursor: not-allowed;
+    /* #endif */
+  }
 
-	.is-default-multiple-disabled-bg {
-		background-color: #F2F6FC;
-		border-color: #DCDFE6;
-		/* #ifdef H5 */
-		cursor: not-allowed;
-		/* #endif */
-	}
+  .is-default-multiple-disabled-bg {
+    background-color: #F2F6FC;
+    border-color: #DCDFE6;
+    /* #ifdef H5 */
+    cursor: not-allowed;
+    /* #endif */
+  }
 
-	.is-default-disabled {
-		border-color: #F2F6FC;
-	}
+  .is-default-disabled {
+    border-color: #F2F6FC;
+  }
 
-	.is-default-multiple-disabled {
-		border-color: #F2F6FC;
-	}
+  .is-default-multiple-disabled {
+    border-color: #F2F6FC;
+  }
 
-	.is-list-disabled {
-		/* #ifdef H5 */
-		cursor: not-allowed;
-		/* #endif */
-		color: #999;
-	}
+  .is-list-disabled {
+    /* #ifdef H5 */
+    cursor: not-allowed;
+    /* #endif */
+    color: #999;
+  }
 
-	.is-list-disabled-checked {
-		color: #a1dcc1;
-	}
+  .is-list-disabled-checked {
+    color: #a1dcc1;
+  }
 
-	.is-button-disabled {
-		/* #ifdef H5 */
-		cursor: not-allowed;
-		/* #endif */
-		border-color: #EBEEF5;
-	}
+  .is-button-disabled {
+    /* #ifdef H5 */
+    cursor: not-allowed;
+    /* #endif */
+    border-color: #EBEEF5;
+  }
 
-	.is-button-text-disabled {
-		color: #C0C4CC;
-	}
+  .is-button-text-disabled {
+    color: #C0C4CC;
+  }
 
-	.is-button-disabled-checked {
-		border-color: #a1dcc1;
-	}
+  .is-button-disabled-checked {
+    border-color: #a1dcc1;
+  }
 
-	.is-tag-disabled {
-		/* #ifdef H5 */
-		cursor: not-allowed;
-		/* #endif */
-		border-color: #e9e9eb;
-		background-color: #f4f4f5;
-	}
+  .is-tag-disabled {
+    /* #ifdef H5 */
+    cursor: not-allowed;
+    /* #endif */
+    border-color: #e9e9eb;
+    background-color: #f4f4f5;
+  }
 
-	.is-tag-text-disabled {
-		color: #bcbec2;
-	}
+  .is-tag-text-disabled {
+    color: #bcbec2;
+  }
 
-	/* 选中样式 */
-	.is-default-checked-bg {
-		border-color: #007aff;
-	}
+  /* 选中样式 */
+  .is-default-checked-bg {
+    border-color: #007aff;
+  }
 
-	.is-default-multiple-checked-bg {
-		border-color: #007aff;
-		background-color: #007aff;
-	}
+  .is-default-multiple-checked-bg {
+    border-color: #007aff;
+    background-color: #007aff;
+  }
 
-	.is-default-checked {
-		opacity: 1;
-		background-color: #007aff;
-		transform: rotate(45deg) scaleY(1);
-	}
+  .is-default-checked {
+    opacity: 1;
+    background-color: #007aff;
+    transform: rotate(45deg) scaleY(1);
+  }
 
-	.is-default-multiple-checked {
-		opacity: 1;
-		transform: rotate(45deg) scaleY(1);
-	}
+  .is-default-multiple-checked {
+    opacity: 1;
+    transform: rotate(45deg) scaleY(1);
+  }
 
-	.is-default-disabled-checked-bg {
-		opacity: 0.4;
-	}
+  .is-default-disabled-checked-bg {
+    opacity: 0.4;
+  }
 
-	.is-default-multiple-disabled-checked-bg {
-		opacity: 0.4;
-	}
+  .is-default-multiple-disabled-checked-bg {
+    opacity: 0.4;
+  }
 
-	.is-default-checked-list {
-		border-color: #007aff;
-		opacity: 1;
-		transform: rotate(45deg) scaleY(1);
-	}
+  .is-default-checked-list {
+    border-color: #007aff;
+    opacity: 1;
+    transform: rotate(45deg) scaleY(1);
+  }
 
-	.is-default-multiple-checked-list {
-		border-color: #007aff;
-		opacity: 1;
-		transform: rotate(45deg) scaleY(1);
-	}
-	.is-list-disabled-checked {
-		opacity: 0.4;
-	}
+  .is-default-multiple-checked-list {
+    border-color: #007aff;
+    opacity: 1;
+    transform: rotate(45deg) scaleY(1);
+  }
+  .is-list-disabled-checked {
+    opacity: 0.4;
+  }
 
-	.is-default-disabled-checked-list {
-		opacity: 0.4;
-	}
+  .is-default-disabled-checked-list {
+    opacity: 0.4;
+  }
 
-	.is-default-multiple-disabled-checked-list {
-		opacity: 0.4;
-	}
-	.is-button-checked {
-		border-color: #007aff;
-	}
+  .is-default-multiple-disabled-checked-list {
+    opacity: 0.4;
+  }
+  .is-button-checked {
+    border-color: #007aff;
+  }
 
-	.is-button-disabled-checked {
-		opacity: 0.4;
-	}
+  .is-button-disabled-checked {
+    opacity: 0.4;
+  }
 
-	.is-list-checked {
-		color: #007aff;
-	}
+  .is-list-checked {
+    color: #007aff;
+  }
 
-	.is-tag-checked {
-		border-color: #007aff;
-		background-color: #007aff;
-	}
+  .is-tag-checked {
+    border-color: #007aff;
+    background-color: #007aff;
+  }
 
-	.is-tag-text-checked {
-		color: #fff;
-	}
+  .is-tag-text-checked {
+    color: #fff;
+  }
 
-	.is-tag-disabled-checked {
-		opacity: 0.4;
-	}
+  .is-tag-disabled-checked {
+    opacity: 0.4;
+  }
 
-	.disabled-cursor {
-		/* #ifdef H5 */
-		cursor: not-allowed;
-		/* #endif */
-	}
+  .disabled-cursor {
+    /* #ifdef H5 */
+    cursor: not-allowed;
+    /* #endif */
+  }
 
-	.is-wrap {
-		flex-direction: column;
-	}
+  .is-wrap {
+    flex-direction: column;
+  }
 </style>

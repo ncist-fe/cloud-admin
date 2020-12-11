@@ -1,10 +1,10 @@
 <template>
-	<view class="uni-group" :style="{marginTop: `${top}px` }">
-		<view v-if="title" class="uni-group__content">
-			<text class="uni-group__content-title">{{ title }}</text>
-		</view>
-		<slot />
-	</view>
+  <view class="uni-group" :style="{marginTop: `${top}px` }">
+    <view v-if="title" class="uni-group__content">
+      <text class="uni-group__content-title">{{ title }}</text>
+    </view>
+    <slot />
+  </view>
 </template>
 
 <script>
@@ -45,30 +45,30 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-	.uni-group {
+  .uni-group {
         background: #fff;
         margin-top: 10px;
     }
 
-	.uni-group__content {
-		/* #ifndef APP-NVUE */
-		display: flex;
-		/* #endif */
-		align-items: center;
-		padding-left: 15px;
-		height: 40px;
-		background-color: $uni-bg-color-grey;
-		font-weight: normal;
-		color: $uni-text-color;
-	}
+  .uni-group__content {
+    /* #ifndef APP-NVUE */
+    display: flex;
+    /* #endif */
+    align-items: center;
+    padding-left: 15px;
+    height: 40px;
+    background-color: $uni-bg-color-grey;
+    font-weight: normal;
+    color: $uni-text-color;
+  }
 
-	.uni-group__content-title {
-		font-size: $uni-font-size-base;
-		color: $uni-text-color;
-	}
+  .uni-group__content-title {
+    font-size: $uni-font-size-base;
+    color: $uni-text-color;
+  }
 
-	.distraction {
-		flex-direction: row;
-		align-items: center;
-	}
+  .distraction {
+    flex-direction: row;
+    align-items: center;
+  }
 </style>

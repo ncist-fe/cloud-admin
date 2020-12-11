@@ -1,9 +1,9 @@
 <template>
-	<view class="uni-nav-menu" :style="{'background-color':backgroundColor}">
-		<slot>
-			<uni-menu-sidebar :data="data"></uni-menu-sidebar>
-		</slot>
-	</view>
+  <view class="uni-nav-menu" :style="{'background-color':backgroundColor}">
+    <slot>
+      <uni-menu-sidebar :data="data"></uni-menu-sidebar>
+    </slot>
+  </view>
 </template>
 
 <script>
@@ -17,7 +17,7 @@ export default {
       }
     },
 
-    // 模式	可选值 horizontal / vertical
+    // 模式  可选值 horizontal / vertical
     mode: {
       type: String,
       default: 'vertical'
@@ -69,7 +69,7 @@ export default {
       type: Boolean,
       default: false
     },
-    // TODO 子菜单打开的触发方式(只在 mode 为 horizontal 时有效) ，可选值 	 hover / click
+    // TODO 子菜单打开的触发方式(只在 mode 为 horizontal 时有效) ，可选值    hover / click
     menuTrigger: {
       type: String,
       default: 'hover'
@@ -200,10 +200,10 @@ export default {
 </script>
 
 <style lang="scss">
-	.uni-nav-menu {
-		width: 240px;
-		min-height: 500px;
-		background-color: #FFFFFF;
-		font-size: 14px;
-	}
+  .uni-nav-menu {
+    width: 240px;
+    min-height: 500px;
+    background-color: #FFFFFF;
+    font-size: 14px;
+  }
 </style>

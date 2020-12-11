@@ -1,8 +1,8 @@
 <template>
-	<view class="uni-menu-item" :class="{'is-active':active,'is-disabled':disabled}" :style="{paddingLeft:paddingLeft,'color':disabled?'#999':(active?activeTextColor:textColor),'background-color':active?activeBackgroundColor:''}"
-	 @click="onClickItem">
-		<slot></slot>
-	</view>
+  <view class="uni-menu-item" :class="{'is-active':active,'is-disabled':disabled}" :style="{paddingLeft:paddingLeft,'color':disabled?'#999':(active?activeTextColor:textColor),'background-color':active?activeBackgroundColor:''}"
+   @click="onClickItem">
+    <slot></slot>
+  </view>
 </template>
 
 <script>
@@ -89,37 +89,37 @@ export default {
 </script>
 
 <style lang="scss">
-	.uni-menu-item {
-		display: flex;
-		align-items: center;
-		padding: 0 20px;
-		height: 56px;
-		line-height: 56px;
-		color: #303133;
-		transition: all 0.3s;
-		cursor: pointer;
-		// border-bottom: 1px #f5f5f5 solid;
-	}
+  .uni-menu-item {
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    height: 56px;
+    line-height: 56px;
+    color: #303133;
+    transition: all 0.3s;
+    cursor: pointer;
+    // border-bottom: 1px #f5f5f5 solid;
+  }
 
-	.uni-menu-item:hover {
-		outline: none;
-		background-color: $sub-menu-bg-color;
-		transition: all 0.3s;
-	}
+  .uni-menu-item:hover {
+    outline: none;
+    background-color: $sub-menu-bg-color;
+    transition: all 0.3s;
+  }
 
-	.is-active {
-		color: #42B983;
-		// background-color: #ecf8f3;
-	}
+  .is-active {
+    color: #42B983;
+    // background-color: #ecf8f3;
+  }
 
-	.is-disabled {
-		// background-color: #f5f5f5;
-		color: #999;
-	}
+  .is-disabled {
+    // background-color: #f5f5f5;
+    color: #999;
+  }
 
-	.uni-menu-item.is-disabled:hover {
-		background-color: inherit;
-		color: #999;
-		cursor: not-allowed;
-	}
+  .uni-menu-item.is-disabled:hover {
+    background-color: inherit;
+    color: #999;
+    cursor: not-allowed;
+  }
 </style>

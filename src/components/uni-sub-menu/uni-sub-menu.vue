@@ -1,17 +1,17 @@
 <template>
-	<view class="uni-sub-menu">
-		<view class="uni-sub-menu__title"  :class="{'is-disabled':disabled}" :style="{paddingLeft:paddingLeft}" @click="select">
-			<view class="uni-sub-menu__title-sub" :style="{color:disabled?'#999':textColor}">
-				<slot name="title"></slot>
-			</view>
-			<uni-icons class="uni-sub-menu__icon" :class="{transition:isOpen}" type="arrowdown" color="#bbb" size="14"></uni-icons>
-		</view>
-		<view class="uni-sub-menu__content" :class="{'uni-sub-menu--close':!isOpen}" :style="{'background-color':backgroundColor}">
-			<view id="content--hook">
-				<slot></slot>
-			</view>
-		</view>
-	</view>
+  <view class="uni-sub-menu">
+    <view class="uni-sub-menu__title"  :class="{'is-disabled':disabled}" :style="{paddingLeft:paddingLeft}" @click="select">
+      <view class="uni-sub-menu__title-sub" :style="{color:disabled?'#999':textColor}">
+        <slot name="title"></slot>
+      </view>
+      <uni-icons class="uni-sub-menu__icon" :class="{transition:isOpen}" type="arrowdown" color="#bbb" size="14"></uni-icons>
+    </view>
+    <view class="uni-sub-menu__content" :class="{'uni-sub-menu--close':!isOpen}" :style="{'background-color':backgroundColor}">
+      <view id="content--hook">
+        <slot></slot>
+      </view>
+    </view>
+  </view>
 </template>
 
 <script>
@@ -104,61 +104,61 @@ export default {
 </script>
 
 <style lang="scss">
-	.uni-sub-menu {
-		position: relative;
-		/* background-color: #FFFFFF; */
-	}
+  .uni-sub-menu {
+    position: relative;
+    /* background-color: #FFFFFF; */
+  }
 
-	.uni-sub-menu__title {
-		display: flex;
-		align-items: center;
-		padding: 0 20px;
-		padding-right: 10px;
-		height: 56px;
-		line-height: 56px;
-		color: #303133;
-		cursor: pointer;
-		/* border-bottom: 1px #f5f5f5 solid; */
-	}
+  .uni-sub-menu__title {
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    padding-right: 10px;
+    height: 56px;
+    line-height: 56px;
+    color: #303133;
+    cursor: pointer;
+    /* border-bottom: 1px #f5f5f5 solid; */
+  }
 
-	.uni-sub-menu__title:hover {
-		color: #42B983;
-		outline: none;
-		background-color: $sub-menu-bg-color;
-	}
+  .uni-sub-menu__title:hover {
+    color: #42B983;
+    outline: none;
+    background-color: $sub-menu-bg-color;
+  }
 
-	.uni-sub-menu__title-sub {
-		display: flex;
-		align-items: center;
-		flex: 1;
-	}
+  .uni-sub-menu__title-sub {
+    display: flex;
+    align-items: center;
+    flex: 1;
+  }
 
-	.uni-sub-menu--close {
-		height: 0;
-		/* transition: all 0.3s; */
-	}
+  .uni-sub-menu--close {
+    height: 0;
+    /* transition: all 0.3s; */
+  }
 
-	.uni-sub-menu__content {
-		overflow: hidden;
-	}
+  .uni-sub-menu__content {
+    overflow: hidden;
+  }
 
-	.uni-sub-menu__icon {
-		max-height: auto;
-		transition: all 0.2s;
-	}
+  .uni-sub-menu__icon {
+    max-height: auto;
+    transition: all 0.2s;
+  }
 
-	.transition {
-		transform: rotate(-180deg);
-	}
+  .transition {
+    transform: rotate(-180deg);
+  }
 
-	.is-disabled {
-		/* background-color: #f5f5f5; */
-		color: red;
-	}
-	.uni-sub-menu__title.is-disabled:hover {
-		background-color: inherit;
-		color: #999;
-		cursor: not-allowed;
-	}
+  .is-disabled {
+    /* background-color: #f5f5f5; */
+    color: red;
+  }
+  .uni-sub-menu__title.is-disabled:hover {
+    background-color: inherit;
+    color: #999;
+    cursor: not-allowed;
+  }
 
 </style>

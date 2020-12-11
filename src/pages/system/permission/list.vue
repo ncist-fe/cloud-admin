@@ -9,7 +9,7 @@
                 <input class="uni-search" type="text" v-model="query" placeholder="权限标识/名称" />
                 <button class="uni-button" type="default" size="mini" @click="search">搜索</button>
                 <button @click="navigateTo('./add')" size="mini" class="uni-button" type="default">新增</button>
-				<button class="uni-button" type="default" size="mini" @click="delTable">批量删除</button>
+        <button class="uni-button" type="default" size="mini" @click="delTable">批量删除</button>
             </view>
         </view>
         <view class="uni-container">
@@ -17,7 +17,7 @@
                 :orderby="orderby" :getcount="true" :page-size="options.pageSize" :page-current="options.pageCurrent"
                 v-slot:default="{data,pagination,loading,error}">
                 <uni-table :loading="loading" :emptyText="error.message || '没有更多数据'" border stripe type="selection"
-				 @selection-change="selectionChange">
+         @selection-change="selectionChange">
                     <uni-tr>
                         <uni-th width="250" align="center">标识</uni-th>
                         <uni-th width="150" align="center">名称</uni-th>
@@ -46,9 +46,9 @@
                 </view>
             </uni-clientdb>
         </view>
-		<!-- #ifndef H5 -->
-		<fix-window />
-		<!-- #endif -->
+    <!-- #ifndef H5 -->
+    <fix-window />
+    <!-- #endif -->
     </view>
 </template>
 
@@ -120,11 +120,11 @@ export default {
     // 批量删除
     delTable () {
       uni.showModal({
-				    title: '提示',
-				    content: '确认删除多条记录？',
-				    success: (res) => {
-				        res.confirm && this.delete(this.selectedItems())
-				    }
+        title: '提示',
+        content: '确认删除多条记录？',
+        success: (res) => {
+          res.confirm && this.delete(this.selectedItems())
+        }
       })
     },
     // 多选
@@ -145,27 +145,27 @@ export default {
         mask: true
       })
       await this.$request('system/permission/remove', { id })
-				    .then(res => {
+        .then(res => {
           uni.showToast({
             title: '删除成功'
           })
-				    }).catch(err => {
+        }).catch(err => {
           uni.showModal({
             content: err.message || '请求服务失败',
             showCancel: false
           })
         }).finally(err => {
-				        uni.hideLoading()
-				    })
+          uni.hideLoading()
+        })
       this.loadData(false)
     }
   }
 }
 </script>
 <style>
-	/* #ifndef H5 */
-	page {
-		padding-top: 85px;
-	}
-	/* #endif */
+  /* #ifndef H5 */
+  page {
+    padding-top: 85px;
+  }
+  /* #endif */
 </style>

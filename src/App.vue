@@ -40,7 +40,7 @@ export default {
 </script>
 
 <style>
-	@import '@/common/uni.css';
-	@import '@/common/uni-icons.css';
-	@import '@/static/iconfont/iconfont.css';
+  @import '@/common/uni.css';
+  @import '@/common/uni-icons.css';
+  @import '@/static/iconfont/iconfont.css';
 </style>

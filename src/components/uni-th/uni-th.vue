@@ -1,20 +1,20 @@
 <template>
-	<view class="uni-table-th" :class="{'table--border':border}" :style="{width:width + 'px','text-align':align}">
-		<slot></slot>
-	</view>
+  <view class="uni-table-th" :class="{'table--border':border}" :style="{width:width + 'px','text-align':align}">
+    <slot></slot>
+  </view>
 </template>
 
 <script>
 /**
-	 * Th 表头
-	 * @description 表格内的表头单元格组件
-	 * @tutorial https://ext.dcloud.net.cn/plugin?id=
-	 * @property {Number} 	width 						单元格宽度
-	 * @property {Number} 	align = [left|center|right]	单元格对齐方式
-	 * @value left   	单元格文字左侧对齐
-	 * @value center	单元格文字居中
-	 * @value right		单元格文字右侧对齐
-	 */
+   * Th 表头
+   * @description 表格内的表头单元格组件
+   * @tutorial https://ext.dcloud.net.cn/plugin?id=
+   * @property {Number}   width             单元格宽度
+   * @property {Number}   align = [left|center|right]  单元格对齐方式
+   * @value left     单元格文字左侧对齐
+   * @value center  单元格文字居中
+   * @value right    单元格文字右侧对齐
+   */
 
 export default {
   name: 'uniTh',
@@ -44,8 +44,8 @@ export default {
   },
   methods: {
     /**
-			 * 获取父元素实例
-			 */
+       * 获取父元素实例
+       */
     getTable (name) {
       let parent = this.$parent
       let parentName = parent.$options.name
@@ -61,18 +61,18 @@ export default {
 </script>
 
 <style lang="scss">
-	.uni-table-th {
-		padding: 12px 10px;
-		display: table-cell;
-		// text-align: center;
-		color: #333;
-		font-weight: 500;
-		border-bottom: 1px #ddd solid;
-		font-size: 14px;
+  .uni-table-th {
+    padding: 12px 10px;
+    display: table-cell;
+    // text-align: center;
+    color: #333;
+    font-weight: 500;
+    border-bottom: 1px #ddd solid;
+    font-size: 14px;
         // background-color: #efefef;
         box-sizing: border-box;
-	}
-	.table--border {
-		border-right: 1px #ddd solid;
-	}
+  }
+  .table--border {
+    border-right: 1px #ddd solid;
+  }
 </style>

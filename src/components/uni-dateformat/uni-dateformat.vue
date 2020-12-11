@@ -1,19 +1,19 @@
 <template>
-	<text>{{dateShow}}</text>
+  <text>{{dateShow}}</text>
 </template>
 
 <script>
 /**
-	 * Dateformat 日期格式化
-	 * @description 日期格式化组件
-	 * @tutorial https://ext.dcloud.net.cn/plugin?id=xxx
-	 * @property {Object|String|Number} date 日期对象/日期字符串/时间戳
-	 * @property {String} locale 格式化使用的语言
-	 * 	@value zh 中文
-	 * 	@value en 英文
-	 * @property {Array} threshold 应用不同类型格式化的阈值
-	 * @property {String} format 输出日期字符串时的格式
-	 */
+   * Dateformat 日期格式化
+   * @description 日期格式化组件
+   * @tutorial https://ext.dcloud.net.cn/plugin?id=xxx
+   * @property {Object|String|Number} date 日期对象/日期字符串/时间戳
+   * @property {String} locale 格式化使用的语言
+   *   @value zh 中文
+   *   @value en 英文
+   * @property {Array} threshold 应用不同类型格式化的阈值
+   * @property {String} format 输出日期字符串时的格式
+   */
 import {
   friendlyDate
 } from './date-format.js'

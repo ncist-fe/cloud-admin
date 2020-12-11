@@ -1,5 +1,5 @@
 <template>
-	<text :style="{ color: color, 'font-size': size + 'px' }" class="uni-icons" :class="[customIcons,customIcons?type:'']" @click="_onClick">{{icons[type]}}</text>
+  <text :style="{ color: color, 'font-size': size + 'px' }" class="uni-icons" :class="[customIcons,customIcons?type:'']" @click="_onClick">{{icons[type]}}</text>
 </template>
 
 <script>
@@ -13,14 +13,14 @@ domModule.addRule('fontFace', {
 // #endif
 
 /**
-	 * Icons 图标
-	 * @description 用于展示 icons 图标
-	 * @tutorial https://ext.dcloud.net.cn/plugin?id=28
-	 * @property {Number} size 图标大小
-	 * @property {String} type 图标图案，参考示例
-	 * @property {String} color 图标颜色
-	 * @event {Function} click 点击 Icon 触发事件
-	 */
+   * Icons 图标
+   * @description 用于展示 icons 图标
+   * @tutorial https://ext.dcloud.net.cn/plugin?id=28
+   * @property {Number} size 图标大小
+   * @property {String} type 图标图案，参考示例
+   * @property {String} color 图标颜色
+   * @event {Function} click 点击 Icon 触发事件
+   */
 export default {
   name: 'UniIcons',
   props: {
@@ -55,17 +55,17 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-	/* #ifndef APP-NVUE */
-	@font-face {
-		font-family: uniicons;
-		src: url('./uni.ttf') format('truetype');
-	}
+  /* #ifndef APP-NVUE */
+  @font-face {
+    font-family: uniicons;
+    src: url('./uni.ttf') format('truetype');
+  }
 
-	/* #endif */
+  /* #endif */
 
-	.uni-icons {
-		font-family: uniicons;
-		text-decoration: none;
-		text-align: center;
-	}
+  .uni-icons {
+    font-family: uniicons;
+    text-decoration: none;
+    text-align: center;
+  }
 </style>

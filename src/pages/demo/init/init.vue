@@ -13,14 +13,14 @@
 
                 <uni-forms-item left-icon="locked" name="password" labelWidth="35">
                     <input class="uni-input-border" :password="showPassword" placeholder="密码" @blur="binddata('password',$event.detail.value)" />
-					<text class="uni-icon-password-eye pointer" :class="[!showPassword ? 'uni-eye-active' : '']" @click="changePassword">&#xe568;</text>
-				</uni-forms-item>
+          <text class="uni-icon-password-eye pointer" :class="[!showPassword ? 'uni-eye-active' : '']" @click="changePassword">&#xe568;</text>
+        </uni-forms-item>
 
                 <uni-forms-item left-icon="locked" name="passwordConfirmation" labelWidth="35" :errorMessage="errorMessage">
                     <input ref="passwordInput" @confirm="confirmForm('passwordConfirmation',$event.detail.value)" @blur="binddata('passwordConfirmation',$event.detail.value)"
                         class="uni-input-border" :password="showPasswordAgain" placeholder="确认密码" />
-					<text class="uni-icon-password-eye pointer" :class="[!showPasswordAgain ? 'uni-eye-active' : '']" @click="changePasswordAgain">&#xe568;</text>
-				</uni-forms-item>
+          <text class="uni-icon-password-eye pointer" :class="[!showPasswordAgain ? 'uni-eye-active' : '']" @click="changePasswordAgain">&#xe568;</text>
+        </uni-forms-item>
                 <view class="uni-button-group">
                     <button class="uni-button" type="primary" :loading="loading" :disabled="loading" @click="submitForm">创建</button>
                     <button class="uni-button" type="default" @click="back">返回</button>
@@ -28,9 +28,9 @@
 
             </uni-forms>
         </view>
-		<!-- #ifndef H5 -->
-		<fix-window />
-		<!-- #endif -->
+    <!-- #ifndef H5 -->
+    <fix-window />
+    <!-- #endif -->
     </view>
 </template>
 <script>
@@ -161,7 +161,7 @@ export default {
     },
     // #ifdef H5
     focus: function () {
-			    this.$refs.usernameInput.$refs.input.focus()
+      this.$refs.usernameInput.$refs.input.focus()
     }
     // #endif
   }
@@ -176,9 +176,9 @@ export default {
         /* align-items: center; */
         justify-content: center;
         background-color: #fff;
-		/* #ifndef H5 */
-		padding-top: 85px;
-		/* #endif */
+    /* #ifndef H5 */
+    padding-top: 85px;
+    /* #endif */
     }
 
     .login-box {

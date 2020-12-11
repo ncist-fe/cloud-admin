@@ -1,90 +1,90 @@
 <template>
-	<view>
-		<view class="uni-tabs__header">
-			<view class="uni-tabs__nav-wrap">
-				<view class="uni-tabs__nav-scroll">
-					<view class="uni-tabs__nav">
-						<view @click="switchTab('menus')" :class="{'is-active':currentTab==='menus'}" class="uni-tabs__item">
-							菜单管理
-						</view>
-						<view @click="switchTab('pluginMenus')" v-if="pluginMenus.length" :class="{'is-active':currentTab==='pluginMenus'}"
-						 class="uni-tabs__item">
-							待添加菜单
-							<uni-badge class="menu-badge" :text="pluginMenus.length" type="error"></uni-badge>
-						</view>
-					</view>
-				</view>
-			</view>
-		</view>
-		<view v-show="currentTab==='menus'">
-			<view class="uni-header" style="border-bottom: 0;margin-bottom: -15px;">
-				<view class="uni-group">
-					<button @click="navigateTo('./add')" size="mini" type="primary">新增</button>
-				</view>
-				<view class="uni-group">
+  <view>
+    <view class="uni-tabs__header">
+      <view class="uni-tabs__nav-wrap">
+        <view class="uni-tabs__nav-scroll">
+          <view class="uni-tabs__nav">
+            <view @click="switchTab('menus')" :class="{'is-active':currentTab==='menus'}" class="uni-tabs__item">
+              菜单管理
+            </view>
+            <view @click="switchTab('pluginMenus')" v-if="pluginMenus.length" :class="{'is-active':currentTab==='pluginMenus'}"
+             class="uni-tabs__item">
+              待添加菜单
+              <uni-badge class="menu-badge" :text="pluginMenus.length" type="error"></uni-badge>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+    <view v-show="currentTab==='menus'">
+      <view class="uni-header" style="border-bottom: 0;margin-bottom: -15px;">
+        <view class="uni-group">
+          <button @click="navigateTo('./add')" size="mini" type="primary">新增</button>
+        </view>
+        <view class="uni-group">
 
-				</view>
-			</view>
-			<view class="uni-container">
-				<uni-table :loading="loading" :emptyText="errMsg || '没有更多数据'" border stripe>
-					<uni-tr>
-						<uni-th width="80" align="center">排序</uni-th>
-						<uni-th width="150" align="center">名称</uni-th>
-						<uni-th width="150" align="center">标识</uni-th>
-						<uni-th align="center">URL</uni-th>
-						<uni-th width="200" align="center">图标</uni-th>
-						<uni-th width="200" align="center">权限</uni-th>
-						<uni-th width="80" align="center">是否启用</uni-th>
-						<uni-th width="160" align="center">操作</uni-th>
-					</uni-tr>
-					<uni-tr v-for="(item,index) in menus" :key="index">
-						<uni-td align="center">{{item.sort}}</uni-td>
-						<uni-td>{{item.title}}</uni-td>
-						<uni-td>{{item.menu_id}}</uni-td>
-						<uni-td>{{item.url}}</uni-td>
-						<uni-td>{{item.icon}}</uni-td>
-						<uni-td>{{item.permission}}</uni-td>
-						<uni-td align="center" :class="{'menu-disable':!item.enable}">{{item.enable?'已启用':'未启用'}}</uni-td>
-						<uni-td align="center">
-							<view class="uni-group">
-								<button @click="navigateTo('./edit?id='+item._id)" class="uni-button" size="mini" type="primary">修改</button>
-								<button :style="{visibility:item.menu_id==='system_menu'||item.menu_id==='system_management'?'hidden':'initial'}"
-								 @click="confirmDelete(item)" class="uni-button" size="mini" type="warn">删除</button>
-							</view>
-						</uni-td>
-					</uni-tr>
-				</uni-table>
-			</view>
-		</view>
-		<view v-show="currentTab==='pluginMenus'">
-			<view class="uni-header" style="border-bottom: 0;margin-bottom: -15px;">
-				<view class="uni-group">
-					<button style="width: 130px;" @click="addPluginMenus" size="mini" type="primary">添加选中的菜单</button>
-				</view>
-				<view class="uni-group"></view>
-			</view>
-			<view class="uni-container">
-				<uni-table ref="pluginMenusTable" type="selection" border stripe @selection-change="pluginMenuSelectChange">
-					<uni-tr>
-						<uni-th align="center">名称（标识）</uni-th>
-						<uni-th align="center">URL</uni-th>
-						<uni-th align="center">插件菜单 json 文件</uni-th>
-					</uni-tr>
-					<uni-tr v-for="(item,index) in pluginMenus" :key="index">
-						<uni-td>{{item.name}}（{{item.menu_id}}）</uni-td>
-						<uni-td>{{item.url}}</uni-td>
-						<uni-td>{{item.json}}</uni-td>
-					</uni-tr>
-				</uni-table>
-				<view class="uni-sub-title" style="margin-top: 15px;">
-					以上待添加菜单来自于三方插件，添加后，将显示在菜单管理中，若不希望显示在上述表格中时，可手动删除项目中对应的`插件id-menu.json`文件。
-				</view>
-			</view>
-		</view>
-		<!-- #ifndef H5 -->
-		<fix-window />
-		<!-- #endif -->
-	</view>
+        </view>
+      </view>
+      <view class="uni-container">
+        <uni-table :loading="loading" :emptyText="errMsg || '没有更多数据'" border stripe>
+          <uni-tr>
+            <uni-th width="80" align="center">排序</uni-th>
+            <uni-th width="150" align="center">名称</uni-th>
+            <uni-th width="150" align="center">标识</uni-th>
+            <uni-th align="center">URL</uni-th>
+            <uni-th width="200" align="center">图标</uni-th>
+            <uni-th width="200" align="center">权限</uni-th>
+            <uni-th width="80" align="center">是否启用</uni-th>
+            <uni-th width="160" align="center">操作</uni-th>
+          </uni-tr>
+          <uni-tr v-for="(item,index) in menus" :key="index">
+            <uni-td align="center">{{item.sort}}</uni-td>
+            <uni-td>{{item.title}}</uni-td>
+            <uni-td>{{item.menu_id}}</uni-td>
+            <uni-td>{{item.url}}</uni-td>
+            <uni-td>{{item.icon}}</uni-td>
+            <uni-td>{{item.permission}}</uni-td>
+            <uni-td align="center" :class="{'menu-disable':!item.enable}">{{item.enable?'已启用':'未启用'}}</uni-td>
+            <uni-td align="center">
+              <view class="uni-group">
+                <button @click="navigateTo('./edit?id='+item._id)" class="uni-button" size="mini" type="primary">修改</button>
+                <button :style="{visibility:item.menu_id==='system_menu'||item.menu_id==='system_management'?'hidden':'initial'}"
+                 @click="confirmDelete(item)" class="uni-button" size="mini" type="warn">删除</button>
+              </view>
+            </uni-td>
+          </uni-tr>
+        </uni-table>
+      </view>
+    </view>
+    <view v-show="currentTab==='pluginMenus'">
+      <view class="uni-header" style="border-bottom: 0;margin-bottom: -15px;">
+        <view class="uni-group">
+          <button style="width: 130px;" @click="addPluginMenus" size="mini" type="primary">添加选中的菜单</button>
+        </view>
+        <view class="uni-group"></view>
+      </view>
+      <view class="uni-container">
+        <uni-table ref="pluginMenusTable" type="selection" border stripe @selection-change="pluginMenuSelectChange">
+          <uni-tr>
+            <uni-th align="center">名称（标识）</uni-th>
+            <uni-th align="center">URL</uni-th>
+            <uni-th align="center">插件菜单 json 文件</uni-th>
+          </uni-tr>
+          <uni-tr v-for="(item,index) in pluginMenus" :key="index">
+            <uni-td>{{item.name}}（{{item.menu_id}}）</uni-td>
+            <uni-td>{{item.url}}</uni-td>
+            <uni-td>{{item.json}}</uni-td>
+          </uni-tr>
+        </uni-table>
+        <view class="uni-sub-title" style="margin-top: 15px;">
+          以上待添加菜单来自于三方插件，添加后，将显示在菜单管理中，若不希望显示在上述表格中时，可手动删除项目中对应的`插件id-menu.json`文件。
+        </view>
+      </view>
+    </view>
+    <!-- #ifndef H5 -->
+    <fix-window />
+    <!-- #endif -->
+  </view>
 </template>
 
 <script>
@@ -104,16 +104,16 @@ if (process.env.NODE_ENV === 'development') {
     })
   })
   // const pluginModules = require.context(
-  // 	'../../../uni_modules/',
-  // 	true,
-  // 	/-menu.json$/
+  //   '../../../uni_modules/',
+  //   true,
+  //   /-menu.json$/
   // )
   // pluginModules.keys().forEach(function(key) {
-  // 	const json = 'uni_modules' + key.substr(1)
-  // 	pluginModules(key).forEach(item => {
-  // 		item.json = json
-  // 		pluginMenuJsons.push(item)
-  // 	})
+  //   const json = 'uni_modules' + key.substr(1)
+  //   pluginModules(key).forEach(item => {
+  //     item.json = json
+  //     pluginMenuJsons.push(item)
+  //   })
   // })
 }
 
@@ -284,18 +284,18 @@ export default {
 }
 </script>
 <style>
-	/* #ifndef H5 */
-	page {
-		padding-top: 85px;
-	}
-	/* #endif */
-	.menu-disable {
-		color: red;
-	}
+  /* #ifndef H5 */
+  page {
+    padding-top: 85px;
+  }
+  /* #endif */
+  .menu-disable {
+    color: red;
+  }
 
-	.menu-badge {
-		position: absolute;
-		top: 0;
-		right: 5px;
-	}
+  .menu-badge {
+    position: absolute;
+    top: 0;
+    right: 5px;
+  }
 </style>

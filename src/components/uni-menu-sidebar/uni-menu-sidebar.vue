@@ -1,23 +1,23 @@
 <template>
-	<view class="pointer">
-		<template v-for="(item,index) in data">
-			<template v-if="!item.children || !item.children.length">
-				<uni-menu-item :index="item">
-					<view :class="['iconfont',item.icon]" v-if="item.icon.indexOf('uni-icon') === -1"></view>
-					<view :class="item.icon" v-else></view>
-					<text :class="{title: item.icon}">{{item.name}}</text>
-				</uni-menu-item>
-			</template>
-			<uni-sub-menu v-else :index="item">
-				<template v-slot:title>
-					<view :class="['iconfont',item.icon]" v-if="item.icon.indexOf('uni-icon') === -1"></view>
-					<view :class="item.icon" v-else></view>
-					<text :class="{title: item.icon}">{{item.name}}</text>
-				</template>
-				<uni-menu-sidebar class="item-bg"  :data="item.children" :key="item._id" />
-			</uni-sub-menu>
-		</template>
-	</view>
+  <view class="pointer">
+    <template v-for="(item,index) in data">
+      <template v-if="!item.children || !item.children.length">
+        <uni-menu-item :index="item">
+          <view :class="['iconfont',item.icon]" v-if="item.icon.indexOf('uni-icon') === -1"></view>
+          <view :class="item.icon" v-else></view>
+          <text :class="{title: item.icon}">{{item.name}}</text>
+        </uni-menu-item>
+      </template>
+      <uni-sub-menu v-else :index="item">
+        <template v-slot:title>
+          <view :class="['iconfont',item.icon]" v-if="item.icon.indexOf('uni-icon') === -1"></view>
+          <view :class="item.icon" v-else></view>
+          <text :class="{title: item.icon}">{{item.name}}</text>
+        </template>
+        <uni-menu-sidebar class="item-bg"  :data="item.children" :key="item._id" />
+      </uni-sub-menu>
+    </template>
+  </view>
 </template>
 
 <script>
@@ -48,7 +48,7 @@ export default {
 </script>
 
 <style lang="scss">
-	.title {
-		margin-left: 5px;
-	}
+  .title {
+    margin-left: 5px;
+  }
 </style>

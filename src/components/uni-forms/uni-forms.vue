@@ -1,33 +1,33 @@
 <template>
-	<view class="uni-forms">
-		<form @submit.stop="submitForm" @reset="resetForm">
-			<slot></slot>
-		</form>
-	</view>
+  <view class="uni-forms">
+    <form @submit.stop="submitForm" @reset="resetForm">
+      <slot></slot>
+    </form>
+  </view>
 </template>
 
 <script>
 /**
-	 * Forms 表单
-	 * @description 由输入框、选择器、单选框、多选框等控件组成，用以收集、校验、提交数据
-	 * @tutorial https://ext.dcloud.net.cn/plugin?id=2773
-	 * @property {Object} rules  							表单校验规则
-	 * @property {String} validateTrigger = [bind|submit]	校验触发器方式 默认 submit 可选
-	 * 	@value bind 	发生变化时触发
-	 * 	@value submit 	提交时触发
-	 * @property {String} labelPosition = [top|left]				label 位置 默认 left 可选
-	 * @value top		顶部显示 label
-	 * @value left		左侧显示 label
-	 * @property {String} labelWidth  							label 宽度，默认 65px
-	 * @property {String} labelAlign = [left|center|right]		label 居中方式  默认 left 可选
-	 * 	@value left		label 左侧显示
-	 * 	@value center	label 居中
-	 * 	@value right		label 右侧对齐
-	 * @property {String} errShowType = [undertext|toast|modal]	校验错误信息提示方式
-	 * 	@value undertext	错误信息在底部显示
-	 * 	@value toast		错误信息toast显示
-	 * 	@value modal		错误信息modal显示
-	 */
+   * Forms 表单
+   * @description 由输入框、选择器、单选框、多选框等控件组成，用以收集、校验、提交数据
+   * @tutorial https://ext.dcloud.net.cn/plugin?id=2773
+   * @property {Object} rules                表单校验规则
+   * @property {String} validateTrigger = [bind|submit]  校验触发器方式 默认 submit 可选
+   *   @value bind   发生变化时触发
+   *   @value submit   提交时触发
+   * @property {String} labelPosition = [top|left]        label 位置 默认 left 可选
+   * @value top    顶部显示 label
+   * @value left    左侧显示 label
+   * @property {String} labelWidth                label 宽度，默认 65px
+   * @property {String} labelAlign = [left|center|right]    label 居中方式  默认 left 可选
+   *   @value left    label 左侧显示
+   *   @value center  label 居中
+   *   @value right    label 右侧对齐
+   * @property {String} errShowType = [undertext|toast|modal]  校验错误信息提示方式
+   *   @value undertext  错误信息在底部显示
+   *   @value toast    错误信息toast显示
+   *   @value modal    错误信息modal显示
+   */
 import Vue from 'vue'
 
 import Validator from './validate.js'
@@ -137,18 +137,18 @@ export default {
       }
     },
     /**
-			 * 设置校验规则
-			 * @param {Object} formRules
-			 */
+       * 设置校验规则
+       * @param {Object} formRules
+       */
     setRules (formRules) {
       this.init(formRules)
     },
     /**
-			 * 公开给用户使用
-			 * 设置自定义表单组件 value 值
-			 *  @param {String} name 字段名称
-			 *  @param {String} value 字段值
-			 */
+       * 公开给用户使用
+       * 设置自定义表单组件 value 值
+       *  @param {String} name 字段名称
+       *  @param {String} value 字段值
+       */
     setValue (name, value, callback) {
       const example = this.childrens.find(child => child.name === name)
       if (!example) return null
@@ -161,17 +161,17 @@ export default {
     },
 
     /**
-			 * TODO 表单提交， 小程序暂不支持这种用法
-			 * @param {Object} event
-			 */
+       * TODO 表单提交， 小程序暂不支持这种用法
+       * @param {Object} event
+       */
     submitForm (event) {
       const value = event.detail.value
       return this.validateAll(value || this.formData, 'submit')
     },
     /**
-			 * 表单重置
-			 * @param {Object} event
-			 */
+       * 表单重置
+       * @param {Object} event
+       */
     resetForm (event) {
       this.childrens.forEach(item => {
         item.errMsg = ''
@@ -191,16 +191,16 @@ export default {
     },
 
     /**
-			 * 触发表单校验，通过 @validate 获取
-			 * @param {Object} validate
-			 */
+       * 触发表单校验，通过 @validate 获取
+       * @param {Object} validate
+       */
     validateCheck (validate) {
       if (validate === null) validate = null
       this.$emit('validate', validate)
     },
     /**
-			 * 校验所有或者部分表单
-			 */
+       * 校验所有或者部分表单
+       */
     async validateAll (invalidFields, type, callback) {
       if (!this.validator) {
         this.$emit('submit', {
@@ -301,28 +301,28 @@ export default {
     },
 
     /**
-			 * 外部调用方法
-			 * 手动提交校验表单
-			 * 对整个表单进行校验的方法，参数为一个回调函数。
-			 */
+       * 外部调用方法
+       * 手动提交校验表单
+       * 对整个表单进行校验的方法，参数为一个回调函数。
+       */
     submit () {
       return this.validateAll(this.formData, 'submit')
     },
 
     /**
-			 * 外部调用方法
-			 * 校验表单
-			 * 对整个表单进行校验的方法，参数为一个回调函数。
-			 */
+       * 外部调用方法
+       * 校验表单
+       * 对整个表单进行校验的方法，参数为一个回调函数。
+       */
     validate (callback) {
       return this.validateAll(this.formData, '', callback)
     },
 
     /**
-			 * 部分表单校验
-			 * @param {Object} props
-			 * @param {Object} cb
-			 */
+       * 部分表单校验
+       * @param {Object} props
+       * @param {Object} cb
+       */
     validateField (props, callback) {
       props = [].concat(props)
       let invalidFields = {}
@@ -339,15 +339,15 @@ export default {
     },
 
     /**
-			 * 对整个表单进行重置，将所有字段值重置为初始值并移除校验结果
-			 */
+       * 对整个表单进行重置，将所有字段值重置为初始值并移除校验结果
+       */
     resetFields () {
       this.resetForm()
     },
 
     /**
-			 * 移除表单项的校验结果。传入待移除的表单项的 prop 属性或者 prop 组成的数组，如不传则移除整个表单的校验结果
-			 */
+       * 移除表单项的校验结果。传入待移除的表单项的 prop 属性或者 prop 组成的数组，如不传则移除整个表单的校验结果
+       */
     clearValidate (props) {
       props = [].concat(props)
       this.childrens.forEach(item => {

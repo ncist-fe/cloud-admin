@@ -1,8 +1,8 @@
 <template>
-	<view v-if="isShow" ref="ani" class="uni-transition" :class="[ani.in]" :style="'transform:' +transform+';'+stylesObject"
-	 @click="change">
-		 <slot></slot>
-	</view>
+  <view v-if="isShow" ref="ani" class="uni-transition" :class="[ani.in]" :style="'transform:' +transform+';'+stylesObject"
+   @click="change">
+     <slot></slot>
+  </view>
 </template>
 
 <script>
@@ -10,10 +10,10 @@
 const animation = uni.requireNativePlugin('animation')
 // #endif
 /**
-	 * Transition 过渡动画
-	 * @description 简单过渡动画组件
-	 * @tutorial https://ext.dcloud.net.cn/plugin?id=985
-	 * @property {Boolean} show = [false|true] 控制组件显示或隐藏
+   * Transition 过渡动画
+   * @description 简单过渡动画组件
+   * @tutorial https://ext.dcloud.net.cn/plugin?id=985
+   * @property {Boolean} show = [false|true] 控制组件显示或隐藏
      * @property {Array} modeClass = [fade|slide-top|slide-right|slide-bottom|slide-left|zoom-in|zoom-out] 过渡动画类型
      *  @value fade 渐隐渐出过渡
      *  @value slide-top 由上至下过渡
@@ -22,9 +22,9 @@ const animation = uni.requireNativePlugin('animation')
      *  @value slide-left 由左至右过渡
      *  @value zoom-in 由小到大过渡
      *  @value zoom-out 由大到小过渡
-	 * @property {Number} duration 过渡动画持续时间
-	 * @property {Object} styles 组件样式，同 css 样式，注意带’-‘连接符的属性需要使用小驼峰写法如：`backgroundColor:red`
-	 */
+   * @property {Number} duration 过渡动画持续时间
+   * @property {Object} styles 组件样式，同 css 样式，注意带’-‘连接符的属性需要使用小驼峰写法如：`backgroundColor:red`
+   */
 export default {
   name: 'uniTransition',
   props: {
@@ -88,9 +88,9 @@ export default {
   created () {
     // this.timer = null
     // this.nextTick = (time = 50) => new Promise(resolve => {
-    // 	clearTimeout(this.timer)
-    // 	this.timer = setTimeout(resolve, time)
-    // 	return this.timer
+    //   clearTimeout(this.timer)
+    //   this.timer = setTimeout(resolve, time)
+    //   return this.timer
     // });
   },
   methods: {
@@ -203,8 +203,8 @@ export default {
       }
     },
     // getEl(el) {
-    // 	console.log(el || el.ref || null);
-    // 	return el || el.ref || null
+    //   console.log(el || el.ref || null);
+    //   return el || el.ref || null
     // },
     toLine (name) {
       return name.replace(/([A-Z])/g, '-$1').toLowerCase()
@@ -214,64 +214,64 @@ export default {
 </script>
 
 <style>
-	.uni-transition {
-		transition-timing-function: ease;
-		transition-duration: 0.3s;
-		transition-property: transform, opacity;
-	}
+  .uni-transition {
+    transition-timing-function: ease;
+    transition-duration: 0.3s;
+    transition-property: transform, opacity;
+  }
 
-	.fade-in {
-		opacity: 0;
-	}
+  .fade-in {
+    opacity: 0;
+  }
 
-	.fade-active {
-		opacity: 1;
-	}
+  .fade-active {
+    opacity: 1;
+  }
 
-	.slide-top-in {
-		/* transition-property: transform, opacity; */
-		transform: translateY(-100%);
-	}
+  .slide-top-in {
+    /* transition-property: transform, opacity; */
+    transform: translateY(-100%);
+  }
 
-	.slide-top-active {
-		transform: translateY(0);
-		/* opacity: 1; */
-	}
+  .slide-top-active {
+    transform: translateY(0);
+    /* opacity: 1; */
+  }
 
-	.slide-right-in {
-		transform: translateX(100%);
-	}
+  .slide-right-in {
+    transform: translateX(100%);
+  }
 
-	.slide-right-active {
-		transform: translateX(0);
-	}
+  .slide-right-active {
+    transform: translateX(0);
+  }
 
-	.slide-bottom-in {
-		transform: translateY(100%);
-	}
+  .slide-bottom-in {
+    transform: translateY(100%);
+  }
 
-	.slide-bottom-active {
-		transform: translateY(0);
-	}
+  .slide-bottom-active {
+    transform: translateY(0);
+  }
 
-	.slide-left-in {
-		transform: translateX(-100%);
-	}
+  .slide-left-in {
+    transform: translateX(-100%);
+  }
 
-	.slide-left-active {
-		transform: translateX(0);
-		opacity: 1;
-	}
+  .slide-left-active {
+    transform: translateX(0);
+    opacity: 1;
+  }
 
-	.zoom-in-in {
-		transform: scale(0.8);
-	}
+  .zoom-in-in {
+    transform: scale(0.8);
+  }
 
-	.zoom-out-active {
-		transform: scale(1);
-	}
+  .zoom-out-active {
+    transform: scale(1);
+  }
 
-	.zoom-out-in {
-		transform: scale(1.2);
-	}
+  .zoom-out-in {
+    transform: scale(1.2);
+  }
 </style>

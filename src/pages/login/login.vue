@@ -1,28 +1,28 @@
 <template>
-	<view class="login-box">
-		<view class="admin-logo">
-			<image :src="logo" mode="heightFix"></image>
-		</view>
-		<view class="uni-header no-padding">
-			<view class="uni-title">系统登录</view>
-		</view>
-		<view class="uni-container">
-			<uni-forms ref="form" validateTrigger="bind" :rules="rules" @submit="submit">
-				<uni-forms-item left-icon="person" name="username" labelWidth="35">
-					<input ref="usernameInput" @confirm="confirmForm('username',$event.detail.value)" class="uni-input-border" type="text" placeholder="账户"
-					 @blur="binddata('username',$event.detail.value)" />
-				</uni-forms-item>
-				<uni-forms-item left-icon="locked" class="icon-container" name="password" labelWidth="35">
-					<input ref="passwordInput" @confirm="confirmForm('password',$event.detail.value)" class="uni-input-border" :password="showPassword"
-					 placeholder="密码" @blur="binddata('password',$event.detail.value)" />
-					<text class="uni-icon-password-eye pointer" :class="[!showPassword ? 'uni-eye-active' : '']" @click="changePassword">&#xe568;</text>
-				</uni-forms-item>
-				<view class="uni-button-group">
-					<button class="uni-button uni-button-full" type="primary" :loading="loading" :disabled="loading" @click="submitForm">登录</button>
-				</view>
-			</uni-forms>
-		</view>
-	</view>
+  <view class="login-box">
+    <view class="admin-logo">
+      <image :src="logo" mode="heightFix"></image>
+    </view>
+    <view class="uni-header no-padding">
+      <view class="uni-title">系统登录</view>
+    </view>
+    <view class="uni-container">
+      <uni-forms ref="form" validateTrigger="bind" :rules="rules" @submit="submit">
+        <uni-forms-item left-icon="person" name="username" labelWidth="35">
+          <input ref="usernameInput" @confirm="confirmForm('username',$event.detail.value)" class="uni-input-border" type="text" placeholder="账户"
+           @blur="binddata('username',$event.detail.value)" />
+        </uni-forms-item>
+        <uni-forms-item left-icon="locked" class="icon-container" name="password" labelWidth="35">
+          <input ref="passwordInput" @confirm="confirmForm('password',$event.detail.value)" class="uni-input-border" :password="showPassword"
+           placeholder="密码" @blur="binddata('password',$event.detail.value)" />
+          <text class="uni-icon-password-eye pointer" :class="[!showPassword ? 'uni-eye-active' : '']" @click="changePassword">&#xe568;</text>
+        </uni-forms-item>
+        <view class="uni-button-group">
+          <button class="uni-button uni-button-full" type="primary" :loading="loading" :disabled="loading" @click="submitForm">登录</button>
+        </view>
+      </uni-forms>
+    </view>
+  </view>
 </template>
 
 <script>
@@ -140,53 +140,53 @@ export default {
 </script>
 
 <style>
-	page {
-		width: 100%;
-		height: 100%;
-		display: flex;
-		justify-content: center;
-		background-color: #fff;
-	}
+  page {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    background-color: #fff;
+  }
 
-	.login-box {
-		position: relative;
-		max-width: 420px;
-		flex: 1;
-		padding: 140px 35px 0;
-		margin: 0 auto;
-		overflow: hidden;
-		/* background-color: #F5F5F5; */
-	}
+  .login-box {
+    position: relative;
+    max-width: 420px;
+    flex: 1;
+    padding: 140px 35px 0;
+    margin: 0 auto;
+    overflow: hidden;
+    /* background-color: #F5F5F5; */
+  }
 
-	.underline:hover {
-		text-decoration: underline;
-	}
+  .underline:hover {
+    text-decoration: underline;
+  }
 
-	.uni-tips {
-		display: flex;
-		justify-content: flex-end;
-		margin-top: 15px;
-	}
+  .uni-tips {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 15px;
+  }
 
-	.uni-tips-text {
-		cursor: pointer;
-		text-decoration: underline;
-		font-size: 13px;
-		color: #007AFF;
-		opacity: 0.8;
-	}
+  .uni-tips-text {
+    cursor: pointer;
+    text-decoration: underline;
+    font-size: 13px;
+    color: #007AFF;
+    opacity: 0.8;
+  }
 
-	.no-padding {
-		padding: 0;
-	}
+  .no-padding {
+    padding: 0;
+  }
 
-	.admin-logo {
-		display: flex;
-		justify-content: center;
-		margin-bottom: 30px;
-	}
+  .admin-logo {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 30px;
+  }
 
-	.admin-logo image {
-		height: 60px;
-	}
+  .admin-logo image {
+    height: 60px;
+  }
 </style>
