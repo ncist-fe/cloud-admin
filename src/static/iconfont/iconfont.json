@@ -6,6 +6,83 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "10005224",
+      "name": "网盘",
+      "font_class": "wangpan",
+      "unicode": "e755",
+      "unicode_decimal": 59221
+    },
+    {
+      "icon_id": "99761",
+      "name": "audio",
+      "font_class": "audio",
+      "unicode": "e6e1",
+      "unicode_decimal": 59105
+    },
+    {
+      "icon_id": "152711",
+      "name": "excel",
+      "font_class": "excel",
+      "unicode": "e608",
+      "unicode_decimal": 58888
+    },
+    {
+      "icon_id": "723086",
+      "name": "powerpoint03",
+      "font_class": "powerpoint03",
+      "unicode": "ed87",
+      "unicode_decimal": 60807
+    },
+    {
+      "icon_id": "5442706",
+      "name": "video",
+      "font_class": "video1",
+      "unicode": "e601",
+      "unicode_decimal": 58881
+    },
+    {
+      "icon_id": "5760515",
+      "name": "image",
+      "font_class": "image",
+      "unicode": "e60e",
+      "unicode_decimal": 58894
+    },
+    {
+      "icon_id": "6820766",
+      "name": "PDF",
+      "font_class": "PDF",
+      "unicode": "e63b",
+      "unicode_decimal": 58939
+    },
+    {
+      "icon_id": "7232930",
+      "name": "txt",
+      "font_class": "txt",
+      "unicode": "e859",
+      "unicode_decimal": 59481
+    },
+    {
+      "icon_id": "7374482",
+      "name": "zip",
+      "font_class": "zip",
+      "unicode": "e622",
+      "unicode_decimal": 58914
+    },
+    {
+      "icon_id": "9397382",
+      "name": "word",
+      "font_class": "word",
+      "unicode": "e7e6",
+      "unicode_decimal": 59366
+    },
+    {
+      "icon_id": "11364983",
+      "name": "code",
+      "font_class": "code",
+      "unicode": "e7bb",
+      "unicode_decimal": 59323
+    },
+    {
       "icon_id": "7025297",
       "name": "文件夹",
       "font_class": "wenjianjia",

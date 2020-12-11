@@ -36,9 +36,12 @@
                     </uni-tr>
                     <uni-tr v-for="(item,index) in data" :key="index">
                         <uni-td align="left" v-if="item.isFolder">
-							<span class="iconfont file-icon">&#xe600;</span><a class="folder-name" @click="enterFolder(item.name)">{{item.name}}</a>
+							<span class="iconfont file-icon icon-folder"></span><a class="folder-name" @click="enterFolder(item.name)">{{item.name}}</a>
 						</uni-td>
-						<uni-td align="left" v-else>{{item.name}}</uni-td>
+						<uni-td align="left" v-else>
+							<span :class="['iconfont','file-icon', getFileType(item.name)]"></span>
+							{{item.name}}
+						</uni-td>
                         <uni-td align="center">{{item.createBy}}</uni-td>
 						<uni-td align="center">{{item.isFolder ? '-': formatSize(item.size)}}</uni-td>
                         <uni-td align="center">
@@ -72,6 +75,7 @@
     // 分页配置
     const pageSize = 20
     const pageCurrent = 1
+	import { formatSize, checkFileType } from '@/js_sdk/netdisk/index.js'
 	import uniPopupDialog from '@/components/uni-popup/uni-popup-dialog.vue'
 	import {
 		mapState
@@ -111,20 +115,11 @@
 			this.$refs.input.$el.appendChild(input);
 		},
         methods: {
-			formatSize(size) {
-			  let result;
-			  // size为字节
-			  if (size / 1024 / 1024 / 1024 >= 1) {
-				// 可以转化为GB就转化为GB
-				result = (size / 1024 / 1024 / 1024).toFixed(2) + "GB";
-			  } else if (size / 1024 / 1024 >= 1) {
-				// 可以转化为MB就转化为MB
-				result = (size / 1024 / 1024).toFixed(2) + "MB";
-			  } else {
-				// 否则转化为KB
-				result = (size / 1024).toFixed(2) + "KB";
-			  }
-			  return result;
+			formatSize (size) {
+				return formatSize(size)
+			},
+			getFileType(name) {
+				return 'icon-' + checkFileType(name)
 			},
 			confirmCreate (done, value) {
 				done()
@@ -156,6 +151,11 @@
 			        clear
 			    })
 			},
+			onPageChanged(e) {
+			    this.$refs.dataQuery.loadData({
+			        current: e.current
+			    })
+			},
 			uploadFile () {
 				return document.getElementById("file").click();
 			},
@@ -184,11 +184,12 @@
 					cloudPath: fileInfo.name,
 					filePath: filePath
 				}).then(res => {
+					console.log('upload resut:', res)
 					if (res.success) {
 						this.saveFileInfo({
 							name: fileInfo.name,
 							size: fileInfo.size,
-							link: fileInfo.link,
+							link: res.fileID,
 							isFolder: false
 						})
 					}

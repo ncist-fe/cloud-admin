@@ -34,8 +34,8 @@ export default {
 		// 	}]
 		staticMenu: [{
 			menu_id: "netdisk-all",
-			name: 'xx网盘',
-			icon: 'uni-icons-list',
+			name: '我的网盘',
+			icon: 'icon-wangpan',
 			url: '/pages/netdisk/list',
 		}]
 	}
