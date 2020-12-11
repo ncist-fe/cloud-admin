@@ -41,7 +41,7 @@
                     </uni-tr>
                 </uni-table>
                 <view class="uni-pagination-box">
-                    <uni-pagination show-icon :page-size="pagination.size" v-model="pagination.current" :total="pagination.total"
+                    <uni-pagination show-icon :page-size="pagination.size" v-model="pagination.current" :total="pagination.count"
                         @change="onPageChanged" />
                 </view>
             </uni-clientdb>

@@ -32,6 +32,11 @@ export default {
 		// 		icon: 'uni-icons-list',
 		// 		url: '/pages/demo/table/table',
 		// 	}]
-		staticMenu: []
+		staticMenu: [{
+			menu_id: "netdisk-all",
+			name: 'xx网盘',
+			icon: 'uni-icons-list',
+			url: '/pages/netdisk/list',
+		}]
 	}
 }

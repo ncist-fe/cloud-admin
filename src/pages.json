@@ -113,6 +113,14 @@
 				"navigationBarTitleText": "表格"
 			}
 		}]
+	}, {
+		"root": "pages/netdisk",
+		"pages": [{
+			"path": "list",
+			"style": {
+				"navigationBarTitleText": "所有文件"
+			}
+		}]
 	}],
 	"globalStyle": {
 		"navigationStyle": "custom",

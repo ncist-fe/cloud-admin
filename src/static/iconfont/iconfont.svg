@@ -1,0 +1,29 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd" >
+<!--
+2013-9-30: Created.
+-->
+<svg>
+<metadata>
+Created by iconfont
+</metadata>
+<defs>
+
+<font id="iconfont" horiz-adv-x="1024" >
+  <font-face
+    font-family="iconfont"
+    font-weight="500"
+    font-stretch="normal"
+    units-per-em="1024"
+    ascent="896"
+    descent="-128"
+  />
+    <missing-glyph />
+    
+    <glyph glyph-name="wenjianjia" unicode="&#58880;" d="M1019.361882-54.272c0-40.779294-32.045176-73.728-71.559529-73.728H53.669647L178.898824 480.256c0 40.719059 31.864471 73.728 71.318588 73.728h822.814117c39.454118 0 71.439059-33.008941 71.439059-73.728l-125.108706-534.528zM196.668235 609.28h804.74353V681.743059c0 40.719059-32.045176 73.728-71.439059 73.728H500.736v66.861176C500.736 862.870588 468.751059 896 429.236706 896H71.499294C32.045176 896 0 862.930824 0 822.272v-876.544l125.108706 589.824c0 40.719059 32.045176 73.788235 71.559529 73.788235z"  horiz-adv-x="1144" />
+
+    
+
+
+  </font>
+</defs></svg>
