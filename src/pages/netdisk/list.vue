@@ -2,6 +2,8 @@
     <view>
 		<view class="uni-header">
 			<button @click="showCreateFolder" class="uni-button" type="primary">新增文件夹</button>
+			<view ref="input" class="input"></view> 
+			<button @click="uploadFile" class="uni-button" type="primary">上传文件</button>
 			<uni-popup ref="folderPopup" type="dialog">
 				<uni-popup-dialog mode="input" title="新增文件夹" placeholder="请输入文件夹名称" @confirm="confirmCreate"></uni-popup-dialog>
 			</uni-popup>
@@ -14,8 +16,8 @@
 						v-for="(item, index) in pathStack"
 						:key="item"
 						@click="toPreviousFolder(index)">
-						<span>{{ item === "/" || item === "" ? " 首页 " : item }}</span>
-						<span style="padding-left:2px" v-if="item || item !== '/'">/</span>
+						<span class="folder-name">{{ item === "/" || item === "" ? " 首页 " : item }}</span>
+						<span v-if="item || item !== '/'">/</span>
 					  </span>
 				</view>
 			</view>
@@ -24,8 +26,7 @@
             <uni-clientdb ref="dataQuery" :collection="collectionName" :options="options" :where="where" page-data="replace"
                 :orderby="orderby" :getcount="true" :page-size="options.pageSize" :page-current="options.pageCurrent"
                 v-slot:default="{data,pagination,loading,error}">
-                <uni-table :loading="loading" :emptyText="error.message || '没有更多数据'" stripe type="selection"
-				 @selection-change="selectionChange">
+                <uni-table :loading="loading" :emptyText="error.message || '没有更多数据'" stripe>
                     <uni-tr>
                         <uni-th min-width="50" align="left">文件名</uni-th>
                         <uni-th width="100" align="center">上传人</uni-th>
@@ -35,18 +36,18 @@
                     </uni-tr>
                     <uni-tr v-for="(item,index) in data" :key="index">
                         <uni-td align="left" v-if="item.isFolder">
-							<span class="iconfont">&#xe600;</span><a class="folder-name" @click="enterFolder(item.name)">{{item.name}}</a>
+							<span class="iconfont file-icon">&#xe600;</span><a class="folder-name" @click="enterFolder(item.name)">{{item.name}}</a>
 						</uni-td>
 						<uni-td align="left" v-else>{{item.name}}</uni-td>
                         <uni-td align="center">{{item.createBy}}</uni-td>
-						<uni-td align="center">{{item.isFolder ? '-': '2'}}</uni-td>
+						<uni-td align="center">{{item.isFolder ? '-': formatSize(item.size)}}</uni-td>
                         <uni-td align="center">
                             <uni-dateformat :date="item.createOn" :threshold = "[0,0]" format="yyyy-MM-dd hh:mm:ss"/>
                         </uni-td>
                         <uni-td align="center">
                             <view class="uni-group">
                                 <button size="mini" @click="navigateTo('./edit?id='+item._id)" class="uni-button" type="primary">修改</button>
-                                <button size="mini" @click="confirmDelete(item._id)" class="uni-button" type="warn">删除</button>
+                                <button size="mini" @click="confirmDelete(item)" class="uni-button" type="warn">删除</button>
                             </view>
                         </uni-td>
                     </uni-tr>
@@ -81,7 +82,7 @@
 			...mapState('user', ['userInfo']),
 			where() {
 				return {
-					parent: this.pathStack.join('/')
+					parent: this.pathStack.join('/').replace('//','/')
 				}
 			}
 		},
@@ -99,35 +100,99 @@
 				pathStack: ['/']
             }
         },
-		onLoad() {
+		mounted() {
+			var input = document.createElement('input')
+			input.type = 'file'
+			input.style.display = 'none'
+			input.id = 'file'
+			input.onchange = (event) => {
+				this.upload(event.target.files[0]);
+			}
+			this.$refs.input.$el.appendChild(input);
 		},
         methods: {
+			formatSize(size) {
+			  let result;
+			  // size为字节
+			  if (size / 1024 / 1024 / 1024 >= 1) {
+				// 可以转化为GB就转化为GB
+				result = (size / 1024 / 1024 / 1024).toFixed(2) + "GB";
+			  } else if (size / 1024 / 1024 >= 1) {
+				// 可以转化为MB就转化为MB
+				result = (size / 1024 / 1024).toFixed(2) + "MB";
+			  } else {
+				// 否则转化为KB
+				result = (size / 1024).toFixed(2) + "KB";
+			  }
+			  return result;
+			},
 			confirmCreate (done, value) {
-				console.log('value is:', value)
 				done()
 				uni.showLoading({
 					title:'创建中'
 				})
-				db.collection(dbCollectionName).add({
-					parent: this.pathStack.join('/'),
+				this.saveFileInfo({
 					name: value,
-					isFolder: true,
-					createOn: new Date().toISOString(),
-					createBy: this.userInfo.username
-				}).catch((err) => {
-                    uni.showModal({
-                        content: err.message || '请求服务失败',
-                        showCancel: false
-                    })
-                }).finally(() => {
-                    uni.hideLoading()
+					isFolder: true
+				})
+			},
+			saveFileInfo(file) {
+				const fileObj = Object.assign({}, file)
+				fileObj.parent = this.where.parent
+				fileObj.createOn = new Date().toISOString()
+				fileObj.createBy = this.userInfo.username
+				db.collection(dbCollectionName).add(fileObj).catch(err => {
+				    uni.showModal({
+				        content: err.message || '请求服务失败',
+				        showCancel: false
+				    })
+				}).finally(() => {
+				    uni.hideLoading()
 					this.loadData()
-                })
+				})
 			},
 			loadData(clear = true) {
 			    this.$refs.dataQuery.loadData({
 			        clear
 			    })
+			},
+			uploadFile () {
+				return document.getElementById("file").click();
+			},
+			upload(fileInfo) {
+				if (fileInfo.size > 100 * 1024 * 1024) {
+					uni.showModal({
+						content: '目前仅支持上传100M以内文件',
+						showCancel: false
+					})
+				} else {
+					uni.showLoading({
+						title:'上传中'
+					})
+					// 转换文件路径--异步操作
+					var reader = new FileReader();
+					reader.readAsDataURL(fileInfo);
+					reader.onload = e => {
+						this.uploadApi(e.target.result, fileInfo)
+					}
+				}
+				console.log('file info', fileInfo)
+			},
+			uploadApi (filePath, fileInfo) {
+				console.log()
+				uniCloud.uploadFile({
+					cloudPath: fileInfo.name,
+					filePath: filePath
+				}).then(res => {
+					if (res.success) {
+						this.saveFileInfo({
+							name: fileInfo.name,
+							size: fileInfo.size,
+							link: fileInfo.link,
+							isFolder: false
+						})
+					}
+				})
 			},
 			enterFolder(name) {
 				this.pathStack.push(name)
@@ -147,17 +212,19 @@
 				  })
 			  }
 			},
-			confirmDelete(id) {
+			confirmDelete(file) {
+				let tip = '确认删除' + (file.isFolder?'文件夹':'文件') + ':[' + file.name + ']?'
 			    uni.showModal({
 			        title: '提示',
-			        content: '确认删除该文件夹？',
+			        content: tip,
 			        success: (res) => {
-			            res.confirm && this.delete(id)
+			            res.confirm && this.delete(file._id)
 			        }
 			    })
 			},
 			async delete(id) {
 			    uni.showLoading({
+					title:'删除中',
 			        mask: true
 			    })
 				await db.collection(dbCollectionName).doc(id).remove()
@@ -185,11 +252,15 @@
 	}
 	/* #endif */
 	.folder-name {
-		padding-left: 5px;
+		padding-left: 2px;
+		padding-right: 2px;
 		font-weight: bold;
 	}
 	.folder-name:hover {
 		color: #007AFF;
 		cursor:pointer;
+	}
+	.file-icon {
+		margin-right: 5px;
 	}
 </style>
