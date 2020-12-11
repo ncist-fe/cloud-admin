@@ -1,18 +1,18 @@
 
-var pattern = {
+const pattern = {
   email: /^\S+?@\S+?\.\S+?$/,
-  url: new RegExp("^(?!mailto:)(?:(?:http|https|ftp)://|//)(?:\\S+(?::\\S*)?@)?(?:(?:(?:[1-9]\\d?|1\\d\\d|2[01]\\d|22[0-3])(?:\\.(?:1?\\d{1,2}|2[0-4]\\d|25[0-5])){2}(?:\\.(?:[0-9]\\d?|1\\d\\d|2[0-4]\\d|25[0-4]))|(?:(?:[a-z\\u00a1-\\uffff0-9]+-*)*[a-z\\u00a1-\\uffff0-9]+)(?:\\.(?:[a-z\\u00a1-\\uffff0-9]+-*)*[a-z\\u00a1-\\uffff0-9]+)*(?:\\.(?:[a-z\\u00a1-\\uffff]{2,})))|localhost)(?::\\d{2,5})?(?:(/|\\?|#)[^\\s]*)?$", 'i')
-};
-
-const FORMAT_MAPPING = {
-  "int": 'number',
-  "bool": 'boolean',
-  "double": 'number',
-  "long": 'number'
+  url: new RegExp('^(?!mailto:)(?:(?:http|https|ftp)://|//)(?:\\S+(?::\\S*)?@)?(?:(?:(?:[1-9]\\d?|1\\d\\d|2[01]\\d|22[0-3])(?:\\.(?:1?\\d{1,2}|2[0-4]\\d|25[0-5])){2}(?:\\.(?:[0-9]\\d?|1\\d\\d|2[0-4]\\d|25[0-4]))|(?:(?:[a-z\\u00a1-\\uffff0-9]+-*)*[a-z\\u00a1-\\uffff0-9]+)(?:\\.(?:[a-z\\u00a1-\\uffff0-9]+-*)*[a-z\\u00a1-\\uffff0-9]+)*(?:\\.(?:[a-z\\u00a1-\\uffff]{2,})))|localhost)(?::\\d{2,5})?(?:(/|\\?|#)[^\\s]*)?$', 'i')
 }
 
-function formatMessage(args, resources) {
-  var defaultMessage = ['label']
+const FORMAT_MAPPING = {
+  int: 'number',
+  bool: 'boolean',
+  double: 'number',
+  long: 'number'
+}
+
+function formatMessage (args, resources) {
+  const defaultMessage = ['label']
   defaultMessage.forEach((item) => {
     if (args[item] === undefined) {
       args[item] = ''
@@ -20,42 +20,41 @@ function formatMessage(args, resources) {
   })
 
   let str = resources
-  for (let key in args) {
-    let reg = new RegExp('{' + key + '}')
+  for (const key in args) {
+    const reg = new RegExp('{' + key + '}')
     str = str.replace(reg, args[key])
   }
   return str
 }
 
-function isEmptyValue(value, type) {
+function isEmptyValue (value, type) {
   if (value === undefined || value === null) {
-    return true;
+    return true
   }
 
   if (typeof value === 'string' && !value) {
-    return true;
+    return true
   }
 
   if (Array.isArray(value) && !value.length) {
-    return true;
+    return true
   }
 
   if (type === 'object' && !Object.keys(value).length) {
-    return true;
+    return true
   }
 
-  return false;
+  return false
 }
 
 class RuleValidator {
-
-  constructor(message) {
+  constructor (message) {
     this._message = message
   }
 
-  async validateRule(key, value, data) {
+  async validateRule (key, value, data) {
     return new Promise(async (resolve, reject) => {
-      let result = await this._invokeValidate(key, value, data)
+      const result = await this._invokeValidate(key, value, data)
       if (result == null) {
         resolve(1)
       } else {
@@ -64,12 +63,12 @@ class RuleValidator {
     })
   }
 
-  async _invokeValidate(key, value, data) {
-    var result = null
+  async _invokeValidate (key, value, data) {
+    let result = null
 
-    let rules = key.rules
+    const rules = key.rules
 
-    let hasRequired = rules.findIndex((item) => { return item.required })
+    const hasRequired = rules.findIndex((item) => { return item.required })
     if (hasRequired < 0) {
       if (value === null || value === undefined) {
         return result
@@ -79,15 +78,15 @@ class RuleValidator {
       }
     }
 
-    var message = this._message
+    const message = this._message
 
     if (rules === undefined) {
-      return message['default']
+      return message.default
     }
 
-    for (var i = 0; i < rules.length; i++) {
-      let rule = rules[i]
-      let vt = this._getValidateType(rule)
+    for (let i = 0; i < rules.length; i++) {
+      const rule = rules[i]
+      const vt = this._getValidateType(rule)
 
       if (key.label !== undefined) {
         Object.assign(rule, { label: key.label })
@@ -111,9 +110,9 @@ class RuleValidator {
     return result
   }
 
-  async _validateFunction(rule, value, data, vt) {
+  async _validateFunction (rule, value, data, vt) {
     let result = null
-    let isAsync = Object.prototype.toString.call(rule.validateFunction).includes('AsyncFunction')
+    const isAsync = Object.prototype.toString.call(rule.validateFunction).includes('AsyncFunction')
     if (isAsync) {
       try {
         const p = await rule.validateFunction(rule, value, data)
@@ -140,13 +139,13 @@ class RuleValidator {
     return result
   }
 
-  _getMessage(rule, message, vt) {
-    return formatMessage(rule, message || rule.errorMessage || this._message[vt] || message['default'])
+  _getMessage (rule, message, vt) {
+    return formatMessage(rule, message || rule.errorMessage || this._message[vt] || message.default)
   }
 
-  _getValidateType(rule) {
+  _getValidateType (rule) {
     // TODO
-    var result = ''
+    let result = ''
     if (rule.required) {
       result = 'required'
     } else if (rule.enum) {
@@ -167,87 +166,87 @@ class RuleValidator {
 }
 
 const RuleValidatorHelper = {
-  required(rule, value, message) {
+  required (rule, value, message) {
     if (rule.required && isEmptyValue(value, rule.format || typeof value)) {
-      return formatMessage(rule, rule.errorMessage || message.required);
+      return formatMessage(rule, rule.errorMessage || message.required)
     }
 
     return null
   },
 
-  range(rule, value, message) {
+  range (rule, value, message) {
     if (Array.isArray(value)) {
-      return formatMessage(rule, rule.errorMessage || message['pattern'].mismatch);
+      return formatMessage(rule, rule.errorMessage || message.pattern.mismatch)
     }
 
     if (rule.enum.indexOf(value) < 0) {
-      return formatMessage(rule, message['enum']);
+      return formatMessage(rule, message.enum)
     }
 
     return null
   },
 
-  rangeNumber(rule, value, message) {
+  rangeNumber (rule, value, message) {
     // let { minimum, maximum, exclusiveMinimum, exclusiveMaximum } = rule;
-    let min = rule.minimum;
-    let max = rule.maximum;
-    let exclusiveMin = rule.exclusiveMinimum;
-    let exclusiveMax = rule.exclusiveMaximum;
-    let val = value;
+    const min = rule.minimum
+    const max = rule.maximum
+    const exclusiveMin = rule.exclusiveMinimum
+    const exclusiveMax = rule.exclusiveMaximum
+    const val = value
 
     if (!types.number(val)) {
-      return formatMessage(rule, rule.errorMessage || message['pattern'].mismatch);
+      return formatMessage(rule, rule.errorMessage || message.pattern.mismatch)
     }
 
-    let _min = exclusiveMin ? val <= min : val < min;
-    let _max = exclusiveMax ? val >= max : val > max;
+    const _min = exclusiveMin ? val <= min : val < min
+    const _max = exclusiveMax ? val >= max : val > max
 
     if (min !== undefined && _min) {
-      return formatMessage(rule, rule.errorMessage || message['number'].min)
+      return formatMessage(rule, rule.errorMessage || message.number.min)
     } else if (max !== undefined && _max) {
-      return formatMessage(rule, rule.errorMessage || message['number'].max)
+      return formatMessage(rule, rule.errorMessage || message.number.max)
     } else if (min !== undefined && max !== undefined && (_min || _max)) {
-      return formatMessage(rule, rule.errorMessage || message['number'].range)
+      return formatMessage(rule, rule.errorMessage || message.number.range)
     }
 
     return null
   },
 
-  rangeString(rule, value, message) {
-    let min = rule.minLength;
-    let max = rule.maxLength;
-    let val = value.length;
+  rangeString (rule, value, message) {
+    const min = rule.minLength
+    const max = rule.maxLength
+    const val = value.length
 
     if (typeof value !== 'string') {
-      return formatMessage(rule, rule.errorMessage || message['pattern'].mismatch);
+      return formatMessage(rule, rule.errorMessage || message.pattern.mismatch)
     }
 
     if (min !== undefined && val < min) {
-      return formatMessage(rule, rule.errorMessage || message['string'].min)
+      return formatMessage(rule, rule.errorMessage || message.string.min)
     } else if (max !== undefined && val > max) {
-      return formatMessage(rule, rule.errorMessage || message['string'].max)
+      return formatMessage(rule, rule.errorMessage || message.string.max)
     } else if (min !== undefined && max !== undefined && (val < min || val > max)) {
-      return formatMessage(rule, rule.errorMessage || message['string'].range)
+      return formatMessage(rule, rule.errorMessage || message.string.range)
     }
 
     return null
   },
 
-  pattern(rule, value, message) {
-    if (!types['pattern'](rule.pattern, value)) {
-      return formatMessage(rule, rule.errorMessage || message.pattern.mismatch);
+  pattern (rule, value, message) {
+    if (!types.pattern(rule.pattern, value)) {
+      return formatMessage(rule, rule.errorMessage || message.pattern.mismatch)
     }
 
     return null
   },
 
-  format(rule, value, message) {
-    var customTypes = Object.keys(types);
-    var format = FORMAT_MAPPING[rule.format] ? FORMAT_MAPPING[rule.format] : rule.format;
+  format (rule, value, message) {
+    const customTypes = Object.keys(types)
+    const format = FORMAT_MAPPING[rule.format] ? FORMAT_MAPPING[rule.format] : rule.format
 
     if (customTypes.indexOf(format) > -1) {
       if (!types[format](value)) {
-        return formatMessage(rule, rule.errorMessage || message.types[format]);
+        return formatMessage(rule, rule.errorMessage || message.types[format])
       }
     }
 
@@ -256,89 +255,88 @@ const RuleValidatorHelper = {
 }
 
 const types = {
-  integer(value) {
-    return types.number(value) && parseInt(value, 10) === value;
+  integer (value) {
+    return types.number(value) && parseInt(value, 10) === value
   },
-  string(value) {
-    return typeof value === 'string';
+  string (value) {
+    return typeof value === 'string'
   },
-  number(value) {
+  number (value) {
     if (isNaN(value)) {
-      return false;
+      return false
     }
-    return typeof value === 'number';
+    return typeof value === 'number'
   },
-  "boolean": function (value) {
-    return typeof value === 'boolean';
+  boolean: function (value) {
+    return typeof value === 'boolean'
   },
-  "float": function (value) {
-    return types.number(value) && !types.integer(value);
+  float: function (value) {
+    return types.number(value) && !types.integer(value)
   },
-  array(value) {
-    return Array.isArray(value);
+  array (value) {
+    return Array.isArray(value)
   },
-  object(value) {
-    return typeof value === 'object' && !types.array(value);
+  object (value) {
+    return typeof value === 'object' && !types.array(value)
   },
-  date(value) {
-    var v
+  date (value) {
+    let v
     if (value instanceof Date) {
-      v = value;
+      v = value
     } else {
-      v = new Date(value);
+      v = new Date(value)
     }
-    return typeof v.getTime === 'function' && typeof v.getMonth === 'function' && typeof v.getYear === 'function' && !isNaN(v.getTime());
+    return typeof v.getTime === 'function' && typeof v.getMonth === 'function' && typeof v.getYear === 'function' && !isNaN(v.getTime())
   },
-  timestamp(value) {
+  timestamp (value) {
     if (!this.integer(value) || Math.abs(value).toString().length > 16) {
       return false
     }
 
-    return this.date(value);
+    return this.date(value)
   },
-  email(value) {
-    return typeof value === 'string' && !!value.match(pattern.email) && value.length < 255;
+  email (value) {
+    return typeof value === 'string' && !!value.match(pattern.email) && value.length < 255
   },
-  url(value) {
-    return typeof value === 'string' && !!value.match(pattern.url);
+  url (value) {
+    return typeof value === 'string' && !!value.match(pattern.url)
   },
-  pattern(reg, value) {
+  pattern (reg, value) {
     try {
-      return new RegExp(reg).test(value);
+      return new RegExp(reg).test(value)
     } catch (e) {
-      return false;
+      return false
     }
   },
-  method(value) {
-    return typeof value === 'function';
+  method (value) {
+    return typeof value === 'function'
   }
 }
 
 class SchemaValidator extends RuleValidator {
-
-  constructor(schema, options) {
-    super(SchemaValidator.message);
+  constructor (schema, options) {
+    super(SchemaValidator.message)
 
     this._schema = schema
     this._options = options || null
   }
 
-  updateSchema(schema) {
+  updateSchema (schema) {
     this._schema = schema
   }
 
-  async validate(data) {
-    var checkResult = this._checkField(data)
+  async validate (data) {
+    const checkResult = this._checkField(data)
     if (checkResult) {
       return checkResult
     }
 
-    var result = await this.invokeValidate(data, false)
+    const result = await this.invokeValidate(data, false)
     return result.length ? result[0] : null
   }
 
-  async validateAll(data) {
-    var checkResult = this._checkField(data)
+  async validateAll (data) {
+    const checkResult = this._checkField(data)
     if (checkResult) {
       return checkResult
     }
@@ -346,21 +344,21 @@ class SchemaValidator extends RuleValidator {
     return await this.invokeValidate(data, true)
   }
 
-  async validateUpdate(data) {
-    var checkResult = this._checkField(data)
+  async validateUpdate (data) {
+    const checkResult = this._checkField(data)
     if (checkResult) {
       return checkResult
     }
 
-    var result = await this.invokeValidateUpdate(data, false)
+    const result = await this.invokeValidateUpdate(data, false)
     return result.length ? result[0] : null
   }
 
-  async invokeValidate(data, all) {
-    let result = []
-    let schema = this._schema
-    for (let key in schema) {
-      let value = schema[key]
+  async invokeValidate (data, all) {
+    const result = []
+    const schema = this._schema
+    for (const key in schema) {
+      const value = schema[key]
 
       try {
         await this.validateRule(value, data[key], data)
@@ -375,9 +373,9 @@ class SchemaValidator extends RuleValidator {
     return result
   }
 
-  async invokeValidateUpdate(data, all) {
-    let result = []
-    for (let key in data) {
+  async invokeValidateUpdate (data, all) {
+    const result = []
+    for (const key in data) {
       try {
         await this.validateRule(this._schema[key], data[key], data)
       } catch (error) {
@@ -391,22 +389,22 @@ class SchemaValidator extends RuleValidator {
     return result
   }
 
-  _checkField(data) {
-    var keys = Object.keys(data)
-    var keys2 = Object.keys(this._schema)
+  _checkField (data) {
+    const keys = Object.keys(data)
+    const keys2 = Object.keys(this._schema)
     if (new Set(keys.concat(keys2)).size === keys2.length) {
       return ''
     }
-    return [{ key: 'invalid', errorMessage: SchemaValidator.message['defaultInvalid'] }]
+    return [{ key: 'invalid', errorMessage: SchemaValidator.message.defaultInvalid }]
   }
 }
 
-function Message() {
+function Message () {
   return {
     default: '验证错误',
     defaultInvalid: '非法字段',
     required: '{label}必填',
-    'enum': '{label}超出范围',
+    enum: '{label}超出范围',
     whitespace: '{label}不能为空',
     date: {
       format: '{label}日期{value}格式无效',
@@ -441,10 +439,9 @@ function Message() {
     pattern: {
       mismatch: '{label}格式不匹配'
     }
-  };
+  }
 }
 
-
-SchemaValidator.message = new Message();
+SchemaValidator.message = new Message()
 
 export default SchemaValidator

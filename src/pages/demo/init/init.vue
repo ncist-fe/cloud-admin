@@ -34,139 +34,138 @@
     </view>
 </template>
 <script>
-    import {
-        mapMutations,
-        mapActions
-    } from 'vuex'
-    import config from '@/admin.config.js'
-    export default {
-        data() {
-            return {
-				showPassword: true,
-				showPasswordAgain: true,
-                loading: false,
-                errorMessage: '',
-                formData: {
-                    username: 'admin',
-                    password: ''
-                },
-                passwordConfirmation: '',
-                rules: {
-                    // 对name字段进行必填验证
-                    username: {
-                        rules: [{
-                                required: true,
-                                errorMessage: '请输入账户',
-                            },
-                            {
-                                minLength: 3,
-                                maxLength: 30,
-                                errorMessage: '账户长度在{minLength}到{maxLength}个字符'
-                            }
-                        ]
-                    },
-                    // 对email字段进行必填验证
-                    password: {
-                        rules: [{
-                                required: true,
-                                errorMessage: '请输入密码',
-                            },
-                            {
-                                minLength: 6,
-                                errorMessage: '密码长度大于{minLength}个字符'
-                            }
-                        ]
-                    },
-                    passwordConfirmation: {
-                        rules: [{
-                                required: true,
-                                errorMessage: '请输入确认密码',
-                            },
-                            {
-                                minLength: 6,
-                                errorMessage: '密码长度最小{minLength}个字符'
-                            }
-                        ]
-                    }
-                }
-            }
+import {
+  mapMutations,
+  mapActions
+} from 'vuex'
+import config from '@/admin.config.js'
+export default {
+  data () {
+    return {
+      showPassword: true,
+      showPasswordAgain: true,
+      loading: false,
+      errorMessage: '',
+      formData: {
+        username: 'admin',
+        password: ''
+      },
+      passwordConfirmation: '',
+      rules: {
+        // 对name字段进行必填验证
+        username: {
+          rules: [{
+            required: true,
+            errorMessage: '请输入账户'
+          },
+          {
+            minLength: 3,
+            maxLength: 30,
+            errorMessage: '账户长度在{minLength}到{maxLength}个字符'
+          }
+          ]
         },
-		mounted() {
-			// #ifdef H5
-			this.focus()
-			// #endif
-		},
-        methods: {
-            ...mapMutations({
-                setToken(commit, tokenInfo) {
-                    commit('user/SET_TOKEN', tokenInfo)
-                }
-            }),
-            register(formData) {
-				// #ifdef H5
-				this.$refs.passwordInput.$refs.input.blur()
-				// #endif
-                this.loading = true
-                this.$request('user/register', formData)
-                    .then(res => {
-                        uni.showModal({
-                            title: '提示',
-                            content: res.msg === '注册成功' ? '创建成功' : res.msg,
-                            showCancel: false,
-                            success: (res) => {
-                                if (res.confirm) {
-                                    uni.navigateTo({
-                                        url: '/pages/login/login'
-                                    })
-                                }
-                            }
-                        })
-                    }).catch(err => {}).finally(err => {
-                        this.loading = false
-                    })
-            },
-            submit(event) {
-				if (this.loading) {
-					return
-				}
-                const {
-                    errors,
-                    value
-                } = event.detail
-                if (errors) return
-                if (value.password === value.passwordConfirmation) {
-                    this.register(value)
-                } else {
-                    this.errorMessage = '两次输入密码不相同'
-                }
-
-            },
-            confirmForm(name, value) {
-                this.binddata(name, value)
-                this.submitForm()
-            },
-            submitForm() {
-                this.errorMessage = ''
-                this.$refs.form.submit()
-            },
-            back() {
-                uni.redirectTo({
-                    url: config.login.url
-                })
-            },
-			changePassword: function() {
-				this.showPassword = !this.showPassword;
-			},
-			changePasswordAgain: function() {
-				this.showPasswordAgain = !this.showPasswordAgain;
-			},
-			// #ifdef H5
-			focus: function () {
-			    this.$refs.usernameInput.$refs.input.focus()
-			}
-			// #endif
+        // 对email字段进行必填验证
+        password: {
+          rules: [{
+            required: true,
+            errorMessage: '请输入密码'
+          },
+          {
+            minLength: 6,
+            errorMessage: '密码长度大于{minLength}个字符'
+          }
+          ]
+        },
+        passwordConfirmation: {
+          rules: [{
+            required: true,
+            errorMessage: '请输入确认密码'
+          },
+          {
+            minLength: 6,
+            errorMessage: '密码长度最小{minLength}个字符'
+          }
+          ]
         }
+      }
     }
+  },
+  mounted () {
+    // #ifdef H5
+    this.focus()
+    // #endif
+  },
+  methods: {
+    ...mapMutations({
+      setToken (commit, tokenInfo) {
+        commit('user/SET_TOKEN', tokenInfo)
+      }
+    }),
+    register (formData) {
+      // #ifdef H5
+      this.$refs.passwordInput.$refs.input.blur()
+      // #endif
+      this.loading = true
+      this.$request('user/register', formData)
+        .then(res => {
+          uni.showModal({
+            title: '提示',
+            content: res.msg === '注册成功' ? '创建成功' : res.msg,
+            showCancel: false,
+            success: (res) => {
+              if (res.confirm) {
+                uni.navigateTo({
+                  url: '/pages/login/login'
+                })
+              }
+            }
+          })
+        }).catch(err => {}).finally(err => {
+          this.loading = false
+        })
+    },
+    submit (event) {
+      if (this.loading) {
+        return
+      }
+      const {
+        errors,
+        value
+      } = event.detail
+      if (errors) return
+      if (value.password === value.passwordConfirmation) {
+        this.register(value)
+      } else {
+        this.errorMessage = '两次输入密码不相同'
+      }
+    },
+    confirmForm (name, value) {
+      this.binddata(name, value)
+      this.submitForm()
+    },
+    submitForm () {
+      this.errorMessage = ''
+      this.$refs.form.submit()
+    },
+    back () {
+      uni.redirectTo({
+        url: config.login.url
+      })
+    },
+    changePassword: function () {
+      this.showPassword = !this.showPassword
+    },
+    changePasswordAgain: function () {
+      this.showPasswordAgain = !this.showPasswordAgain
+    },
+    // #ifdef H5
+    focus: function () {
+			    this.$refs.usernameInput.$refs.input.focus()
+    }
+    // #endif
+  }
+}
 </script>
 
 <style>

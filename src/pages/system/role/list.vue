@@ -54,114 +54,114 @@
 </template>
 
 <script>
-	const db = uniCloud.database()
-	// 表查询配置
-	const dbCollectionName = 'uni-id-roles,uni-id-permissions'
-	const dbOrderBy = '' // 排序字段
-	const dbSearchFields = [] // 支持模糊搜索的字段列表
-	// 分页配置
-	const pageSize = 20
-	const pageCurrent = 1
+const db = uniCloud.database()
+// 表查询配置
+const dbCollectionName = 'uni-id-roles,uni-id-permissions'
+const dbOrderBy = '' // 排序字段
+const dbSearchFields = [] // 支持模糊搜索的字段列表
+// 分页配置
+const pageSize = 20
+const pageCurrent = 1
 
-	export default {
-		data() {
-			return {
-				query: '',
-				where: '',
-				orderby: dbOrderBy,
-				collectionName: dbCollectionName,
-				options: {
-					pageSize,
-					pageCurrent
-				}
-			}
-		},
-		methods: {
-			getWhere() {
-				const query = this.query.trim()
-				if (!query) {
-					return ''
-				}
-				const queryRe = new RegExp(query, 'i')
-				return dbSearchFields.map(name => queryRe + '.test(' + name + ')').join(' || ')
-			},
-			search() {
-				const newWhere = this.getWhere()
-				const isSameWhere = newWhere === this.where
-				this.where = newWhere
-				if (isSameWhere) { // 相同条件时，手动强制刷新
-					this.loadData()
-				}
-			},
-			loadData(clear = true) {
-				this.$refs.udb.loadData({
-					clear
-				})
-			},
-			onPageChanged(e) {
-				this.$refs.udb.loadData({
-					current: e.current
-				})
-			},
-			navigateTo(url) {
-				uni.navigateTo({
-					url,
-					events: {
-						refreshData: () => {
-							this.loadData()
-						}
-					}
-				})
-			},
-			// 多选处理
-			selectedItems() {
-				var dataList = this.$refs.udb.dataList
-				return this.selectedIndexs.map(i => dataList[i].role_id)
-			},
-			//批量删除
-			delTable() {
-				uni.showModal({
+export default {
+  data () {
+    return {
+      query: '',
+      where: '',
+      orderby: dbOrderBy,
+      collectionName: dbCollectionName,
+      options: {
+        pageSize,
+        pageCurrent
+      }
+    }
+  },
+  methods: {
+    getWhere () {
+      const query = this.query.trim()
+      if (!query) {
+        return ''
+      }
+      const queryRe = new RegExp(query, 'i')
+      return dbSearchFields.map(name => queryRe + '.test(' + name + ')').join(' || ')
+    },
+    search () {
+      const newWhere = this.getWhere()
+      const isSameWhere = newWhere === this.where
+      this.where = newWhere
+      if (isSameWhere) { // 相同条件时，手动强制刷新
+        this.loadData()
+      }
+    },
+    loadData (clear = true) {
+      this.$refs.udb.loadData({
+        clear
+      })
+    },
+    onPageChanged (e) {
+      this.$refs.udb.loadData({
+        current: e.current
+      })
+    },
+    navigateTo (url) {
+      uni.navigateTo({
+        url,
+        events: {
+          refreshData: () => {
+            this.loadData()
+          }
+        }
+      })
+    },
+    // 多选处理
+    selectedItems () {
+      const dataList = this.$refs.udb.dataList
+      return this.selectedIndexs.map(i => dataList[i].role_id)
+    },
+    // 批量删除
+    delTable () {
+      uni.showModal({
 				    title: '提示',
 				    content: '确认删除多条记录？',
 				    success: (res) => {
 				        res.confirm && this.delete(this.selectedItems())
 				    }
-				})
-			},
-			// 多选
-			selectionChange(e) {
-				this.selectedIndexs = e.detail.index
-			},
-			confirmDelete(id) {
-				uni.showModal({
+      })
+    },
+    // 多选
+    selectionChange (e) {
+      this.selectedIndexs = e.detail.index
+    },
+    confirmDelete (id) {
+      uni.showModal({
 				    title: '提示',
 				    content: '确认删除该记录？',
 				    success: (res) => {
 				        res.confirm && this.delete(id)
 				    }
-				})
-			},
-			async delete(id) {
-				uni.showLoading({
+      })
+    },
+    async delete (id) {
+      uni.showLoading({
 				    mask: true
-				})
-				await this.$request('system/role/remove', {id})
+      })
+      await this.$request('system/role/remove', { id })
 				    .then(res => {
-						uni.showToast({
-							title: '删除成功'
-						})
+          uni.showToast({
+            title: '删除成功'
+          })
 				    }).catch(err => {
-						uni.showModal({
-							content: err.message || '请求服务失败',
-							showCancel: false
-						})
-					}).finally(err => {
+          uni.showModal({
+            content: err.message || '请求服务失败',
+            showCancel: false
+          })
+        }).finally(err => {
 				        uni.hideLoading()
 				    })
-				this.loadData(false)
-			}
-		}
-	}
+      this.loadData(false)
+    }
+  }
+}
 </script>
 <style>
 	/* #ifndef H5 */

@@ -5,8 +5,8 @@
 </template>
 
 <script>
-	
-	/**
+
+/**
 	 * PopUp 弹出层-消息提示
 	 * @description 弹出层-消息提示
 	 * @tutorial https://ext.dcloud.net.cn/plugin?id=329
@@ -18,52 +18,52 @@
 	 * @property {String} message 消息提示文字
 	 * @property {String} duration 显示时间，设置为 0 则不会自动关闭
 	 */
-	
-	export default {
-		name: 'UniPopupMessage',
-		props: {
-			/**
+
+export default {
+  name: 'UniPopupMessage',
+  props: {
+    /**
 			 * 主题 success/warning/info/error	  默认 success
 			 */
-			type: {
-				type: String,
-				default: 'success'
-			},
-			/**
+    type: {
+      type: String,
+      default: 'success'
+    },
+    /**
 			 * 消息文字
 			 */
-			message: {
-				type: String,
-				default: ''
-			},
-			/**
+    message: {
+      type: String,
+      default: ''
+    },
+    /**
 			 * 显示时间，设置为 0 则不会自动关闭
 			 */
-			duration: {
-				type: Number,
-				default: 3000
-			}
-		},
-		inject: ['popup'],
-		data() {
-			return {}
-		},
-		created() {
-			this.popup.childrenMsg = this
-		},
-		methods: {
-			open() {
-				if (this.duration === 0) return
-				clearTimeout(this.popuptimer)
-				this.popuptimer = setTimeout(() => {
-					this.popup.close()
-				}, this.duration)
-			},
-			close() {
-				clearTimeout(this.popuptimer)
-			}
-		}
-	}
+    duration: {
+      type: Number,
+      default: 3000
+    }
+  },
+  inject: ['popup'],
+  data () {
+    return {}
+  },
+  created () {
+    this.popup.childrenMsg = this
+  },
+  methods: {
+    open () {
+      if (this.duration === 0) return
+      clearTimeout(this.popuptimer)
+      this.popuptimer = setTimeout(() => {
+        this.popup.close()
+      }, this.duration)
+    },
+    close () {
+      clearTimeout(this.popuptimer)
+    }
+  }
+}
 </script>
 <style lang="scss" scoped>
 	.uni-popup-message {

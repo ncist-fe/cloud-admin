@@ -1,15 +1,15 @@
 const {
-	Controller
+  Controller
 } = require('uni-cloud-router')
 const uniID = require('uni-id')
 module.exports = class PermissionController extends Controller {
-	async remove() {
-		const {
-			id
-		} = this.ctx.data
+  async remove () {
+    const {
+      id
+    } = this.ctx.data
 
-		return uniID.deletePermission({
-			permissionID: id
-		})
-	}
+    return uniID.deletePermission({
+      permissionID: id
+    })
+  }
 }

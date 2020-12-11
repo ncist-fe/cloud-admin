@@ -20,7 +20,7 @@
 </template>
 
 <script>
-	/**
+/**
 	 * PopUp 弹出层-对话框样式
 	 * @description 弹出层-对话框样式
 	 * @tutorial https://ext.dcloud.net.cn/plugin?id=329
@@ -40,111 +40,111 @@
 	 * @event {Function} close 点击取消按钮触发
 	 */
 
-	export default {
-		name: "uniPopupDialog",
-		props: {
-			value: {
-				type: [String, Number],
-				default: ''
-			},
-			placeholder: {
-				type: [String, Number],
-				default: '请输入内容'
-			},
-			/**
+export default {
+  name: 'uniPopupDialog',
+  props: {
+    value: {
+      type: [String, Number],
+      default: ''
+    },
+    placeholder: {
+      type: [String, Number],
+      default: '请输入内容'
+    },
+    /**
 			 * 对话框主题 success/warning/info/error	  默认 success
 			 */
-			type: {
-				type: String,
-				default: 'error'
-			},
-			/**
+    type: {
+      type: String,
+      default: 'error'
+    },
+    /**
 			 * 对话框模式 base/input
 			 */
-			mode: {
-				type: String,
-				default: 'base'
-			},
-			/**
+    mode: {
+      type: String,
+      default: 'base'
+    },
+    /**
 			 * 对话框标题
 			 */
-			title: {
-				type: String,
-				default: '提示'
-			},
-			/**
+    title: {
+      type: String,
+      default: '提示'
+    },
+    /**
 			 * 对话框内容
 			 */
-			content: {
-				type: String,
-				default: ''
-			},
-			/**
+    content: {
+      type: String,
+      default: ''
+    },
+    /**
 			 * 拦截取消事件 ，如果拦截取消事件，必须监听close事件，执行 done()
 			 */
-			beforeClose: {
-				type: Boolean,
-				default: false
-			}
-		},
-		data() {
-			return {
-				dialogType: 'error',
-				focus: false,
-				val: ""
-			}
-		},
-		inject: ['popup'],
-		watch: {
-			type(val) {
-				this.dialogType = val
-			},
-			mode(val) {
-				if (val === 'input') {
-					this.dialogType = 'info'
-				}
-			},
-			value(val) {
-				this.val = val
-			}
-		},
-		created() {
-			// 对话框遮罩不可点击
-			this.popup.mkclick = false
-			if (this.mode === 'input') {
-				this.dialogType = 'info'
-				this.val = this.value
-			} else {
-				this.dialogType = this.type
-			}
-		},
-		mounted() {
-			this.focus = true
-		},
-		methods: {
-			/**
+    beforeClose: {
+      type: Boolean,
+      default: false
+    }
+  },
+  data () {
+    return {
+      dialogType: 'error',
+      focus: false,
+      val: ''
+    }
+  },
+  inject: ['popup'],
+  watch: {
+    type (val) {
+      this.dialogType = val
+    },
+    mode (val) {
+      if (val === 'input') {
+        this.dialogType = 'info'
+      }
+    },
+    value (val) {
+      this.val = val
+    }
+  },
+  created () {
+    // 对话框遮罩不可点击
+    this.popup.mkclick = false
+    if (this.mode === 'input') {
+      this.dialogType = 'info'
+      this.val = this.value
+    } else {
+      this.dialogType = this.type
+    }
+  },
+  mounted () {
+    this.focus = true
+  },
+  methods: {
+    /**
 			 * 点击确认按钮
 			 */
-			onOk() {
-				this.$emit('confirm', () => {
-					this.popup.close()
-					if (this.mode === 'input') this.val = this.value
-				}, this.mode === 'input' ? this.val : '')
-			},
-			/**
+    onOk () {
+      this.$emit('confirm', () => {
+        this.popup.close()
+        if (this.mode === 'input') this.val = this.value
+      }, this.mode === 'input' ? this.val : '')
+    },
+    /**
 			 * 点击取消按钮
 			 */
-			close() {
-				if (this.beforeClose) {
-					this.$emit('close', () => {
-						this.popup.close()
-					})
-					return
-				}
-				this.popup.close()
-			}
-		}
-	}
+    close () {
+      if (this.beforeClose) {
+        this.$emit('close', () => {
+          this.popup.close()
+        })
+        return
+      }
+      this.popup.close()
+    }
+  }
+}
 </script>
 
 <style lang="scss" scoped>

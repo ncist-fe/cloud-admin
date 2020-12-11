@@ -16,7 +16,7 @@
 </template>
 
 <script>
-	/**
+/**
 	 * SegmentedControl 分段器
 	 * @description 用作不同视图的显示
 	 * @tutorial https://ext.dcloud.net.cn/plugin?id=54
@@ -29,54 +29,54 @@
 	 * @event {Function} clickItem 组件触发点击事件时触发，e={currentIndex}
 	 */
 
-	export default {
-		name: 'UniSegmentedControl',
-		props: {
-			current: {
-				type: Number,
-				default: 0
-			},
-			values: {
-				type: Array,
-				default () {
-					return []
-				}
-			},
-			activeColor: {
-				type: String,
-				default: '#007aff'
-			},
-			styleType: {
-				type: String,
-				default: 'button'
-			}
-		},
-		data() {
-			return {
-				currentIndex: 0
-			}
-		},
-		watch: {
-			current(val) {
-				if (val !== this.currentIndex) {
-					this.currentIndex = val
-				}
-			}
-		},
-		created() {
-			this.currentIndex = this.current
-		},
-		methods: {
-			_onClick(index) {
-				if (this.currentIndex !== index) {
-					this.currentIndex = index
-					this.$emit('clickItem', {
-						currentIndex: index
-					})
-				}
-			}
-		}
-	}
+export default {
+  name: 'UniSegmentedControl',
+  props: {
+    current: {
+      type: Number,
+      default: 0
+    },
+    values: {
+      type: Array,
+      default () {
+        return []
+      }
+    },
+    activeColor: {
+      type: String,
+      default: '#007aff'
+    },
+    styleType: {
+      type: String,
+      default: 'button'
+    }
+  },
+  data () {
+    return {
+      currentIndex: 0
+    }
+  },
+  watch: {
+    current (val) {
+      if (val !== this.currentIndex) {
+        this.currentIndex = val
+      }
+    }
+  },
+  created () {
+    this.currentIndex = this.current
+  },
+  methods: {
+    _onClick (index) {
+      if (this.currentIndex !== index) {
+        this.currentIndex = index
+        this.$emit('clickItem', {
+          currentIndex: index
+        })
+      }
+    }
+  }
+}
 </script>
 
 <style scoped>

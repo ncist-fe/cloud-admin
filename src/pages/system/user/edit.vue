@@ -32,156 +32,154 @@
 </template>
 
 <script>
-	import validator from '@/js_sdk/validator/uni-id-users.js';
+import validator from '@/js_sdk/validator/uni-id-users.js'
 
-	const db = uniCloud.database();
-	const dbCmd = db.command;
-	const dbCollectionName = 'uni-id-users';
+const db = uniCloud.database()
+const dbCmd = db.command
+const dbCollectionName = 'uni-id-users'
 
-	function getValidator(fields) {
-		let reuslt = {}
-		for (let key in validator) {
-			if (fields.includes(key)) {
-				reuslt[key] = validator[key]
-			}
-		}
-		return reuslt
-	}
+function getValidator (fields) {
+  const reuslt = {}
+  for (const key in validator) {
+    if (fields.includes(key)) {
+      reuslt[key] = validator[key]
+    }
+  }
+  return reuslt
+}
 
-	export default {
-		data() {
-			return {
-				formData: {
-					"username": "",
-					"password": "",
-					"role": [],
-					"mobile": "",
-					"email": "",
-					"status": false //默认开启
-				},
-				rules: {
-					...getValidator(["username", "password", "role", "mobile", "email"])
-				},
-				roles: []
-			}
-		},
-		onLoad(e) {
-			const id = e.id
-			this.formDataId = id
-			this.getDetail(id)
-			this.loadroles()
-
-		},
-		methods: {
-			/**
+export default {
+  data () {
+    return {
+      formData: {
+        username: '',
+        password: '',
+        role: [],
+        mobile: '',
+        email: '',
+        status: false // 默认开启
+      },
+      rules: {
+        ...getValidator(['username', 'password', 'role', 'mobile', 'email'])
+      },
+      roles: []
+    }
+  },
+  onLoad (e) {
+    const id = e.id
+    this.formDataId = id
+    this.getDetail(id)
+    this.loadroles()
+  },
+  methods: {
+    /**
 			 * 触发表单提交
 			 */
-			submitForm(form) {
-				this.$refs.form.submit();
-			},
+    submitForm (form) {
+      this.$refs.form.submit()
+    },
 
-			/**
+    /**
 			 * 表单提交
 			 * @param {Object} event 回调参数 Function(callback:{value,errors})
 			 */
-			submit(event) {
-				const {
-					value,
-					errors
-				} = event.detail
+    submit (event) {
+      const {
+        value,
+        errors
+      } = event.detail
 
-				// 表单校验失败页面会提示报错 ，要停止表单提交逻辑
-				if (errors) {
-					return
-				}
-				uni.showLoading({
-					title: '修改中...',
-					mask: true
-				})
+      // 表单校验失败页面会提示报错 ，要停止表单提交逻辑
+      if (errors) {
+        return
+      }
+      uni.showLoading({
+        title: '修改中...',
+        mask: true
+      })
 
-				// 是否启用功能的数据类型转换， 0 正常， 1 禁用
-				if (typeof value.status === "boolean") {
-					value.status = Number(!value.status)
-				}
-				// 使用 uni-clientDB 提交数据
-				db.collection(dbCollectionName).where({
-					_id: this.formDataId
-				}).update(value).then((res) => {
-					uni.showToast({
-						title: '修改成功'
-					})
-					this.getOpenerEventChannel().emit('refreshData')
-					setTimeout(() => uni.navigateBack(), 500)
-				}).catch((err) => {
-					uni.showModal({
-						content: err.message || '请求服务失败',
-						showCancel: false
-					})
-				}).finally(() => {
-					uni.hideLoading()
-				})
-			},
+      // 是否启用功能的数据类型转换， 0 正常， 1 禁用
+      if (typeof value.status === 'boolean') {
+        value.status = Number(!value.status)
+      }
+      // 使用 uni-clientDB 提交数据
+      db.collection(dbCollectionName).where({
+        _id: this.formDataId
+      }).update(value).then((res) => {
+        uni.showToast({
+          title: '修改成功'
+        })
+        this.getOpenerEventChannel().emit('refreshData')
+        setTimeout(() => uni.navigateBack(), 500)
+      }).catch((err) => {
+        uni.showModal({
+          content: err.message || '请求服务失败',
+          showCancel: false
+        })
+      }).finally(() => {
+        uni.hideLoading()
+      })
+    },
 
-			/**
+    /**
 			 * 获取表单数据
 			 * @param {Object} id
 			 */
-			getDetail(id) {
-				uni.showLoading({
-					mask: true
-				})
-				db.collection(dbCollectionName)
-				.doc(id)
-				.field('username,role,mobile,email,status')
-				.get()
-				.then((res) => {
-					const data = res.result.data[0]
-					if (data) {
-						// Object.keys(this.formData).forEach(name => {
-						// 	this.binddata(name, data[name])
-						// })
-						const status = data.status
-						if (status < 2) {
-							data.status = !status
-							this.formData = data
-						} else if (status === 2) {
-							this.formData.status = '审核中'
-						} else if (status === 3) {
-							this.formData.status = '审核拒绝'
-						} else {
-							this.formData.status = '未知状态'
-						}
-
-					}
-				}).catch((err) => {
-					uni.showModal({
-						content: err.message || '请求服务失败',
-						showCancel: false
-					})
-				}).finally(() => {
-					uni.hideLoading()
-				})
-			},
-			loadroles() {
-				db.collection('uni-id-roles').limit(500).get().then(res => {
-					this.roles = res.result.data.map(item => {
-						return {
-							value: item.role_id,
-							text: item.role_name
-						}
-					})
-					this.roles.unshift({
-						value: 'admin',
-						text: 'admin'
-					})
-				}).catch(err => {
-					uni.showModal({
-						title: '提示',
-						content: err.message,
-						showCancel: false
-					})
-				})
-			}
-		}
-	}
+    getDetail (id) {
+      uni.showLoading({
+        mask: true
+      })
+      db.collection(dbCollectionName)
+        .doc(id)
+        .field('username,role,mobile,email,status')
+        .get()
+        .then((res) => {
+          const data = res.result.data[0]
+          if (data) {
+            // Object.keys(this.formData).forEach(name => {
+            // 	this.binddata(name, data[name])
+            // })
+            const status = data.status
+            if (status < 2) {
+              data.status = !status
+              this.formData = data
+            } else if (status === 2) {
+              this.formData.status = '审核中'
+            } else if (status === 3) {
+              this.formData.status = '审核拒绝'
+            } else {
+              this.formData.status = '未知状态'
+            }
+          }
+        }).catch((err) => {
+          uni.showModal({
+            content: err.message || '请求服务失败',
+            showCancel: false
+          })
+        }).finally(() => {
+          uni.hideLoading()
+        })
+    },
+    loadroles () {
+      db.collection('uni-id-roles').limit(500).get().then(res => {
+        this.roles = res.result.data.map(item => {
+          return {
+            value: item.role_id,
+            text: item.role_name
+          }
+        })
+        this.roles.unshift({
+          value: 'admin',
+          text: 'admin'
+        })
+      }).catch(err => {
+        uni.showModal({
+          title: '提示',
+          content: err.message,
+          showCancel: false
+        })
+      })
+    }
+  }
+}
 </script>

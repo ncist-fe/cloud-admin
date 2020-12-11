@@ -88,200 +88,200 @@
 </template>
 
 <script>
-	// 查找插件注册的菜单列表（目前仅在开发模式启用，仅限 admin 角色）
-	const pluginMenuJsons = []
-	if (process.env.NODE_ENV === 'development') {
-		const rootModules = require.context(
-			'../../../',
-			false,
-			/-menu.json$/
-		)
-		rootModules.keys().forEach(function(key) {
-			const json = key.substr(2)
-			rootModules(key).forEach(item => {
-				item.json = json
-				pluginMenuJsons.push(item)
-			})
-		})
-		// const pluginModules = require.context(
-		// 	'../../../uni_modules/',
-		// 	true,
-		// 	/-menu.json$/
-		// )
-		// pluginModules.keys().forEach(function(key) {
-		// 	const json = 'uni_modules' + key.substr(1)
-		// 	pluginModules(key).forEach(item => {
-		// 		item.json = json
-		// 		pluginMenuJsons.push(item)
-		// 	})
-		// })
-	}
+// 查找插件注册的菜单列表（目前仅在开发模式启用，仅限 admin 角色）
+const pluginMenuJsons = []
+if (process.env.NODE_ENV === 'development') {
+  const rootModules = require.context(
+    '../../../',
+    false,
+    /-menu.json$/
+  )
+  rootModules.keys().forEach(function (key) {
+    const json = key.substr(2)
+    rootModules(key).forEach(item => {
+      item.json = json
+      pluginMenuJsons.push(item)
+    })
+  })
+  // const pluginModules = require.context(
+  // 	'../../../uni_modules/',
+  // 	true,
+  // 	/-menu.json$/
+  // )
+  // pluginModules.keys().forEach(function(key) {
+  // 	const json = 'uni_modules' + key.substr(1)
+  // 	pluginModules(key).forEach(item => {
+  // 		item.json = json
+  // 		pluginMenuJsons.push(item)
+  // 	})
+  // })
+}
 
-	// 菜单扁平化
-	function flatMenu(menu, result, depth = 0) {
-		menu.title = (depth ? '　'.repeat(depth) + '|-' : '') + menu.name
-		result.push(menu)
-		if (menu.children) {
-			flatMenus(menu.children, result, depth + 1)
-		}
-	}
+// 菜单扁平化
+function flatMenu (menu, result, depth = 0) {
+  menu.title = (depth ? '　'.repeat(depth) + '|-' : '') + menu.name
+  result.push(menu)
+  if (menu.children) {
+    flatMenus(menu.children, result, depth + 1)
+  }
+}
 
-	function flatMenus(menus, result = [], depth = 0) {
-		menus.forEach(menu => flatMenu(menu, result, depth))
-		return result
-	}
+function flatMenus (menus, result = [], depth = 0) {
+  menus.forEach(menu => flatMenu(menu, result, depth))
+  return result
+}
 
-	export default {
-		data() {
-			return {
-				loading: true,
-				menus: [],
-				errMsg: '',
-				currentTab: 'menus',
-				selectedPluginMenuIndexs: []
-			}
-		},
-		computed: {
-			pluginMenus() {
-				const menus = []
-				if (!this.$hasRole('admin')) {
-					return menus
-				}
-				const dbMenus = this.menus
-				if (!dbMenus.length) {
-					return menus
-				}
-				pluginMenuJsons.forEach(menu => {
-					// 查找尚未被注册到数据库中的菜单
-					if (!dbMenus.find(item => item.menu_id === menu.menu_id)) {
-						menus.push(menu)
-					}
-				})
-				return menus
-			},
-		},
-		watch: {
-			pluginMenus(val) {
-				if (!val.length) {
-					this.currentTab = 'menus'
-				}
-			}
-		},
-		onLoad() {
-			this.loadData()
-		},
-		methods: {
-			switchTab(tab) {
-				this.currentTab = tab
-			},
-			loadData() {
-				this.loading = true
-				this.$request('system/menu/list', {}, {
-					showModal: false
-				}).then(res => {
-					this.menus = flatMenus(res)
-				}).catch(err => {
-					this.errMsg = err.message
-				}).finally(() => {
-					this.loading = false
-				})
-			},
-			navigateTo(url) {
-				uni.navigateTo({
-					url,
-					events: {
-						refreshData: () => {
-							this.loadData()
-						}
-					}
-				})
-			},
-			confirmDelete(menu) {
-				let content = '是否删除该菜单？'
-				// 有子菜单
-				if (this.menus.find(item => item.parent_id === menu.menu_id)) {
-					content = '是否删除该菜单及其所有子菜单？'
-				}
-				uni.showModal({
-					title: '提示',
-					content,
-					success: (res) => {
-						if (!res.confirm) {
-							return
-						}
-						uni.showLoading({
-							mask: true
-						})
-						this.$request('system/menu/delete', {
-							id: menu._id
-						}).then(() => {
-							this.loadData()
-						}).finally(() => {
-							uni.hideLoading()
-						})
-					}
-				})
-			},
-			pluginMenuSelectChange(e) {
-				this.selectedPluginMenuIndexs = e.detail.index
-			},
-			addPluginMenus(confirmContent) {
-				if (!this.selectedPluginMenuIndexs.length) {
-					return uni.showModal({
-						title: '提示',
-						content: '请选择要添加的菜单！',
-						showCancel: false
-					})
-				}
-				const pluginMenus = this.pluginMenus
-				const menus = []
-				this.selectedPluginMenuIndexs.forEach(i => {
-					const menu = pluginMenus[i]
-					if (menu) {
-						// 拷贝一份，移除 json 字段
-						const dbMenu = JSON.parse(JSON.stringify(menu))
-						delete dbMenu.json
-						menus.push(dbMenu)
-					}
-				})
-				uni.showModal({
-					title: '提示',
-					content: '您确认要添加已选中的菜单吗？',
-					success: (res) => {
-						if (!res.confirm) {
-							return
-						}
-						uni.showLoading({
-							mask: true
-						})
-						const checkAll = menus.length === pluginMenus.length
-						uniCloud.database().collection('opendb-admin-menus').add(menus).then(res => {
-							uni.showModal({
-								title: '提示',
-								content: '添加菜单成功！',
-								showCancel: false,
-								success: () => {
-									this.$refs.pluginMenusTable.clearSelection()
-									if (checkAll) {
-										this.currentTab = 'menus'
-									}
-									this.loadData()
-								}
-							})
-						}).catch(err => {
-							uni.showModal({
-								title: '提示',
-								content: err.message,
-								showCancel: false
-							})
-						}).finally(() => {
-							uni.hideLoading()
-						})
-					}
-				})
-			}
-		}
-	}
+export default {
+  data () {
+    return {
+      loading: true,
+      menus: [],
+      errMsg: '',
+      currentTab: 'menus',
+      selectedPluginMenuIndexs: []
+    }
+  },
+  computed: {
+    pluginMenus () {
+      const menus = []
+      if (!this.$hasRole('admin')) {
+        return menus
+      }
+      const dbMenus = this.menus
+      if (!dbMenus.length) {
+        return menus
+      }
+      pluginMenuJsons.forEach(menu => {
+        // 查找尚未被注册到数据库中的菜单
+        if (!dbMenus.find(item => item.menu_id === menu.menu_id)) {
+          menus.push(menu)
+        }
+      })
+      return menus
+    }
+  },
+  watch: {
+    pluginMenus (val) {
+      if (!val.length) {
+        this.currentTab = 'menus'
+      }
+    }
+  },
+  onLoad () {
+    this.loadData()
+  },
+  methods: {
+    switchTab (tab) {
+      this.currentTab = tab
+    },
+    loadData () {
+      this.loading = true
+      this.$request('system/menu/list', {}, {
+        showModal: false
+      }).then(res => {
+        this.menus = flatMenus(res)
+      }).catch(err => {
+        this.errMsg = err.message
+      }).finally(() => {
+        this.loading = false
+      })
+    },
+    navigateTo (url) {
+      uni.navigateTo({
+        url,
+        events: {
+          refreshData: () => {
+            this.loadData()
+          }
+        }
+      })
+    },
+    confirmDelete (menu) {
+      let content = '是否删除该菜单？'
+      // 有子菜单
+      if (this.menus.find(item => item.parent_id === menu.menu_id)) {
+        content = '是否删除该菜单及其所有子菜单？'
+      }
+      uni.showModal({
+        title: '提示',
+        content,
+        success: (res) => {
+          if (!res.confirm) {
+            return
+          }
+          uni.showLoading({
+            mask: true
+          })
+          this.$request('system/menu/delete', {
+            id: menu._id
+          }).then(() => {
+            this.loadData()
+          }).finally(() => {
+            uni.hideLoading()
+          })
+        }
+      })
+    },
+    pluginMenuSelectChange (e) {
+      this.selectedPluginMenuIndexs = e.detail.index
+    },
+    addPluginMenus (confirmContent) {
+      if (!this.selectedPluginMenuIndexs.length) {
+        return uni.showModal({
+          title: '提示',
+          content: '请选择要添加的菜单！',
+          showCancel: false
+        })
+      }
+      const pluginMenus = this.pluginMenus
+      const menus = []
+      this.selectedPluginMenuIndexs.forEach(i => {
+        const menu = pluginMenus[i]
+        if (menu) {
+          // 拷贝一份，移除 json 字段
+          const dbMenu = JSON.parse(JSON.stringify(menu))
+          delete dbMenu.json
+          menus.push(dbMenu)
+        }
+      })
+      uni.showModal({
+        title: '提示',
+        content: '您确认要添加已选中的菜单吗？',
+        success: (res) => {
+          if (!res.confirm) {
+            return
+          }
+          uni.showLoading({
+            mask: true
+          })
+          const checkAll = menus.length === pluginMenus.length
+          uniCloud.database().collection('opendb-admin-menus').add(menus).then(res => {
+            uni.showModal({
+              title: '提示',
+              content: '添加菜单成功！',
+              showCancel: false,
+              success: () => {
+                this.$refs.pluginMenusTable.clearSelection()
+                if (checkAll) {
+                  this.currentTab = 'menus'
+                }
+                this.loadData()
+              }
+            })
+          }).catch(err => {
+            uni.showModal({
+              title: '提示',
+              content: err.message,
+              showCancel: false
+            })
+          }).finally(() => {
+            uni.hideLoading()
+          })
+        }
+      })
+    }
+  }
+}
 </script>
 <style>
 	/* #ifndef H5 */

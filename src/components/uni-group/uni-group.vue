@@ -16,32 +16,32 @@
  * @property {Number} top 分组间隔
  */
 export default {
-	name: 'UniFormGroup',
-	props: {
-		title: {
-			type: String,
-			default: ''
-		},
-		top: {
-			type: [Number, String],
-			default: 10
-		}
-	},
-	data() {
-		return {}
-	},
-	watch: {
-		title(newVal) {
-			if (uni.report && newVal !== '') {
-				uni.report('title', newVal)
-			}
-		}
-	},
-	methods: {
-		onClick() {
-			this.$emit('click')
-		}
-	}
+  name: 'UniFormGroup',
+  props: {
+    title: {
+      type: String,
+      default: ''
+    },
+    top: {
+      type: [Number, String],
+      default: 10
+    }
+  },
+  data () {
+    return {}
+  },
+  watch: {
+    title (newVal) {
+      if (uni.report && newVal !== '') {
+        uni.report('title', newVal)
+      }
+    }
+  },
+  methods: {
+    onClick () {
+      this.$emit('click')
+    }
+  }
 }
 </script>
 <style lang="scss" scoped>

@@ -13,7 +13,7 @@
 </template>
 
 <script>
-	/**
+/**
 	 * Table 表格
 	 * @description 用于展示多条结构类似的数据
 	 * @tutorial https://ext.dcloud.net.cn/plugin?id=
@@ -24,116 +24,114 @@
 	 * @property {Boolean} 	loading 			显示加载中
 	 * @event {Function} 	selection-change 	开启多选时，当选择项发生变化时会触发该事件
 	 */
-    export default {
-        name: 'uniTable',
-        options: {
-            virtualHost: true
-        },
-        props: {
-            // 是否有竖线
-            border: {
-                type: Boolean,
-                default: false
-            },
-            // 是否显示斑马线
-            stripe: {
-                type: Boolean,
-                default: false
-            },
-            // 多选
-            type: {
-                type: String,
-                default: ''
-            },
-            // 没有更多数据
-            emptyText: {
-                type: String,
-                default: '没有更多数据'
-            },
-            loading: {
-                type: Boolean,
-                default: false
-            },
-        },
-        data() {
-            return {
-                noData: true,
-                minWidth:0
-            };
-        },
-        watch: {
-            loading(val) {
+export default {
+  name: 'uniTable',
+  options: {
+    virtualHost: true
+  },
+  props: {
+    // 是否有竖线
+    border: {
+      type: Boolean,
+      default: false
+    },
+    // 是否显示斑马线
+    stripe: {
+      type: Boolean,
+      default: false
+    },
+    // 多选
+    type: {
+      type: String,
+      default: ''
+    },
+    // 没有更多数据
+    emptyText: {
+      type: String,
+      default: '没有更多数据'
+    },
+    loading: {
+      type: Boolean,
+      default: false
+    }
+  },
+  data () {
+    return {
+      noData: true,
+      minWidth: 0
+    }
+  },
+  watch: {
+    loading (val) {
 
-            }
-        },
-        created() {
-            // 定义tr的实例数组
-            this.trChildren = []
-            this.backData = []
-        },
-        methods: {
-            isNodata() {
-                if (this.trChildren.length > 1) {
-                    this.noData = false
-                } else {
-                    this.noData = true
-                }
-            },
-			/**
+    }
+  },
+  created () {
+    // 定义tr的实例数组
+    this.trChildren = []
+    this.backData = []
+  },
+  methods: {
+    isNodata () {
+      if (this.trChildren.length > 1) {
+        this.noData = false
+      } else {
+        this.noData = true
+      }
+    },
+    /**
 			 * 清除选中
 			 */
-			clearSelection(){
-				this.trChildren.forEach((item, index) => {
+    clearSelection () {
+      this.trChildren.forEach((item, index) => {
 				    item.value = false
-				})
-				this.$emit('selection-change', {
+      })
+      this.$emit('selection-change', {
 				    detail: {
 				        index: [],
 				        value: []
 				    }
-				})
-			},
-            check(child, check) {
-                const childDom = this.trChildren.find((item, index) => child === item)
-                const childDomIndex = this.trChildren.findIndex((item, index) => child === item)
-                if (childDomIndex === 0) {
-                    if (childDom.value !== check) {
-                        this.backData = []
-                        this.trChildren.map((item, index) => item.value = check)
-                    }
-                    this.trChildren.forEach((item, index) => {
-                        if (index > 0 && item.value) {
-                            this.backData.push(index - 1)
-                        }
-                    })
-
-                } else {
-                    if (!check) {
-                        this.trChildren[0].value = false
-                    }
-                    childDom.value = check
-                    if (check) {
-                        this.backData.push(childDomIndex - 1)
-                    } else {
-                        const index = this.backData.findIndex(item => item === (childDomIndex - 1))
-                        this.backData.splice(index, 1)
-                    }
-                    const domCheckAll = this.trChildren.find((item, index) => index > 0 && !item.value)
-                    if (!domCheckAll) {
-                        this.trChildren[0].value = true
-                    }
-                }
-
-                this.$emit('selection-change', {
-                    detail: {
-                        index: this.backData.sort(),
-                        value: []
-                    }
-                })
-
-            }
+      })
+    },
+    check (child, check) {
+      const childDom = this.trChildren.find((item, index) => child === item)
+      const childDomIndex = this.trChildren.findIndex((item, index) => child === item)
+      if (childDomIndex === 0) {
+        if (childDom.value !== check) {
+          this.backData = []
+          this.trChildren.map((item, index) => item.value = check)
         }
+        this.trChildren.forEach((item, index) => {
+          if (index > 0 && item.value) {
+            this.backData.push(index - 1)
+          }
+        })
+      } else {
+        if (!check) {
+          this.trChildren[0].value = false
+        }
+        childDom.value = check
+        if (check) {
+          this.backData.push(childDomIndex - 1)
+        } else {
+          const index = this.backData.findIndex(item => item === (childDomIndex - 1))
+          this.backData.splice(index, 1)
+        }
+        const domCheckAll = this.trChildren.find((item, index) => index > 0 && !item.value)
+        if (!domCheckAll) {
+          this.trChildren[0].value = true
+        }
+      }
+
+      this.$emit('selection-change', {
+        detail: {
+          index: this.backData.sort(),
+          value: []
+        }
+      })
     }
+  }
+}
 </script>
 
 <style lang="scss">

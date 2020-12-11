@@ -10,68 +10,68 @@
 </template>
 
 <script>
-	/**
+/**
 	 * Tr 表格行组件
 	 * @description 表格行组件 仅包含 th,td 组件
 	 * @tutorial https://ext.dcloud.net.cn/plugin?id=
 	 */
-    export default {
-        name: 'uniTr',
-        options: {
-            virtualHost: true
-        },
-        data() {
-            return {
-                value: false,
-                border: false,
-                selection:false,
-                widthThArr:[]
-            };
-        },
-        created() {
-            this.root = this.getTable()
-            this.border = this.root.border
-            this.selection = this.root.type
-            this.root.trChildren.push(this)
-            this.root.isNodata()
-        },
-        mounted() {
-            if(this.widthThArr.length > 0){
-                const selectionWidth = this.selection === 'selection'? 50:0
-                this.root.minWidth =  this.widthThArr.reduce((a,b)=> Number(a) + Number(b)) + selectionWidth
-            }
-        },
-        destroyed() {
-            const index = this.root.trChildren.findIndex(i=>i===this)
-            this.root.trChildren.splice(index,1)
-            this.root.isNodata()
-        },
-        methods: {
-            minWidthUpdate(width){
-                this.widthThArr.push(width)
-            },
-            change(e) {
-                this.root.trChildren.forEach((item) => {
-                    if (item === this) {
-                        this.root.check(this,e.detail.value.length > 0 ? true : false)
-                    }
-                })
-            },
-            /**
+export default {
+  name: 'uniTr',
+  options: {
+    virtualHost: true
+  },
+  data () {
+    return {
+      value: false,
+      border: false,
+      selection: false,
+      widthThArr: []
+    }
+  },
+  created () {
+    this.root = this.getTable()
+    this.border = this.root.border
+    this.selection = this.root.type
+    this.root.trChildren.push(this)
+    this.root.isNodata()
+  },
+  mounted () {
+    if (this.widthThArr.length > 0) {
+      const selectionWidth = this.selection === 'selection' ? 50 : 0
+      this.root.minWidth = this.widthThArr.reduce((a, b) => Number(a) + Number(b)) + selectionWidth
+    }
+  },
+  destroyed () {
+    const index = this.root.trChildren.findIndex(i => i === this)
+    this.root.trChildren.splice(index, 1)
+    this.root.isNodata()
+  },
+  methods: {
+    minWidthUpdate (width) {
+      this.widthThArr.push(width)
+    },
+    change (e) {
+      this.root.trChildren.forEach((item) => {
+        if (item === this) {
+          this.root.check(this, e.detail.value.length > 0)
+        }
+      })
+    },
+    /**
              * 获取父元素实例
              */
-            getTable() {
-                let parent = this.$parent;
-                let parentName = parent.$options.name;
-                while (parentName !== 'uniTable') {
-                    parent = parent.$parent;
-                    if (!parent) return false;
-                    parentName = parent.$options.name;
-                }
-                return parent;
-            },
-        }
+    getTable () {
+      let parent = this.$parent
+      let parentName = parent.$options.name
+      while (parentName !== 'uniTable') {
+        parent = parent.$parent
+        if (!parent) return false
+        parentName = parent.$options.name
+      }
+      return parent
     }
+  }
+}
 </script>
 
 <style lang="scss">
@@ -110,8 +110,5 @@
             }
         }
     }
-
-
-
 
 </style>

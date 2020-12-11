@@ -26,118 +26,117 @@
 </template>
 
 <script>
-	import {
-		mapMutations,
-		mapActions
-	} from 'vuex'
-	import config from '@/admin.config.js'
-	export default {
-		data() {
-			return {
-				...config.navBar,
-				showPassword: true,
-				loading: false,
-				formData: {
-					username: '',
-					password: '',
-				},
-				rules: {
-					// 对name字段进行必填验证
-					username: {
-						rules: [{
-								required: true,
-								errorMessage: '请输入账户',
-							},
-							{
-								minLength: 1,
-								maxLength: 30,
-								errorMessage: '账户长度在{minLength}到{maxLength}个字符',
-							}
-						]
-					},
-					// 对email字段进行必填验证
-					password: {
-						rules: [{
-								required: true,
-								errorMessage: '请输入正确的密码',
-							},
-							{
-								minLength: 6,
-								errorMessage: '密码长度大于{minLength}个字符',
-							}
-						]
-					}
-				}
-			}
-		},
-		mounted(){
-			// #ifdef H5
-			this.focus()
-			// #endif
-		},
-		methods: {
-			...mapActions({
-				init: 'app/init'
-			}),
-			...mapMutations({
-				setToken(commit, tokenInfo) {
-					commit('user/SET_TOKEN', tokenInfo)
-				}
-			}),
-			submit(event) {
-				if (this.loading) {
-					return
-				}
-				const {
-					errors,
-					value
-				} = event.detail
-				if (errors) {
-					return
-				}
-				// #ifdef H5
-				this.$refs.passwordInput.$refs.input.blur()
-				// #endif
-				this.loading = true
-				this.$request('user/login', value)
-					.then(res => {
-						this.setToken({
-							token: res.token,
-							tokenExpired: res.tokenExpired
-						})
-						return this.init().then(() => {
-							uni.showToast({
-								title: '登录成功',
-								icon: 'none'
-							})
-							uni.redirectTo({
-								url: '/pages/index/index'
-							})
-						})
-					}).catch(err => {
+import {
+  mapMutations,
+  mapActions
+} from 'vuex'
+import config from '@/admin.config.js'
+export default {
+  data () {
+    return {
+      ...config.navBar,
+      showPassword: true,
+      loading: false,
+      formData: {
+        username: '',
+        password: ''
+      },
+      rules: {
+        // 对name字段进行必填验证
+        username: {
+          rules: [{
+            required: true,
+            errorMessage: '请输入账户'
+          },
+          {
+            minLength: 1,
+            maxLength: 30,
+            errorMessage: '账户长度在{minLength}到{maxLength}个字符'
+          }
+          ]
+        },
+        // 对email字段进行必填验证
+        password: {
+          rules: [{
+            required: true,
+            errorMessage: '请输入正确的密码'
+          },
+          {
+            minLength: 6,
+            errorMessage: '密码长度大于{minLength}个字符'
+          }
+          ]
+        }
+      }
+    }
+  },
+  mounted () {
+    // #ifdef H5
+    this.focus()
+    // #endif
+  },
+  methods: {
+    ...mapActions({
+      init: 'app/init'
+    }),
+    ...mapMutations({
+      setToken (commit, tokenInfo) {
+        commit('user/SET_TOKEN', tokenInfo)
+      }
+    }),
+    submit (event) {
+      if (this.loading) {
+        return
+      }
+      const {
+        errors,
+        value
+      } = event.detail
+      if (errors) {
+        return
+      }
+      // #ifdef H5
+      this.$refs.passwordInput.$refs.input.blur()
+      // #endif
+      this.loading = true
+      this.$request('user/login', value)
+        .then(res => {
+          this.setToken({
+            token: res.token,
+            tokenExpired: res.tokenExpired
+          })
+          return this.init().then(() => {
+            uni.showToast({
+              title: '登录成功',
+              icon: 'none'
+            })
+            uni.redirectTo({
+              url: '/pages/index/index'
+            })
+          })
+        }).catch(err => {
 
-					}).finally(err => {
-						this.loading = false
-					})
-
-			},
-			confirmForm(name, value) {
-				this.binddata(name, value)
-				this.submitForm()
-			},
-			submitForm() {
-				this.$refs.form.submit()
-			},
-			changePassword: function() {
-				this.showPassword = !this.showPassword;
-			},
-			// #ifdef H5
-			focus: function () {
-				this.$refs.usernameInput.$refs.input.focus()
-			}
-			// #endif
-		}
-	}
+        }).finally(err => {
+          this.loading = false
+        })
+    },
+    confirmForm (name, value) {
+      this.binddata(name, value)
+      this.submitForm()
+    },
+    submitForm () {
+      this.$refs.form.submit()
+    },
+    changePassword: function () {
+      this.showPassword = !this.showPassword
+    },
+    // #ifdef H5
+    focus: function () {
+      this.$refs.usernameInput.$refs.input.focus()
+    }
+    // #endif
+  }
+}
 </script>
 
 <style>
@@ -158,7 +157,6 @@
 		overflow: hidden;
 		/* background-color: #F5F5F5; */
 	}
-
 
 	.underline:hover {
 		text-decoration: underline;

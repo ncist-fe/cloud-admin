@@ -31,7 +31,7 @@
 </template>
 
 <script>
-	/**
+/**
 	 * Field 输入框
 	 * @description 此组件可以实现表单的输入与校验，包括 "text" 和 "textarea" 类型。
 	 * @tutorial https://ext.dcloud.net.cn/plugin?id=21001
@@ -54,290 +54,287 @@
 	 * @property {String } 	name 				表单域的属性名，在使用校验规则时必填
 	 */
 
+export default {
+  name: 'uniFormsItem',
+  props: {
+    // 自定义内容
+    custom: {
+      type: Boolean,
+      default: false
+    },
+    // 是否显示报错信息
+    showMessage: {
+      type: Boolean,
+      default: true
+    },
+    name: String,
+    required: Boolean,
+    validateTrigger: {
+      type: String,
+      default: ''
+    },
+    leftIcon: String,
+    iconColor: {
+      type: String,
+      default: '#606266'
+    },
+    label: String,
+    // 左边标题的宽度单位px
+    labelWidth: {
+      type: [Number, String],
+      default: ''
+    },
+    // 对齐方式，left|center|right
+    labelAlign: {
+      type: String,
+      default: ''
+    },
+    // lable的位置，可选为 left-左边，top-上边
+    labelPosition: {
+      type: String,
+      default: ''
+    },
+    errorMessage: {
+      type: [String, Boolean],
+      default: ''
+    }
+  },
+  data () {
+    return {
+      errorTop: false,
+      errorBottom: false,
+      labelMarginBottom: '',
+      errorWidth: '',
+      errMsg: '',
+      val: '',
+      labelPos: '',
+      labelWid: '',
+      labelAli: '',
+      showMsg: 'undertext'
+    }
+  },
+  computed: {
+    msg () {
+      return this.errorMessage || this.errMsg
+    },
+    fieldStyle () {
+      const style = {}
+      if (this.labelPos == 'top') {
+        style.padding = '10px 14px'
+        this.labelMarginBottom = '6px'
+      }
+      if (this.labelPos == 'left' && this.msg !== false && this.msg != '') {
+        style.paddingBottom = '0px'
+        this.errorBottom = true
+        this.errorTop = false
+      } else if (this.labelPos == 'top' && this.msg !== false && this.msg != '') {
+        this.errorBottom = false
+        this.errorTop = true
+      } else {
+        // style.paddingBottom = ''
+        this.errorTop = false
+        this.errorBottom = false
+      }
+      return style
+    },
 
+    // uni不支持在computed中写style.justifyContent = 'center'的形式，故用此方法
+    justifyContent () {
+      if (this.labelAli === 'left') return 'flex-start'
+      if (this.labelAli === 'center') return 'center'
+      if (this.labelAli === 'right') return 'flex-end'
+    }
 
-	export default {
-		name: "uniFormsItem",
-		props: {
-			// 自定义内容
-			custom: {
-				type: Boolean,
-				default: false
-			},
-			// 是否显示报错信息
-			showMessage: {
-				type: Boolean,
-				default: true
-			},
-			name: String,
-			required: Boolean,
-			validateTrigger: {
-				type: String,
-				default: ''
-			},
-			leftIcon: String,
-			iconColor: {
-				type: String,
-				default: '#606266'
-			},
-			label: String,
-			// 左边标题的宽度单位px
-			labelWidth: {
-				type: [Number, String],
-				default: ''
-			},
-			// 对齐方式，left|center|right
-			labelAlign: {
-				type: String,
-				default: ''
-			},
-			// lable的位置，可选为 left-左边，top-上边
-			labelPosition: {
-				type: String,
-				default: ''
-			},
-			errorMessage: {
-				type: [String, Boolean],
-				default: ''
-			}
-		},
-		data() {
-			return {
-				errorTop: false,
-				errorBottom: false,
-				labelMarginBottom: '',
-				errorWidth: '',
-				errMsg: '',
-				val: '',
-				labelPos: '',
-				labelWid: '',
-				labelAli: '',
-				showMsg: 'undertext'
-			};
-		},
-		computed: {
-			msg() {
-				return this.errorMessage || this.errMsg;
-			},
-			fieldStyle() {
-				let style = {}
-				if (this.labelPos == 'top') {
-					style.padding = '10px 14px'
-					this.labelMarginBottom = '6px'
-				}
-				if (this.labelPos == 'left' && this.msg !== false && this.msg != '') {
-					style.paddingBottom = '0px'
-					this.errorBottom = true
-					this.errorTop = false
-				} else if (this.labelPos == 'top' && this.msg !== false && this.msg != '') {
-					this.errorBottom = false
-					this.errorTop = true
-				} else {
-					// style.paddingBottom = ''
-					this.errorTop = false
-					this.errorBottom = false
-				}
-				return style
-			},
+  },
+  watch: {
+    validateTrigger (trigger) {
+      this.formTrigger = trigger
+    }
+  },
+  created () {
+    this.form = this.getForm()
+    this.formRules = []
+    this.formTrigger = this.validateTrigger
+    if (this.form) {
+      this.form.childrens.push(this)
+    }
+    this.init()
+  },
+  destroyed () {
+    // if (this.name) {
+    // 	delete this.form.formData[this.name]
+    // }
+    if (this.form) {
+      this.form.childrens.forEach((item, index) => {
+        if (item === this) {
+          this.form.childrens.splice(index, 1)
+        }
+      })
+    }
+  },
+  methods: {
+    init () {
+      if (this.form) {
+        const {
+          formRules,
+          validator,
+          formData,
+          value,
+          labelPosition,
+          labelWidth,
+          labelAlign,
+          errShowType
+        } = this.form
 
-			// uni不支持在computed中写style.justifyContent = 'center'的形式，故用此方法
-			justifyContent() {
-				if (this.labelAli === 'left') return 'flex-start';
-				if (this.labelAli === 'center') return 'center';
-				if (this.labelAli === 'right') return 'flex-end';
-			}
+        this.labelPos = this.labelPosition ? this.labelPosition : labelPosition
+        this.labelWid = this.labelWidth ? this.labelWidth : labelWidth
+        this.labelAli = this.labelAlign ? this.labelAlign : labelAlign
+        this.showMsg = errShowType
 
-		},
-		watch: {
-			validateTrigger(trigger) {
-				this.formTrigger = trigger
-			}
-		},
-		created() {
-			this.form = this.getForm()
-			this.formRules = []
-			this.formTrigger = this.validateTrigger
-			if (this.form) {
-				this.form.childrens.push(this)
-			}
-			this.init()
-		},
-		destroyed() {
-			// if (this.name) {
-			// 	delete this.form.formData[this.name]
-			// }
-			if (this.form) {
-				this.form.childrens.forEach((item, index) => {
-					if (item === this) {
-						this.form.childrens.splice(index, 1)
-					}
-				})
-			}
-		},
-		methods: {
-			init() {
-				if (this.form) {
-					const {
-						formRules,
-						validator,
-						formData,
-						value,
-						labelPosition,
-						labelWidth,
-						labelAlign,
-						errShowType
-					} = this.form
+        if (formRules) {
+          this.formRules = formRules[this.name] || {}
+        }
 
-					this.labelPos = this.labelPosition ? this.labelPosition : labelPosition
-					this.labelWid = this.labelWidth ? this.labelWidth : labelWidth
-					this.labelAli = this.labelAlign ? this.labelAlign : labelAlign
-					this.showMsg = errShowType
+        this.validator = validator
 
-					if (formRules) {
-						this.formRules = formRules[this.name] || {}
-					}
-
-					this.validator = validator
-
-					if (this.name) {
-						formData[this.name] = value.hasOwnProperty(this.name) ? value[this.name] : null
-					}
-				} else {
-					this.labelPos = this.labelPosition || 'left'
-					this.labelWid = this.labelWidth || 65
-					this.labelAli = this.labelAlign || 'left'
-				}
-			},
-			/**
+        if (this.name) {
+          formData[this.name] = value.hasOwnProperty(this.name) ? value[this.name] : null
+        }
+      } else {
+        this.labelPos = this.labelPosition || 'left'
+        this.labelWid = this.labelWidth || 65
+        this.labelAli = this.labelAlign || 'left'
+      }
+    },
+    /**
 			 * 获取父元素实例
 			 */
-			getForm() {
-				let parent = this.$parent;
-				let parentName = parent.$options.name;
-				while (parentName !== 'uniForms') {
-					parent = parent.$parent;
-					if (!parent) return false
-					parentName = parent.$options.name;
-				}
-				return parent;
-			},
-			/**
+    getForm () {
+      let parent = this.$parent
+      let parentName = parent.$options.name
+      while (parentName !== 'uniForms') {
+        parent = parent.$parent
+        if (!parent) return false
+        parentName = parent.$options.name
+      }
+      return parent
+    },
+    /**
 			 * 移除该表单项的校验结果
 			 */
-			clearValidate() {
-				this.errMsg = ''
-			},
-			/**
+    clearValidate () {
+      this.errMsg = ''
+    },
+    /**
 			 * 父组件处理函数
 			 * @param {Object} callback
 			 */
-			// parentVal(callback) {
-			// 	typeof(callback) === 'function' && callback({
-			// 		[this.name]: this.form.formData[this.name]
-			// 	}, this.name)
-			// },
+    // parentVal(callback) {
+    // 	typeof(callback) === 'function' && callback({
+    // 		[this.name]: this.form.formData[this.name]
+    // 	}, this.name)
+    // },
 
-			/**
+    /**
 			 * 校验规则
 			 * @param {Object} value
 			 */
-			triggerCheck(value, callback) {
-				let promise = null;
-				this.errMsg = ''
-				// if no callback, return promise
-				if (callback && typeof callback !== 'function' && Promise) {
-					promise = new Promise((resolve, reject) => {
-						callback = function(valid) {
-							!valid ? resolve(valid) : reject(valid)
-						};
-					});
-				}
+    triggerCheck (value, callback) {
+      let promise = null
+      this.errMsg = ''
+      // if no callback, return promise
+      if (callback && typeof callback !== 'function' && Promise) {
+        promise = new Promise((resolve, reject) => {
+          callback = function (valid) {
+            !valid ? resolve(valid) : reject(valid)
+          }
+        })
+      }
 
-				if (!this.validator) {
-					typeof callback === 'function' && callback(null);
-					if (promise) return promise
-				}
-				
-				const isNoField = this.isRequired(this.formRules.rules || [])
-			
-				// const rules = this.formRules.rules || []
-				// const rule = rules.find(item => item.format && this.type_filter(item.format))
+      if (!this.validator) {
+        typeof callback === 'function' && callback(null)
+        if (promise) return promise
+      }
 
-				// // 输入值为 number
-				// if (rule) {
-				// 	value = value === '' ? null : Number(value)
-				// }
+      const isNoField = this.isRequired(this.formRules.rules || [])
 
-				// this.form.formData[this.name] = value
+      // const rules = this.formRules.rules || []
+      // const rule = rules.find(item => item.format && this.type_filter(item.format))
 
-				let result = this.validator && this.validator.validateUpdate({
-					[this.name]: value
-				})
+      // // 输入值为 number
+      // if (rule) {
+      // 	value = value === '' ? null : Number(value)
+      // }
 
-				// 判断是否必填
-				if (!isNoField && !value) {
-					result = null
-				}
-				let isTrigger = this.isTrigger(this.formRules.validateTrigger, this.validateTrigger, this.form.validateTrigger)
-				if (!isTrigger) {
-					result = null
-				}
-				if (isTrigger && result && result.errorMessage) {
-					if (this.form.errShowType === 'toast') {
-						uni.showToast({
-							title: result.errorMessage || '校验错误',
-							icon: 'none'
-						})
-					}
-					if (this.form.errShowType === 'modal') {
-						uni.showModal({
-							title: '提示',
-							content: result.errorMessage || '校验错误'
-						})
-					}
-				}
+      // this.form.formData[this.name] = value
 
-				this.errMsg = !result ? '' : result.errorMessage
-				this.form.validateCheck(result ? result : null)
-				typeof callback === 'function' && callback(result ? result : null);
-				if (promise) return promise
+      let result = this.validator && this.validator.validateUpdate({
+        [this.name]: value
+      })
 
-			},
-			/**
+      // 判断是否必填
+      if (!isNoField && !value) {
+        result = null
+      }
+      const isTrigger = this.isTrigger(this.formRules.validateTrigger, this.validateTrigger, this.form.validateTrigger)
+      if (!isTrigger) {
+        result = null
+      }
+      if (isTrigger && result && result.errorMessage) {
+        if (this.form.errShowType === 'toast') {
+          uni.showToast({
+            title: result.errorMessage || '校验错误',
+            icon: 'none'
+          })
+        }
+        if (this.form.errShowType === 'modal') {
+          uni.showModal({
+            title: '提示',
+            content: result.errorMessage || '校验错误'
+          })
+        }
+      }
+
+      this.errMsg = !result ? '' : result.errorMessage
+      this.form.validateCheck(result || null)
+      typeof callback === 'function' && callback(result || null)
+      if (promise) return promise
+    },
+    /**
 			 * 触发时机
 			 * @param {Object} event
 			 */
-			isTrigger(rule, itemRlue, parentRule) {
-				let rl = true;
-				//  bind  submit
-				if (rule === 'submit' || !rule) {
-					if (rule === undefined) {
-						if (itemRlue !== 'bind') {
-							if (!itemRlue) {
-								return parentRule === 'bind' ? true : false
-							}
-							return false
-						}
-						return true
-					}
-					return false
-				}
-				return true;
-			},
-			// 是否有必填字段
-			isRequired(rules) {
-				let isNoField = false
-				for (let i = 0; i < rules.length; i++) {
-					const ruleData = rules[i]
-					if (ruleData.required) {
-						isNoField = true
-						break
-					}
-				}
-				return isNoField
-			}
-		}
-	};
+    isTrigger (rule, itemRlue, parentRule) {
+      const rl = true
+      //  bind  submit
+      if (rule === 'submit' || !rule) {
+        if (rule === undefined) {
+          if (itemRlue !== 'bind') {
+            if (!itemRlue) {
+              return parentRule === 'bind'
+            }
+            return false
+          }
+          return true
+        }
+        return false
+      }
+      return true
+    },
+    // 是否有必填字段
+    isRequired (rules) {
+      let isNoField = false
+      for (let i = 0; i < rules.length; i++) {
+        const ruleData = rules[i]
+        if (ruleData.required) {
+          isNoField = true
+          break
+        }
+      }
+      return isNoField
+    }
+  }
+}
 </script>
 
 <style lang="scss" scoped>

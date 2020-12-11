@@ -8,24 +8,24 @@
 </template>
 
 <script>
-	import topWindow from '../../windows/topWindow.vue'
-	import leftWindow from '../../windows/leftWindow.vue'
-	export default {
-		components:{
-			topWindow,
-			leftWindow
-		},
-		data() {
-			return {
-				visible: false
-			};
-		},
-		methods: {
-			tiggerWindow() {
-				this.visible = !this.visible
-			}
-		}
-	}
+import topWindow from '../../windows/topWindow.vue'
+import leftWindow from '../../windows/leftWindow.vue'
+export default {
+  components: {
+    topWindow,
+    leftWindow
+  },
+  data () {
+    return {
+      visible: false
+    }
+  },
+  methods: {
+    tiggerWindow () {
+      this.visible = !this.visible
+    }
+  }
+}
 </script>
 
 <style>

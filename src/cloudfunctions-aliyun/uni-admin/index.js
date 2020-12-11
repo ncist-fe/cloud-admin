@@ -1,8 +1,8 @@
-'use strict';
+'use strict'
 const {
-    Router
+  Router
 } = require('uni-cloud-router')
 const router = new Router(require('./config.js'))
 exports.main = async (event, context) => {
-    return router.serve(event, context)
-};
+  return router.serve(event, context)
+}

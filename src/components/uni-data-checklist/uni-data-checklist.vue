@@ -29,279 +29,279 @@
 </template>
 
 <script>
-	export default {
-		name: 'uniDataChecklist',
-		props: {
-			// 模s式，可选值 default row ，list，button，tag
-			mode: {
-				type: String,
-				default: 'default'
-			},
-			multiple: {
-				type: Boolean,
-				default: false
-			},
-			// 默认值 ,如果不指定，则取 range 的 selected 属性
-			value: {
-				type: [Array, String, Number],
-				default () {
-					return ''
-				}
-			},
-			// 范围
-			range: {
-				type: Array,
-				default () {
-					return []
-				}
-			},
-			// 最大值
-			min: {
-				type: [Number, String],
-				default: ''
-			},
-			// 最小值
-			max: {
-				type: [Number, String],
-				default: ''
-			},
-			wrap: {
-				type: Boolean,
-				default: false
-			},
-			// style:{
-			// 	type : Object,
-			// 	default(){
-			// 		return {}
-			// 	}
-			// }
-		},
-		watch: {
-			range: {
-				handler(newVal) {
-					this.dataList = this.getDataList(this.getSelectedValue(newVal))
-				},
-				deep: true
-			},
-			value(newVal) {
-				this.dataList = this.getDataList(newVal)
-			}
-		},
-		data() {
-			return {
-				dataList: [],
-				styles: {
-					selectedBackgroudColor: 'red',
-					selectedColor: 'blue',
-					backgroundColor: '#ffffff',
-					color: '#333'
-				}
-			};
-		},
-		created() {
-			this.dataList = this.getDataList(this.getSelectedValue(this.range))
-		},
-		methods: {
-			chagne(e) {
-				const values = e.detail.value
+export default {
+  name: 'uniDataChecklist',
+  props: {
+    // 模s式，可选值 default row ，list，button，tag
+    mode: {
+      type: String,
+      default: 'default'
+    },
+    multiple: {
+      type: Boolean,
+      default: false
+    },
+    // 默认值 ,如果不指定，则取 range 的 selected 属性
+    value: {
+      type: [Array, String, Number],
+      default () {
+        return ''
+      }
+    },
+    // 范围
+    range: {
+      type: Array,
+      default () {
+        return []
+      }
+    },
+    // 最大值
+    min: {
+      type: [Number, String],
+      default: ''
+    },
+    // 最小值
+    max: {
+      type: [Number, String],
+      default: ''
+    },
+    wrap: {
+      type: Boolean,
+      default: false
+    }
+    // style:{
+    // 	type : Object,
+    // 	default(){
+    // 		return {}
+    // 	}
+    // }
+  },
+  watch: {
+    range: {
+      handler (newVal) {
+        this.dataList = this.getDataList(this.getSelectedValue(newVal))
+      },
+      deep: true
+    },
+    value (newVal) {
+      this.dataList = this.getDataList(newVal)
+    }
+  },
+  data () {
+    return {
+      dataList: [],
+      styles: {
+        selectedBackgroudColor: 'red',
+        selectedColor: 'blue',
+        backgroundColor: '#ffffff',
+        color: '#333'
+      }
+    }
+  },
+  created () {
+    this.dataList = this.getDataList(this.getSelectedValue(this.range))
+  },
+  methods: {
+    chagne (e) {
+      const values = e.detail.value
 
-				let detail = {
-					value: [],
-					data: []
-				}
+      let detail = {
+        value: [],
+        data: []
+      }
 
-				if (this.multiple) {
-					this.range.forEach(item => {
-						if (values.includes(item.value + '')) {
-							detail.value.push(item.value)
-							detail.data.push(item)
-						}
-					})
-				} else {
-					const range = this.range.find(item => (item.value + '') === values)
-					if (range) {
-						detail = {
-							value: range.value,
-							data: range
-						}
-					}
-				}
+      if (this.multiple) {
+        this.range.forEach(item => {
+          if (values.includes(item.value + '')) {
+            detail.value.push(item.value)
+            detail.data.push(item)
+          }
+        })
+      } else {
+        const range = this.range.find(item => (item.value + '') === values)
+        if (range) {
+          detail = {
+            value: range.value,
+            data: range
+          }
+        }
+      }
 
-				this.$emit('input', detail.value)
-				this.$emit('change', {
-					detail
-				})
+      this.$emit('input', detail.value)
+      this.$emit('change', {
+        detail
+      })
 
-				if (this.multiple) {
-					// 如果 v-model 没有绑定 ，则走内部逻辑
-					if (this.value.length === 0) {
-						this.dataList = this.getDataList(detail.value, true)
-					}
-				} else {
-					this.dataList = this.getDataList(detail.value)
-				}
-			},
-			getLabelClass(item, index) {
-				let classes = []
-				switch (this.mode) {
-					case 'default':
-						item.disable && classes.push('disabled-cursor')
-						break
-					case 'button':
-						classes.push(...['is-button', ...this.getClasses(item, 'button')])
-						break
-					case 'list':
-						if (this.multiple) {
-							classes.push('is-list-multiple-box')
-						} else {
-							classes.push('is-list-box')
-						}
-						item.disable && classes.push('is-list-disabled')
-						index !== 0 && classes.push('is-list-border')
-						break
-					case 'tag':
-						classes.push(...['is-tag', ...this.getClasses(item, 'tag')])
-						break
-				}
-				classes = classes.join(' ')
-				return classes
-			},
-			getCheckboxClass(item, type = '') {
-				let classes = []
-				if (this.multiple) {
-					classes.push(...this.getClasses(item, 'default-multiple', type))
-				} else {
-					classes.push(...this.getClasses(item, 'default', type))
-				}
-				classes = classes.join(' ')
-				return classes
-			},
-			getTextClass(item) {
-				let classes = []
-				switch (this.mode) {
-					case 'default':
-						classes.push(...this.getClasses(item, 'list'))
-						break
-					case 'button':
-						classes.push(...this.getClasses(item, 'list'))
-						break
-					case 'list':
-						classes.push(...this.getClasses(item, 'list'))
-						break
-					case 'tag':
-						classes.push(...['is-tag-text', ...this.getClasses(item, 'tag-text')])
-						break
-				}
-				classes = classes.join(' ')
-				return classes
-			},
+      if (this.multiple) {
+        // 如果 v-model 没有绑定 ，则走内部逻辑
+        if (this.value.length === 0) {
+          this.dataList = this.getDataList(detail.value, true)
+        }
+      } else {
+        this.dataList = this.getDataList(detail.value)
+      }
+    },
+    getLabelClass (item, index) {
+      let classes = []
+      switch (this.mode) {
+        case 'default':
+          item.disable && classes.push('disabled-cursor')
+          break
+        case 'button':
+          classes.push(...['is-button', ...this.getClasses(item, 'button')])
+          break
+        case 'list':
+          if (this.multiple) {
+            classes.push('is-list-multiple-box')
+          } else {
+            classes.push('is-list-box')
+          }
+          item.disable && classes.push('is-list-disabled')
+          index !== 0 && classes.push('is-list-border')
+          break
+        case 'tag':
+          classes.push(...['is-tag', ...this.getClasses(item, 'tag')])
+          break
+      }
+      classes = classes.join(' ')
+      return classes
+    },
+    getCheckboxClass (item, type = '') {
+      let classes = []
+      if (this.multiple) {
+        classes.push(...this.getClasses(item, 'default-multiple', type))
+      } else {
+        classes.push(...this.getClasses(item, 'default', type))
+      }
+      classes = classes.join(' ')
+      return classes
+    },
+    getTextClass (item) {
+      let classes = []
+      switch (this.mode) {
+        case 'default':
+          classes.push(...this.getClasses(item, 'list'))
+          break
+        case 'button':
+          classes.push(...this.getClasses(item, 'list'))
+          break
+        case 'list':
+          classes.push(...this.getClasses(item, 'list'))
+          break
+        case 'tag':
+          classes.push(...['is-tag-text', ...this.getClasses(item, 'tag-text')])
+          break
+      }
+      classes = classes.join(' ')
+      return classes
+    },
 
-			/**
+    /**
 			 * 获取渲染的新数组
 			 * @param {Object} value 选中内容
 			 */
-			getDataList(value) {
-				// 解除引用关系，破坏原引用关系，避免污染源数据
-				let dataList = JSON.parse(JSON.stringify(this.range))
-				let list = []
-				if (this.multiple) {
-					if (!Array.isArray(value)) {
-						value = []
-						// console.error('props 类型错误');
-					}
-				}
-				dataList.forEach((item, index) => {
-					if (this.multiple) {
-						if (value.length > 0) {
-							let have = value.find(val => val === item.value)
-							item.selected = have !== undefined
-						} else {
-							item.selected = false
-						}
-					} else {
-						item.selected = value === item.value
-					}
+    getDataList (value) {
+      // 解除引用关系，破坏原引用关系，避免污染源数据
+      const dataList = JSON.parse(JSON.stringify(this.range))
+      const list = []
+      if (this.multiple) {
+        if (!Array.isArray(value)) {
+          value = []
+          // console.error('props 类型错误');
+        }
+      }
+      dataList.forEach((item, index) => {
+        if (this.multiple) {
+          if (value.length > 0) {
+            const have = value.find(val => val === item.value)
+            item.selected = have !== undefined
+          } else {
+            item.selected = false
+          }
+        } else {
+          item.selected = value === item.value
+        }
 
-					list.push(item)
-				})
-				return this.setRange(list)
-			},
-			/**
+        list.push(item)
+      })
+      return this.setRange(list)
+    },
+    /**
 			 * 处理最大最小值
 			 * @param {Object} list
 			 */
-			setRange(list) {
-				let selectList = list.filter(item => item.selected)
-				let min = Number(this.min) || 0
-				let max = Number(this.max) || ''
-				list.forEach((item, index) => {
-					if (this.multiple) {
-						if (selectList.length <= min) {
-							let have = selectList.find(val => val.value === item.value)
-							if (have !== undefined) {
-								item.disable = true
-							}
-						}
+    setRange (list) {
+      const selectList = list.filter(item => item.selected)
+      const min = Number(this.min) || 0
+      const max = Number(this.max) || ''
+      list.forEach((item, index) => {
+        if (this.multiple) {
+          if (selectList.length <= min) {
+            const have = selectList.find(val => val.value === item.value)
+            if (have !== undefined) {
+              item.disable = true
+            }
+          }
 
-						if (selectList.length >= max && max !== '') {
-							let have = selectList.find(val => val.value === item.value)
-							if (have === undefined) {
-								item.disable = true
-							}
-						}
-					}
-					this.setClass(item, index)
-					list[index] = item
-				})
-				return list
-			},
-			/**
+          if (selectList.length >= max && max !== '') {
+            const have = selectList.find(val => val.value === item.value)
+            if (have === undefined) {
+              item.disable = true
+            }
+          }
+        }
+        this.setClass(item, index)
+        list[index] = item
+      })
+      return list
+    },
+    /**
 			 * 设置 class
 			 * @param {Object} item
 			 * @param {Object} index
 			 */
-			setClass(item, index) {
-				// 设置 label 的 class
-				item.labelClass = this.getLabelClass(item, index)
-				// 设置 checkbox外层样式
-				item.checkboxBgClass = this.getCheckboxClass(item, '-bg')
-				// 设置 checkbox 内层样式
-				item.checkboxClass = this.getCheckboxClass(item)
-				// 设置文本样式
-				item.textClass = this.getTextClass(item)
-				// 设置 list 对勾右侧样式
-				item.listClass = this.getCheckboxClass(item, '-list')
-			},
-			/**
+    setClass (item, index) {
+      // 设置 label 的 class
+      item.labelClass = this.getLabelClass(item, index)
+      // 设置 checkbox外层样式
+      item.checkboxBgClass = this.getCheckboxClass(item, '-bg')
+      // 设置 checkbox 内层样式
+      item.checkboxClass = this.getCheckboxClass(item)
+      // 设置文本样式
+      item.textClass = this.getTextClass(item)
+      // 设置 list 对勾右侧样式
+      item.listClass = this.getCheckboxClass(item, '-list')
+    },
+    /**
 			 * 获取 class
 			 */
-			getClasses(item, name, type = '') {
-				let classes = []
-				item.disable && classes.push('is-' + name + '-disabled' + type)
-				item.selected && classes.push('is-' + name + '-checked' + type)
+    getClasses (item, name, type = '') {
+      const classes = []
+      item.disable && classes.push('is-' + name + '-disabled' + type)
+      item.selected && classes.push('is-' + name + '-checked' + type)
 
-				if(this.mode !== 'button' || name === 'button'){
-					item.selected && item.disable && classes.push('is-' + name + '-disabled-checked' + type)
-				}
+      if (this.mode !== 'button' || name === 'button') {
+        item.selected && item.disable && classes.push('is-' + name + '-disabled-checked' + type)
+      }
 
-				return classes
-			},
-			/**
+      return classes
+    },
+    /**
 			 * 获取选中值
 			 * @param {Object} range
 			 */
-			getSelectedValue(range) {
-				if (!this.multiple) return this.value
-				let selectedArr = []
-				range.forEach((item) => {
-					if (item.selected) {
-						selectedArr.push(item.value)
-					}
-				})
-				return this.value.length > 0 ? this.value : selectedArr
-			}
-		}
-	}
+    getSelectedValue (range) {
+      if (!this.multiple) return this.value
+      const selectedArr = []
+      range.forEach((item) => {
+        if (item.selected) {
+          selectedArr.push(item.value)
+        }
+      })
+      return this.value.length > 0 ? this.value : selectedArr
+    }
+  }
+}
 </script>
 
 <style>
@@ -450,7 +450,6 @@
 		transition: all 0.2s;
 	}
 
-
 	/* 禁用样式 */
 	.is-default-disabled-bg {
 		background-color: #F2F6FC;
@@ -486,7 +485,6 @@
 	.is-list-disabled-checked {
 		color: #a1dcc1;
 	}
-
 
 	.is-button-disabled {
 		/* #ifdef H5 */
@@ -544,7 +542,6 @@
 		opacity: 0.4;
 	}
 
-
 	.is-default-checked-list {
 		border-color: #007aff;
 		opacity: 1;
@@ -591,7 +588,6 @@
 	.is-tag-disabled-checked {
 		opacity: 0.4;
 	}
-
 
 	.disabled-cursor {
 		/* #ifdef H5 */

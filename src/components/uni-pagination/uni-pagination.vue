@@ -41,9 +41,9 @@
 </template>
 
 <script>
-    import uniIcons from '../uni-icons/uni-icons.vue'
+import uniIcons from '../uni-icons/uni-icons.vue'
 
-    /**
+/**
      * Pagination 分页器
      * @description 分页器组件，用于展示页码、请求数据等
      * @tutorial https://ext.dcloud.net.cn/plugin?id=32
@@ -56,185 +56,178 @@
      * @event {Function} change 点击页码按钮时触发 ,e={type,current} current为当前页，type值为：next/prev，表示点击的是上一页还是下一个
      */
 
-    export default {
-        name: 'UniPagination',
-        components: {
-            uniIcons
-        },
-        props: {
-            value: {
-                type: [Number, String],
-                default: 1
-            },
-            prevText: {
-                type: String,
-                default: '上一页'
-            },
-            nextText: {
-                type: String,
-                default: '下一页'
-            },
-            current: {
-                type: [Number, String],
-                default: 1
-            },
-            total: { // 数据总量
-                type: [Number, String],
-                default: 0
-            },
-            pageSize: { // 每页数据量
-                type: [Number, String],
-                default: 10
-            },
-            showIcon: { // 是否以 icon 形式展示按钮
-                type: [Boolean, String],
-                default: false
-            },
-            pagerCount: {
-                type: Number,
-                default: 7
-            }
-        },
-        data() {
-            return {
-                currentIndex: 1,
-                paperData: []
-            }
-        },
-        computed: {
-            maxPage() {
-                let maxPage = 1
-                let total = Number(this.total)
-                let pageSize = Number(this.pageSize)
-                if (total && pageSize) {
-                    maxPage = Math.ceil(total / pageSize)
-                }
-                return maxPage
-            },
-            paper() {
-                const num = this.currentIndex
-                // TODO 最大页数
-                const pagerCount = this.pagerCount
-                // const total = 181
-                const total = this.total
-                const pageSize = this.pageSize
-                let totalArr = []
-                let showPagerArr = []
-                let pagerNum = Math.ceil(total / pageSize)
-                for (let i = 0; i < pagerNum; i++) {
-                    totalArr.push(i + 1)
-                }
-                showPagerArr.push(1)
-                const totalNum = totalArr[totalArr.length - (pagerCount + 1) / 2]
-                totalArr.forEach((item, index) => {
-                    if ((pagerCount + 1) / 2 >= num) {
-                        if (item < pagerCount + 1 && item > 1) {
-                            showPagerArr.push(item)
-                        }
-                    } else if (num + 2 <= totalNum) {
-                        if (item > (num - (pagerCount + 1) / 2) && item < (num + (pagerCount + 1) / 2)) {
-                            showPagerArr.push(item)
-                        }
-
-                    } else {
-                        if ((item > num - (pagerCount + 1) / 2 || pagerNum - pagerCount < item) && item <
-                            totalArr[totalArr.length - 1]) {
-                            showPagerArr.push(item)
-                        }
-
-                    }
-
-                })
-                if (pagerNum > pagerCount) {
-                    if ((pagerCount + 1) / 2 >= num) {
-                        showPagerArr[showPagerArr.length - 1] = '...'
-                    } else if (num + 2 <= totalNum) {
-                        showPagerArr[1] = '...'
-                        showPagerArr[showPagerArr.length - 1] = '...'
-                    } else {
-                        showPagerArr[1] = '...'
-                    }
-                    showPagerArr.push(totalArr[totalArr.length - 1])
-                } else {
-
-                    if ((pagerCount + 1) / 2 >= num) {} else if (num + 2 <= totalNum) {} else {
-                        showPagerArr.shift()
-                        showPagerArr.push(totalArr[totalArr.length - 1])
-                    }
-
-                }
-
-                return showPagerArr
-            }
-        },
-        watch: {
-            current(val) {
-                this.currentIndex = val
-            },
-            value(val) {
-                if (val < 1) {
-                    this.currentIndex = 1
-                } else {
-                    this.currentIndex = val
-                }
-            }
-        },
-        created() {
-            this.currentIndex = +this.value
-        },
-        methods: {
-            // 选择标签
-            selectPage(e, index) {
-                if (parseInt(e)) {
-                    this.currentIndex = e
-                    this.change('current')
-                } else {
-                    let pagerNum = Math.ceil(this.total / this.pageSize)
-                    // let pagerNum = Math.ceil(181 / this.pageSize)
-                    // 上一页
-                    if (index <= 1) {
-                        if (this.currentIndex - 5 > 1) {
-                            this.currentIndex -= 5
-                        } else {
-                            this.currentIndex = 1
-                        }
-                        return
-                    }
-                    // 下一页
-                    if (index >= 6) {
-                        if (this.currentIndex + 5 > pagerNum) {
-                            this.currentIndex = pagerNum
-                        } else {
-                            this.currentIndex += 5
-                        }
-                        return
-                    }
-
-                }
-            },
-            clickLeft() {
-                if (Number(this.currentIndex) === 1) {
-                    return
-                }
-                this.currentIndex -= 1
-                this.change('prev')
-            },
-            clickRight() {
-                if (Number(this.currentIndex) >= this.maxPage) {
-                    return
-                }
-                this.currentIndex += 1
-                this.change('next')
-            },
-            change(e) {
-                this.$emit('input', this.currentIndex)
-                this.$emit('change', {
-                    type: e,
-                    current: this.currentIndex
-                })
-            }
-        }
+export default {
+  name: 'UniPagination',
+  components: {
+    uniIcons
+  },
+  props: {
+    value: {
+      type: [Number, String],
+      default: 1
+    },
+    prevText: {
+      type: String,
+      default: '上一页'
+    },
+    nextText: {
+      type: String,
+      default: '下一页'
+    },
+    current: {
+      type: [Number, String],
+      default: 1
+    },
+    total: { // 数据总量
+      type: [Number, String],
+      default: 0
+    },
+    pageSize: { // 每页数据量
+      type: [Number, String],
+      default: 10
+    },
+    showIcon: { // 是否以 icon 形式展示按钮
+      type: [Boolean, String],
+      default: false
+    },
+    pagerCount: {
+      type: Number,
+      default: 7
     }
+  },
+  data () {
+    return {
+      currentIndex: 1,
+      paperData: []
+    }
+  },
+  computed: {
+    maxPage () {
+      let maxPage = 1
+      const total = Number(this.total)
+      const pageSize = Number(this.pageSize)
+      if (total && pageSize) {
+        maxPage = Math.ceil(total / pageSize)
+      }
+      return maxPage
+    },
+    paper () {
+      const num = this.currentIndex
+      // TODO 最大页数
+      const pagerCount = this.pagerCount
+      // const total = 181
+      const total = this.total
+      const pageSize = this.pageSize
+      const totalArr = []
+      const showPagerArr = []
+      const pagerNum = Math.ceil(total / pageSize)
+      for (let i = 0; i < pagerNum; i++) {
+        totalArr.push(i + 1)
+      }
+      showPagerArr.push(1)
+      const totalNum = totalArr[totalArr.length - (pagerCount + 1) / 2]
+      totalArr.forEach((item, index) => {
+        if ((pagerCount + 1) / 2 >= num) {
+          if (item < pagerCount + 1 && item > 1) {
+            showPagerArr.push(item)
+          }
+        } else if (num + 2 <= totalNum) {
+          if (item > (num - (pagerCount + 1) / 2) && item < (num + (pagerCount + 1) / 2)) {
+            showPagerArr.push(item)
+          }
+        } else {
+          if ((item > num - (pagerCount + 1) / 2 || pagerNum - pagerCount < item) && item <
+                            totalArr[totalArr.length - 1]) {
+            showPagerArr.push(item)
+          }
+        }
+      })
+      if (pagerNum > pagerCount) {
+        if ((pagerCount + 1) / 2 >= num) {
+          showPagerArr[showPagerArr.length - 1] = '...'
+        } else if (num + 2 <= totalNum) {
+          showPagerArr[1] = '...'
+          showPagerArr[showPagerArr.length - 1] = '...'
+        } else {
+          showPagerArr[1] = '...'
+        }
+        showPagerArr.push(totalArr[totalArr.length - 1])
+      } else {
+        if ((pagerCount + 1) / 2 >= num) {} else if (num + 2 <= totalNum) {} else {
+          showPagerArr.shift()
+          showPagerArr.push(totalArr[totalArr.length - 1])
+        }
+      }
+
+      return showPagerArr
+    }
+  },
+  watch: {
+    current (val) {
+      this.currentIndex = val
+    },
+    value (val) {
+      if (val < 1) {
+        this.currentIndex = 1
+      } else {
+        this.currentIndex = val
+      }
+    }
+  },
+  created () {
+    this.currentIndex = +this.value
+  },
+  methods: {
+    // 选择标签
+    selectPage (e, index) {
+      if (parseInt(e)) {
+        this.currentIndex = e
+        this.change('current')
+      } else {
+        const pagerNum = Math.ceil(this.total / this.pageSize)
+        // let pagerNum = Math.ceil(181 / this.pageSize)
+        // 上一页
+        if (index <= 1) {
+          if (this.currentIndex - 5 > 1) {
+            this.currentIndex -= 5
+          } else {
+            this.currentIndex = 1
+          }
+          return
+        }
+        // 下一页
+        if (index >= 6) {
+          if (this.currentIndex + 5 > pagerNum) {
+            this.currentIndex = pagerNum
+          } else {
+            this.currentIndex += 5
+          }
+        }
+      }
+    },
+    clickLeft () {
+      if (Number(this.currentIndex) === 1) {
+        return
+      }
+      this.currentIndex -= 1
+      this.change('prev')
+    },
+    clickRight () {
+      if (Number(this.currentIndex) >= this.maxPage) {
+        return
+      }
+      this.currentIndex += 1
+      this.change('next')
+    },
+    change (e) {
+      this.$emit('input', this.currentIndex)
+      this.$emit('change', {
+        type: e,
+        current: this.currentIndex
+      })
+    }
+  }
+}
 </script>
 
 <style lang="scss" scoped>

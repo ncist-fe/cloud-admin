@@ -61,121 +61,121 @@ register_date" :threshold="[0, 0]" />
 </template>
 
 <script>
-	const db = uniCloud.database()
-	// 表查询配置
-	const dbCollectionName = 'uni-id-users,uni-id-roles'
-	const dbOrderBy = '' // 排序字段
-	const dbSearchFields = [] // 支持模糊搜索的字段列表
-	// 分页配置
-	const pageSize = 10
-	const pageCurrent = 1
+import {
+  mapState
+} from 'vuex'
 
-	import {
-		mapState
-	} from 'vuex'
-	export default {
-		data() {
-			return {
-				query: '',
-				where: '',
-				orderby: dbOrderBy,
-				collectionName: dbCollectionName,
-				options: {
-					pageSize,
-					pageCurrent
-				}
-			}
-		},
-		computed: {
-			...mapState('user', ['userInfo']),
-		},
-		methods: {
-			getWhere() {
-				const query = this.query.trim()
-				if (!query) {
-					return ''
-				}
-				const queryRe = new RegExp(query, 'i')
-				return dbSearchFields.map(name => queryRe + '.test(' + name + ')').join(' || ')
-			},
-			search() {
-				const newWhere = this.getWhere()
-				const isSameWhere = newWhere === this.where
-				this.where = newWhere
-				if (isSameWhere) { // 相同条件时，手动强制刷新
-					this.loadData()
-				}
-			},
-			loadData(clear = true) {
-				this.$refs.udb.loadData({
-					clear
-				})
-			},
-			onPageChanged(e) {
-				this.$refs.udb.loadData({
-					current: e.current
-				})
-			},
-			navigateTo(url) {
-				uni.navigateTo({
-					url,
-					events: {
-						refreshData: () => {
-							this.loadData()
-						}
-					}
-				})
-			},
-			// 多选处理
-			selectedItems() {
-				var dataList = this.$refs.udb.dataList
-				return this.selectedIndexs.map(i => dataList[i]._id)
-			},
-			//批量删除
-			delTable() {
-				const ids = this.selectedItems()
-				const currentUserId = this.userInfo._id
-				if (ids.includes(currentUserId)) {
-					uni.showToast({
-						icon: 'none',
-						title: '当前账号不能删除自己',
-						duration: 1500
-					})
-					return
-				}
-				this.$refs.udb.remove(ids)
-			},
-			// 多选
-			selectionChange(e) {
-				this.selectedIndexs = e.detail.index
-			},
-			confirmDelete(item) {
-				const currentUserId = this.userInfo._id
-				if (currentUserId === item._id) {
-					uni.showToast({
-						icon: 'none',
-						title: '不允许账号删除自己',
-						duration: 1500
-					})
-					return
-				}
-				this.$refs.udb.remove(item._id)
-			},
-			parseUserStatus(status) {
-				if (status === 0) {
-					return '启用'
-				} else if (status === 1) {
-					return '禁用'
-				} else if (status === 2) {
-					return '审核中'
-				} else if (status === 3) {
-					return '审核拒绝'
-				} else {
-					return '未知'
-				}
-			}
-		}
-	}
+const db = uniCloud.database()
+// 表查询配置
+const dbCollectionName = 'uni-id-users,uni-id-roles'
+const dbOrderBy = '' // 排序字段
+const dbSearchFields = [] // 支持模糊搜索的字段列表
+// 分页配置
+const pageSize = 10
+const pageCurrent = 1
+export default {
+  data () {
+    return {
+      query: '',
+      where: '',
+      orderby: dbOrderBy,
+      collectionName: dbCollectionName,
+      options: {
+        pageSize,
+        pageCurrent
+      }
+    }
+  },
+  computed: {
+    ...mapState('user', ['userInfo'])
+  },
+  methods: {
+    getWhere () {
+      const query = this.query.trim()
+      if (!query) {
+        return ''
+      }
+      const queryRe = new RegExp(query, 'i')
+      return dbSearchFields.map(name => queryRe + '.test(' + name + ')').join(' || ')
+    },
+    search () {
+      const newWhere = this.getWhere()
+      const isSameWhere = newWhere === this.where
+      this.where = newWhere
+      if (isSameWhere) { // 相同条件时，手动强制刷新
+        this.loadData()
+      }
+    },
+    loadData (clear = true) {
+      this.$refs.udb.loadData({
+        clear
+      })
+    },
+    onPageChanged (e) {
+      this.$refs.udb.loadData({
+        current: e.current
+      })
+    },
+    navigateTo (url) {
+      uni.navigateTo({
+        url,
+        events: {
+          refreshData: () => {
+            this.loadData()
+          }
+        }
+      })
+    },
+    // 多选处理
+    selectedItems () {
+      const dataList = this.$refs.udb.dataList
+      return this.selectedIndexs.map(i => dataList[i]._id)
+    },
+    // 批量删除
+    delTable () {
+      const ids = this.selectedItems()
+      const currentUserId = this.userInfo._id
+      if (ids.includes(currentUserId)) {
+        uni.showToast({
+          icon: 'none',
+          title: '当前账号不能删除自己',
+          duration: 1500
+        })
+        return
+      }
+      this.$refs.udb.remove(ids)
+    },
+    // 多选
+    selectionChange (e) {
+      this.selectedIndexs = e.detail.index
+    },
+    confirmDelete (item) {
+      const currentUserId = this.userInfo._id
+      if (currentUserId === item._id) {
+        uni.showToast({
+          icon: 'none',
+          title: '不允许账号删除自己',
+          duration: 1500
+        })
+        return
+      }
+      this.$refs.udb.remove(item._id)
+    },
+    parseUserStatus (status) {
+      if (status === 0) {
+        return '启用'
+      } else if (status === 1) {
+        return '禁用'
+      } else if (status === 2) {
+        return '审核中'
+      } else if (status === 3) {
+        return '审核拒绝'
+      } else {
+        return '未知'
+      }
+    }
+  }
+}
 </script>
 <style>
 	/* #ifndef H5 */

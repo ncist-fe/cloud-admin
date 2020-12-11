@@ -21,37 +21,37 @@
 </template>
 
 <script>
-	import icons from './uni-icons.js'
-	export default {
-		data() {
-			return {
-				icons
-			}
-		},
-		methods: {
-			setClipboardData(type, icon) {
-				let data = 'uni-icons-' + icon
-				if (type === 'tag') {
-					data = '<view class="' + data + '"></view>'
-				}
-				uni.setClipboardData({
-					data,
-					success(res) {
-						uni.showToast({
-							icon: 'none',
-							title: '复制 ' + data + ' 成功！'
-						})
-					},
-					fail(res) {
-						uni.showModal({
-							content: '复制 ' + data + ' 失败！',
-							showCancel: false
-						})
-					}
-				})
-			}
-		}
-	}
+import icons from './uni-icons.js'
+export default {
+  data () {
+    return {
+      icons
+    }
+  },
+  methods: {
+    setClipboardData (type, icon) {
+      let data = 'uni-icons-' + icon
+      if (type === 'tag') {
+        data = '<view class="' + data + '"></view>'
+      }
+      uni.setClipboardData({
+        data,
+        success (res) {
+          uni.showToast({
+            icon: 'none',
+            title: '复制 ' + data + ' 成功！'
+          })
+        },
+        fail (res) {
+          uni.showModal({
+            content: '复制 ' + data + ' 失败！',
+            showCancel: false
+          })
+        }
+      })
+    }
+  }
+}
 </script>
 
 <style>

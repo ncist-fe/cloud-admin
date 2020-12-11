@@ -6,10 +6,10 @@
 </template>
 
 <script>
-	// #ifdef APP-NVUE
-	const animation = uni.requireNativePlugin('animation');
-	// #endif
-	/**
+// #ifdef APP-NVUE
+const animation = uni.requireNativePlugin('animation')
+// #endif
+/**
 	 * Transition 过渡动画
 	 * @description 简单过渡动画组件
 	 * @tutorial https://ext.dcloud.net.cn/plugin?id=985
@@ -25,194 +25,192 @@
 	 * @property {Number} duration 过渡动画持续时间
 	 * @property {Object} styles 组件样式，同 css 样式，注意带’-‘连接符的属性需要使用小驼峰写法如：`backgroundColor:red`
 	 */
-	export default {
-		name: 'uniTransition',
-		props: {
-			show: {
-				type: Boolean,
-				default: false
-			},
-			modeClass: {
-				type: Array,
-				default () {
-					return []
-				}
-			},
-			duration: {
-				type: Number,
-				default: 300
-			},
-			styles: {
-				type: Object,
-				default () {
-					return {}
-				}
-			}
-		},
-		data() {
-			return {
-				isShow: false,
-				transform: '',
-				ani: { in: '',
-					active: ''
-				}
-			};
-		},
-		watch: {
-			show: {
-				handler(newVal) {
-					if (newVal) {
-						this.open()
-					} else {
-						this.close()
-					}
-				},
-				immediate: true
-			}
-		},
-		computed: {
-			stylesObject() {
-				let styles = {
-					...this.styles,
-					'transition-duration': this.duration / 1000 + 's'
-				}
-				let transfrom = ''
-				for (let i in styles) {
-					let line = this.toLine(i)
-					transfrom += line + ':' + styles[i] + ';'
-				}
-				return transfrom
-			}
-		},
-		created() {
-			// this.timer = null
-			// this.nextTick = (time = 50) => new Promise(resolve => {
-			// 	clearTimeout(this.timer)
-			// 	this.timer = setTimeout(resolve, time)
-			// 	return this.timer
-			// });
-		},
-		methods: {
-			change() {
-				this.$emit('click', {
-					detail: this.isShow
-				})
-			},
-			open() {
-				clearTimeout(this.timer)
-				this.isShow = true
-				this.transform = ''
-				this.ani.in = ''
-				for (let i in this.getTranfrom(false)) {
-					if (i === 'opacity') {
-						this.ani.in = 'fade-in'
-					} else {
-						this.transform += `${this.getTranfrom(false)[i]} `
-					}
-				}
-				this.$nextTick(() => {
-					setTimeout(() => {
-						this._animation(true)
-					}, 50)
-				})
-
-			},
-			close(type) {
-				clearTimeout(this.timer)
-				this._animation(false)
-			},
-			_animation(type) {
-				let styles = this.getTranfrom(type)
-				// #ifdef APP-NVUE
-				if(!this.$refs['ani']) return
-				animation.transition(this.$refs['ani'].ref, {
-					styles,
-					duration: this.duration, //ms
-					timingFunction: 'ease',
-					needLayout: false,
-					delay: 0 //ms
-				}, () => {
-					if (!type) {
-						this.isShow = false
-					}
-					this.$emit('change', {
-						detail: this.isShow
-					})
-				})
-				// #endif
-				// #ifndef APP-NVUE
-				this.transform = ''
-				for (let i in styles) {
-					if (i === 'opacity') {
-						this.ani.in = `fade-${type?'out':'in'}`
-					} else {
-						this.transform += `${styles[i]} `
-					}
-				}
-				this.timer = setTimeout(() => {
-					if (!type) {
-						this.isShow = false
-					}
-					this.$emit('change', {
-						detail: this.isShow
-					})
-
-				}, this.duration)
-				// #endif
-
-			},
-			getTranfrom(type) {
-				let styles = {
-					transform: ''
-				}
-				this.modeClass.forEach((mode) => {
-					switch (mode) {
-						case 'fade':
-							styles.opacity = type ? 1 : 0
-							break;
-						case 'slide-top':
-							styles.transform += `translateY(${type?'0':'-100%'}) `
-							break;
-						case 'slide-right':
-							styles.transform += `translateX(${type?'0':'100%'}) `
-							break;
-						case 'slide-bottom':
-							styles.transform += `translateY(${type?'0':'100%'}) `
-							break;
-						case 'slide-left':
-							styles.transform += `translateX(${type?'0':'-100%'}) `
-							break;
-						case 'zoom-in':
-							styles.transform += `scale(${type?1:0.8}) `
-							break;
-						case 'zoom-out':
-							styles.transform += `scale(${type?1:1.2}) `
-							break;
-					}
-				})
-				return styles
-			},
-			_modeClassArr(type) {
-				let mode = this.modeClass
-				if (typeof(mode) !== "string") {
-					let modestr = ''
-					mode.forEach((item) => {
-						modestr += (item + '-' + type + ',')
-					})
-					return modestr.substr(0, modestr.length - 1)
-				} else {
-					return mode + '-' + type
-				}
-			},
-			// getEl(el) {
-			// 	console.log(el || el.ref || null);
-			// 	return el || el.ref || null
-			// },
-			toLine(name) {
-				return name.replace(/([A-Z])/g, "-$1").toLowerCase();
-			}
-		}
-	}
+export default {
+  name: 'uniTransition',
+  props: {
+    show: {
+      type: Boolean,
+      default: false
+    },
+    modeClass: {
+      type: Array,
+      default () {
+        return []
+      }
+    },
+    duration: {
+      type: Number,
+      default: 300
+    },
+    styles: {
+      type: Object,
+      default () {
+        return {}
+      }
+    }
+  },
+  data () {
+    return {
+      isShow: false,
+      transform: '',
+      ani: {
+        in: '',
+        active: ''
+      }
+    }
+  },
+  watch: {
+    show: {
+      handler (newVal) {
+        if (newVal) {
+          this.open()
+        } else {
+          this.close()
+        }
+      },
+      immediate: true
+    }
+  },
+  computed: {
+    stylesObject () {
+      const styles = {
+        ...this.styles,
+        'transition-duration': this.duration / 1000 + 's'
+      }
+      let transfrom = ''
+      for (const i in styles) {
+        const line = this.toLine(i)
+        transfrom += line + ':' + styles[i] + ';'
+      }
+      return transfrom
+    }
+  },
+  created () {
+    // this.timer = null
+    // this.nextTick = (time = 50) => new Promise(resolve => {
+    // 	clearTimeout(this.timer)
+    // 	this.timer = setTimeout(resolve, time)
+    // 	return this.timer
+    // });
+  },
+  methods: {
+    change () {
+      this.$emit('click', {
+        detail: this.isShow
+      })
+    },
+    open () {
+      clearTimeout(this.timer)
+      this.isShow = true
+      this.transform = ''
+      this.ani.in = ''
+      for (const i in this.getTranfrom(false)) {
+        if (i === 'opacity') {
+          this.ani.in = 'fade-in'
+        } else {
+          this.transform += `${this.getTranfrom(false)[i]} `
+        }
+      }
+      this.$nextTick(() => {
+        setTimeout(() => {
+          this._animation(true)
+        }, 50)
+      })
+    },
+    close (type) {
+      clearTimeout(this.timer)
+      this._animation(false)
+    },
+    _animation (type) {
+      const styles = this.getTranfrom(type)
+      // #ifdef APP-NVUE
+      if (!this.$refs.ani) return
+      animation.transition(this.$refs.ani.ref, {
+        styles,
+        duration: this.duration, // ms
+        timingFunction: 'ease',
+        needLayout: false,
+        delay: 0 // ms
+      }, () => {
+        if (!type) {
+          this.isShow = false
+        }
+        this.$emit('change', {
+          detail: this.isShow
+        })
+      })
+      // #endif
+      // #ifndef APP-NVUE
+      this.transform = ''
+      for (const i in styles) {
+        if (i === 'opacity') {
+          this.ani.in = `fade-${type ? 'out' : 'in'}`
+        } else {
+          this.transform += `${styles[i]} `
+        }
+      }
+      this.timer = setTimeout(() => {
+        if (!type) {
+          this.isShow = false
+        }
+        this.$emit('change', {
+          detail: this.isShow
+        })
+      }, this.duration)
+      // #endif
+    },
+    getTranfrom (type) {
+      const styles = {
+        transform: ''
+      }
+      this.modeClass.forEach((mode) => {
+        switch (mode) {
+          case 'fade':
+            styles.opacity = type ? 1 : 0
+            break
+          case 'slide-top':
+            styles.transform += `translateY(${type ? '0' : '-100%'}) `
+            break
+          case 'slide-right':
+            styles.transform += `translateX(${type ? '0' : '100%'}) `
+            break
+          case 'slide-bottom':
+            styles.transform += `translateY(${type ? '0' : '100%'}) `
+            break
+          case 'slide-left':
+            styles.transform += `translateX(${type ? '0' : '-100%'}) `
+            break
+          case 'zoom-in':
+            styles.transform += `scale(${type ? 1 : 0.8}) `
+            break
+          case 'zoom-out':
+            styles.transform += `scale(${type ? 1 : 1.2}) `
+            break
+        }
+      })
+      return styles
+    },
+    _modeClassArr (type) {
+      const mode = this.modeClass
+      if (typeof (mode) !== 'string') {
+        let modestr = ''
+        mode.forEach((item) => {
+          modestr += (item + '-' + type + ',')
+        })
+        return modestr.substr(0, modestr.length - 1)
+      } else {
+        return mode + '-' + type
+      }
+    },
+    // getEl(el) {
+    // 	console.log(el || el.ref || null);
+    // 	return el || el.ref || null
+    // },
+    toLine (name) {
+      return name.replace(/([A-Z])/g, '-$1').toLowerCase()
+    }
+  }
+}
 </script>
 
 <style>

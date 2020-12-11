@@ -17,71 +17,71 @@
 </template>
 
 <script>
-	export default {
-		name: 'UniPopupShare',
-		props: {
-			title: {
-				type: String,
-				default: '分享到'
-			}
-		},
-		inject: ['popup'],
-		data() {
-			return {
-				bottomData: [{
-						text: '微信',
-						icon: 'https://img-cdn-qiniu.dcloud.net.cn/uni-ui/grid-2.png',
-						name: 'wx'
-					},
-					{
-						text: '支付宝',
-						icon: 'https://img-cdn-qiniu.dcloud.net.cn/uni-ui/grid-8.png',
-						name: 'wx'
-					},
-					{
-						text: 'QQ',
-						icon: 'https://img-cdn-qiniu.dcloud.net.cn/uni-ui/gird-3.png',
-						name: 'qq'
-					},
-					{
-						text: '新浪',
-						icon: 'https://img-cdn-qiniu.dcloud.net.cn/uni-ui/grid-1.png',
-						name: 'sina'
-					},
-					{
-						text: '百度',
-						icon: 'https://img-cdn-qiniu.dcloud.net.cn/uni-ui/grid-7.png',
-						name: 'copy'
-					},
-					{
-						text: '其他',
-						icon: 'https://img-cdn-qiniu.dcloud.net.cn/uni-ui/grid-5.png',
-						name: 'more'
-					}
-				]
-			}
-		},
-		created() {},
-		methods: {
-			/**
+export default {
+  name: 'UniPopupShare',
+  props: {
+    title: {
+      type: String,
+      default: '分享到'
+    }
+  },
+  inject: ['popup'],
+  data () {
+    return {
+      bottomData: [{
+        text: '微信',
+        icon: 'https://img-cdn-qiniu.dcloud.net.cn/uni-ui/grid-2.png',
+        name: 'wx'
+      },
+      {
+        text: '支付宝',
+        icon: 'https://img-cdn-qiniu.dcloud.net.cn/uni-ui/grid-8.png',
+        name: 'wx'
+      },
+      {
+        text: 'QQ',
+        icon: 'https://img-cdn-qiniu.dcloud.net.cn/uni-ui/gird-3.png',
+        name: 'qq'
+      },
+      {
+        text: '新浪',
+        icon: 'https://img-cdn-qiniu.dcloud.net.cn/uni-ui/grid-1.png',
+        name: 'sina'
+      },
+      {
+        text: '百度',
+        icon: 'https://img-cdn-qiniu.dcloud.net.cn/uni-ui/grid-7.png',
+        name: 'copy'
+      },
+      {
+        text: '其他',
+        icon: 'https://img-cdn-qiniu.dcloud.net.cn/uni-ui/grid-5.png',
+        name: 'more'
+      }
+      ]
+    }
+  },
+  created () {},
+  methods: {
+    /**
 			 * 选择内容
 			 */
-			select(item, index) {
-				this.$emit('select', {
-					item,
-					index
-				}, () => {
-					this.popup.close()
-				})
-			},
-			/**
+    select (item, index) {
+      this.$emit('select', {
+        item,
+        index
+      }, () => {
+        this.popup.close()
+      })
+    },
+    /**
 			 * 关闭窗口
 			 */
-			close() {
-				this.popup.close()
-			}
-		}
-	}
+    close () {
+      this.popup.close()
+    }
+  }
+}
 </script>
 <style lang="scss" scoped>
 	.uni-popup-share {
@@ -108,7 +108,7 @@
 		justify-content: center;
 		padding-top: 10px;
 	}
-	
+
 	.uni-share-content-box {
 		/* #ifndef APP-NVUE */
 		display: flex;
@@ -117,7 +117,7 @@
 		flex-wrap: wrap;
 		width: 360px;
 	}
-	
+
 	.uni-share-content-item {
 		width: 90px;
 		/* #ifndef APP-NVUE */
@@ -128,22 +128,22 @@
 		padding: 10px 0;
 		align-items: center;
 	}
-	
+
 	.uni-share-content-item:active {
 		background-color: #f5f5f5;
 	}
-	
+
 	.uni-share-image {
 		width: 30px;
 		height: 30px;
 	}
-	
+
 	.uni-share-text {
 		margin-top: 10px;
 		font-size: 14px;
 		color: #3B4144;
 	}
-	
+
 	.uni-share-button-box {
 		/* #ifndef APP-NVUE */
 		display: flex;
@@ -151,14 +151,14 @@
 		flex-direction: row;
 		padding: 10px 15px;
 	}
-	
+
 	.uni-share-button {
 		flex: 1;
 		border-radius: 50px;
 		color: #666;
 		font-size: 16px;
 	}
-	
+
 	.uni-share-button::after {
 		border-radius: 50px;
 	}

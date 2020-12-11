@@ -21,30 +21,30 @@
 </template>
 
 <script>
-	import uniMenuSidebar from '../uni-menu-sidebar/uni-menu-sidebar.vue'
-	export default {
-		name: 'uniMenuSidebar',
-		components: {
-			uniMenuSidebar
-		},
-		props: {
-			data: {
-				type: Array,
-				default () {
-					return []
-				}
-			}
-		},
-		data() {
-			return {};
-		},
-		computed: {
+import uniMenuSidebar from '../uni-menu-sidebar/uni-menu-sidebar.vue'
+export default {
+  name: 'uniMenuSidebar',
+  components: {
+    uniMenuSidebar
+  },
+  props: {
+    data: {
+      type: Array,
+      default () {
+        return []
+      }
+    }
+  },
+  data () {
+    return {}
+  },
+  computed: {
 
-		},
-		methods: {
+  },
+  methods: {
 
-		}
-	}
+  }
+}
 </script>
 
 <style lang="scss">

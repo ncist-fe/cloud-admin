@@ -53,114 +53,114 @@
 </template>
 
 <script>
-    const db = uniCloud.database()
-    // 表查询配置
-    const dbCollectionName = 'uni-id-permissions'
-    const dbOrderBy = 'create_date desc'
-    const dbSearchFields = ['permission_id', 'permission_name'] // 支持模糊搜索的字段列表
-    // 分页配置
-    const pageSize = 20
-    const pageCurrent = 1
+const db = uniCloud.database()
+// 表查询配置
+const dbCollectionName = 'uni-id-permissions'
+const dbOrderBy = 'create_date desc'
+const dbSearchFields = ['permission_id', 'permission_name'] // 支持模糊搜索的字段列表
+// 分页配置
+const pageSize = 20
+const pageCurrent = 1
 
-    export default {
-        data() {
-            return {
-                query: '',
-                where: '',
-                orderby: dbOrderBy,
-                collectionName: dbCollectionName,
-                options: {
-                    pageSize,
-                    pageCurrent
-                }
-            }
-        },
-        methods: {
-            getWhere() {
-                const query = this.query.trim()
-                if (!query) {
-                    return ''
-                }
-                const queryRe = `/${query}/i`
-                return dbSearchFields.map(name => queryRe + '.test(' + name + ')').join(' || ')
-            },
-            search() {
-                const newWhere = this.getWhere()
-                const isSameWhere = newWhere === this.where
-                this.where = newWhere
-                if (isSameWhere) { // 相同条件时，手动强制刷新
-                    this.loadData()
-                }
-            },
-            loadData(clear = true) {
-                this.$refs.dataQuery.loadData({
-                    clear
-                })
-            },
-            onPageChanged(e) {
-                this.$refs.dataQuery.loadData({
-                    current: e.current
-                })
-            },
-            navigateTo(url) {
-                uni.navigateTo({
-                    url,
-                    events: {
-                        refreshData: () => {
-                            this.loadData()
-                        }
-                    }
-                })
-            },
-			// 多选处理
-			selectedItems() {
-				var dataList = this.$refs.dataQuery.dataList
-				return this.selectedIndexs.map(i => dataList[i].permission_id)
-			},
-			//批量删除
-			delTable() {
-				uni.showModal({
+export default {
+  data () {
+    return {
+      query: '',
+      where: '',
+      orderby: dbOrderBy,
+      collectionName: dbCollectionName,
+      options: {
+        pageSize,
+        pageCurrent
+      }
+    }
+  },
+  methods: {
+    getWhere () {
+      const query = this.query.trim()
+      if (!query) {
+        return ''
+      }
+      const queryRe = `/${query}/i`
+      return dbSearchFields.map(name => queryRe + '.test(' + name + ')').join(' || ')
+    },
+    search () {
+      const newWhere = this.getWhere()
+      const isSameWhere = newWhere === this.where
+      this.where = newWhere
+      if (isSameWhere) { // 相同条件时，手动强制刷新
+        this.loadData()
+      }
+    },
+    loadData (clear = true) {
+      this.$refs.dataQuery.loadData({
+        clear
+      })
+    },
+    onPageChanged (e) {
+      this.$refs.dataQuery.loadData({
+        current: e.current
+      })
+    },
+    navigateTo (url) {
+      uni.navigateTo({
+        url,
+        events: {
+          refreshData: () => {
+            this.loadData()
+          }
+        }
+      })
+    },
+    // 多选处理
+    selectedItems () {
+      const dataList = this.$refs.dataQuery.dataList
+      return this.selectedIndexs.map(i => dataList[i].permission_id)
+    },
+    // 批量删除
+    delTable () {
+      uni.showModal({
 				    title: '提示',
 				    content: '确认删除多条记录？',
 				    success: (res) => {
 				        res.confirm && this.delete(this.selectedItems())
 				    }
-				})
-			},
-			// 多选
-			selectionChange(e) {
-				this.selectedIndexs = e.detail.index
-			},
-            confirmDelete(id) {
-                uni.showModal({
-                    title: '提示',
-                    content: '确认删除该记录？',
-                    success: (res) => {
-                        res.confirm && this.delete(id)
-                    }
-                })
-            },
-            async delete(id) {
-                uni.showLoading({
-                    mask: true
-                })
-				await this.$request('system/permission/remove', {id})
+      })
+    },
+    // 多选
+    selectionChange (e) {
+      this.selectedIndexs = e.detail.index
+    },
+    confirmDelete (id) {
+      uni.showModal({
+        title: '提示',
+        content: '确认删除该记录？',
+        success: (res) => {
+          res.confirm && this.delete(id)
+        }
+      })
+    },
+    async delete (id) {
+      uni.showLoading({
+        mask: true
+      })
+      await this.$request('system/permission/remove', { id })
 				    .then(res => {
-						uni.showToast({
-							title: '删除成功'
-						})
+          uni.showToast({
+            title: '删除成功'
+          })
 				    }).catch(err => {
-						uni.showModal({
-							content: err.message || '请求服务失败',
-							showCancel: false
-						})
-					}).finally(err => {
+          uni.showModal({
+            content: err.message || '请求服务失败',
+            showCancel: false
+          })
+        }).finally(err => {
 				        uni.hideLoading()
 				    })
-                this.loadData(false)
-            }
-        }
+      this.loadData(false)
     }
+  }
+}
 </script>
 <style>
 	/* #ifndef H5 */

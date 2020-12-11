@@ -1,65 +1,63 @@
 // 校验规则由 schema 生成，请不要直接修改当前文件，如果需要请在uniCloud控制台修改schema
 // uniCloud: https://unicloud.dcloud.net.cn/
 
-
-
 export default {
-  "username": {
-    "rules": [
+  username: {
+    rules: [
       {
-        "required": true,
-        "errorMessage": "{label}必填"
+        required: true,
+        errorMessage: '{label}必填'
       },
       {
-        "format": "string"
+        format: 'string'
       },
       {
-        "minLength": 2
+        minLength: 2
       }
     ],
-    "label": "用户名"
+    label: '用户名'
   },
-  "password": {
-    "rules": [
+  password: {
+    rules: [
       {
-        "required": true,
-        "errorMessage": "{label}必填"
+        required: true,
+        errorMessage: '{label}必填'
       },
       {
-        "format": "string"
+        format: 'string'
       },
       {
-        "minLength": 6
+        minLength: 6
       }
     ],
-    "label": "初始密码"
+    label: '初始密码'
   },
-  "mobile": {
-    "rules": [
+  mobile: {
+    rules: [
       {
-        "format": "string"
+        format: 'string'
       },
       {
-        "pattern": "^\\+?[0-9-]{3,20}$"
+        pattern: '^\\+?[0-9-]{3,20}$'
       }
     ],
-    "label": "手机号"
+    label: '手机号'
   },
-  "email": {
-    "rules": [
+  email: {
+    rules: [
       {
-        "format": "string"
+        format: 'string'
       },
 	  {
-	    "format": "email"
+	    format: 'email'
 	  }
     ],
-    "label": "邮箱"
+    label: '邮箱'
   },
-  "role": {
-    "rules": [
+  role: {
+    rules: [
       {
-        "format": "array"
+        format: 'array'
       }
     ]
   }

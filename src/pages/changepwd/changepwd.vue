@@ -8,25 +8,25 @@
 </template>
 
 <script>
-    import updatePassword from '@/windows/components/update-password.vue'
-    export default {
-        components: {
-            updatePassword
-        },
-        data() {
-            return {
+import updatePassword from '@/windows/components/update-password.vue'
+export default {
+  components: {
+    updatePassword
+  },
+  data () {
+    return {
 
-            }
-        },
-        onShow() {
-            uni.setNavigationBarTitle({
-                title: '修改密码'
-            })
-        },
-        methods: {
-
-        }
     }
+  },
+  onShow () {
+    uni.setNavigationBarTitle({
+      title: '修改密码'
+    })
+  },
+  methods: {
+
+  }
+}
 </script>
 
 <style>

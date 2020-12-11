@@ -2,7 +2,7 @@
     <view>
 		<view class="uni-header">
 			<button @click="showCreateFolder" class="uni-button" type="primary">新增文件夹</button>
-			<view ref="input" class="input"></view> 
+			<view ref="input" class="input"></view>
 			<button @click="uploadFile" class="uni-button" type="primary">上传文件</button>
 			<uni-popup ref="folderPopup" type="dialog">
 				<uni-popup-dialog mode="input" title="新增文件夹" placeholder="请输入文件夹名称" @confirm="confirmCreate"></uni-popup-dialog>
@@ -40,7 +40,7 @@
 						</uni-td>
 						<uni-td align="left" v-else>
 							<span :class="['iconfont','file-icon', getFileType(item.name)]"></span>
-							{{item.name}}
+							<span @click="fileClick(item.name, item.link, index)">{{item.name}}</span>
 						</uni-td>
                         <uni-td align="center">{{item.createBy}}</uni-td>
 						<uni-td align="center">{{item.isFolder ? '-': formatSize(item.size)}}</uni-td>
@@ -64,157 +64,179 @@
 		<!-- #ifndef H5 -->
 		<fix-window />
 		<!-- #endif -->
+		<D-Player v-on:closeVideo="closeV" ref="mydplayer" v-show="video.show"></D-Player>
+		<A-Player v-on:closeAudio="closeA" ref="myaplayer" v-show="audio.show"></A-Player>
+		<uni-popup ref="imagePopup">
+			<image :src="popUpImg" alt="" style="width:100%;height:100%" />
+		</uni-popup>
     </view>
 </template>
 
 <script>
-    const db = uniCloud.database()
-    // 表查询配置
-    const dbCollectionName = 'opendb-netdisk-files'
-    const dbOrderBy = 'createOn desc'
-    // 分页配置
-    const pageSize = 20
-    const pageCurrent = 1
-	import { formatSize, checkFileType } from '@/js_sdk/netdisk/index.js'
-	import uniPopupDialog from '@/components/uni-popup/uni-popup-dialog.vue'
-	import {
-		mapState
-	} from 'vuex'
+import { formatSize, checkFileType } from '@/js_sdk/netdisk/index.js'
+import uniPopupDialog from '@/components/uni-popup/uni-popup-dialog.vue'
+import DPlayer from './Dplayer.vue'
+import APlayer from './Aplayer.vue'
 
-    export default {
-		computed: {
-			...mapState('user', ['userInfo']),
-			where() {
-				return {
-					parent: this.pathStack.join('/').replace('//','/')
-				}
-			}
-		},
-		components:{
-			uniPopupDialog
-		},
-        data() {
-            return {
-                orderby: dbOrderBy,
-                collectionName: dbCollectionName,
-                options: {
-                    pageSize,
-                    pageCurrent
-                },
-				pathStack: ['/']
-            }
-        },
-		mounted() {
-			var input = document.createElement('input')
-			input.type = 'file'
-			input.style.display = 'none'
-			input.id = 'file'
-			input.onchange = (event) => {
-				this.upload(event.target.files[0]);
-			}
-			this.$refs.input.$el.appendChild(input);
-		},
-        methods: {
-			formatSize (size) {
-				return formatSize(size)
-			},
-			getFileType(name) {
-				return 'icon-' + checkFileType(name)
-			},
-			confirmCreate (done, value) {
-				done()
-				uni.showLoading({
-					title:'创建中'
-				})
-				this.saveFileInfo({
-					name: value,
-					isFolder: true
-				})
-			},
-			saveFileInfo(file) {
-				const fileObj = Object.assign({}, file)
-				fileObj.parent = this.where.parent
-				fileObj.createOn = new Date().toISOString()
-				fileObj.createBy = this.userInfo.username
-				db.collection(dbCollectionName).add(fileObj).catch(err => {
+import {
+  mapState
+} from 'vuex'
+const db = uniCloud.database()
+// 表查询配置
+const dbCollectionName = 'opendb-netdisk-files'
+const dbOrderBy = 'createOn desc'
+// 分页配置
+const pageSize = 20
+const pageCurrent = 1
+
+export default {
+  computed: {
+    ...mapState('user', ['userInfo']),
+    where () {
+      return {
+        parent: this.pathStack.join('/').replace('//', '/')
+      }
+    }
+  },
+  components: {
+    uniPopupDialog,
+    'D-Player': DPlayer,
+    'A-Player': APlayer
+  },
+  data  () {
+    return {
+      orderby: dbOrderBy,
+      collectionName: dbCollectionName,
+      options: {
+        pageSize,
+        pageCurrent
+      },
+      pathStack: ['/'],
+      video: {
+        show: false,
+        index: -1, // 点击的元素
+        // 记录正在播放视频的文件夹
+        hash: ''
+      },
+      audio: {
+        show: false,
+        index: -1,
+        hash: ''
+      },
+      popUpImg: ''
+    }
+  },
+  mounted () {
+    const input = document.createElement('input')
+    input.type = 'file'
+    input.style.display = 'none'
+    input.id = 'file'
+    input.onchange = (event) => {
+      this.upload(event.target.files[0])
+    }
+    this.$refs.input.$el.appendChild(input)
+  },
+  methods: {
+    formatSize (size) {
+      return formatSize(size)
+    },
+    getFileType (name) {
+      return 'icon-' + checkFileType(name)
+    },
+    confirmCreate (done, value) {
+      done()
+      uni.showLoading({
+        title: '创建中'
+      })
+      this.saveFileInfo({
+        name: value,
+        isFolder: true
+      })
+    },
+    saveFileInfo (file) {
+      const fileObj = Object.assign({}, file)
+      fileObj.parent = this.where.parent
+      fileObj.createOn = new Date().toISOString()
+      fileObj.createBy = this.userInfo.username
+      db.collection(dbCollectionName).add(fileObj).catch(err => {
 				    uni.showModal({
 				        content: err.message || '请求服务失败',
 				        showCancel: false
 				    })
-				}).finally(() => {
-				    uni.hideLoading()
-					this.loadData()
-				})
-			},
-			loadData(clear = true) {
+      }).finally(() => {
+        uni.hideLoading()
+        this.loadData()
+      })
+    },
+    loadData (clear = true) {
 			    this.$refs.dataQuery.loadData({
 			        clear
 			    })
-			},
-			onPageChanged(e) {
+    },
+    onPageChanged (e) {
 			    this.$refs.dataQuery.loadData({
 			        current: e.current
 			    })
-			},
-			uploadFile () {
-				return document.getElementById("file").click();
-			},
-			upload(fileInfo) {
-				if (fileInfo.size > 100 * 1024 * 1024) {
-					uni.showModal({
-						content: '目前仅支持上传100M以内文件',
-						showCancel: false
-					})
-				} else {
-					uni.showLoading({
-						title:'上传中'
-					})
-					// 转换文件路径--异步操作
-					var reader = new FileReader();
-					reader.readAsDataURL(fileInfo);
-					reader.onload = e => {
-						this.uploadApi(e.target.result, fileInfo)
-					}
-				}
-				console.log('file info', fileInfo)
-			},
-			uploadApi (filePath, fileInfo) {
-				console.log()
-				uniCloud.uploadFile({
-					cloudPath: fileInfo.name,
-					filePath: filePath
-				}).then(res => {
-					console.log('upload resut:', res)
-					if (res.success) {
-						this.saveFileInfo({
-							name: fileInfo.name,
-							size: fileInfo.size,
-							link: res.fileID,
-							isFolder: false
-						})
-					}
-				})
-			},
-			enterFolder(name) {
-				this.pathStack.push(name)
-			},
-			showCreateFolder() {
-				this.$refs.folderPopup.open()
-			},
-			toPreviousFolder(index) {
+    },
+    uploadFile () {
+      return document.getElementById('file').click()
+    },
+    upload (fileInfo) {
+      if (fileInfo.size > 100 * 1024 * 1024) {
+        uni.showModal({
+          content: '目前仅支持上传100M以内文件',
+          showCancel: false
+        })
+      } else {
+        uni.showLoading({
+          title: '上传中'
+        })
+        // 转换文件路径--异步操作
+        const reader = new FileReader()
+        reader.readAsDataURL(fileInfo)
+        reader.onload = e => {
+          this.uploadApi(e.target.result, fileInfo)
+        }
+      }
+      console.log('file info', fileInfo)
+    },
+    uploadApi (filePath, fileInfo) {
+      console.log()
+      uniCloud.uploadFile({
+        cloudPath: fileInfo.name,
+        filePath: filePath
+      }).then(res => {
+        console.log('upload resut:', res)
+        if (res.success) {
+          this.saveFileInfo({
+            name: fileInfo.name,
+            size: fileInfo.size,
+            link: res.fileID,
+            isFolder: false
+          })
+        }
+      })
+    },
+    enterFolder (name) {
+      this.pathStack.push(name)
+    },
+    showCreateFolder () {
+      this.$refs.folderPopup.open()
+    },
+    toPreviousFolder (index) {
 			  if (index + 1 !== this.pathStack.length) {
-				const target = this.pathStack.slice(0, index + 1);
-				console.log("to target folder", target, "index", index);
-				this.pathStack = target
+        const target = this.pathStack.slice(0, index + 1)
+        console.log('to target folder', target, 'index', index)
+        this.pathStack = target
 			  } else {
-				  uni.showToast({
-				  	title: '已在该目录',
-					icon: 'none'
-				  })
+        uni.showToast({
+          title: '已在该目录',
+          icon: 'none'
+        })
 			  }
-			},
-			confirmDelete(file) {
-				let tip = '确认删除' + (file.isFolder?'文件夹':'文件') + ':[' + file.name + ']?'
+    },
+    confirmDelete (file) {
+      const tip = '确认删除' + (file.isFolder ? '文件夹' : '文件') + ':[' + file.name + ']?'
 			    uni.showModal({
 			        title: '提示',
 			        content: tip,
@@ -222,29 +244,79 @@
 			            res.confirm && this.delete(file._id)
 			        }
 			    })
-			},
-			async delete(id) {
+    },
+    async delete (id) {
 			    uni.showLoading({
-					title:'删除中',
+        title: '删除中',
 			        mask: true
 			    })
-				await db.collection(dbCollectionName).doc(id).remove()
+      await db.collection(dbCollectionName).doc(id).remove()
 				    .then(res => {
-						uni.showToast({
-							title: '删除成功'
-						})
+          uni.showToast({
+            title: '删除成功'
+          })
 				    }).catch(err => {
-						uni.showModal({
-							content: err.message || '请求服务失败',
-							showCancel: false
-						})
-					}).finally(err => {
+          uni.showModal({
+            content: err.message || '请求服务失败',
+            showCancel: false
+          })
+        }).finally(err => {
 				        uni.hideLoading()
 				    })
 			    this.loadData(false)
-			}
-        }
+    },
+    fileClick (fileName, downloadUrl, index) {
+      const fileType = checkFileType(fileName)
+      if (fileType === 'video') {
+        this.playVideo(downloadUrl, index)
+      } else if (fileType === 'image') {
+        this.showImage(downloadUrl, index)
+      } else if (fileType === 'audio') {
+        this.playAudio(downloadUrl, index)
+      } else {
+        this.downloadFile(fileName, downloadUrl)
+      }
+    },
+    playVideo (playUrl, index) {
+      const video = {
+        playUrl: playUrl
+      }
+      if (!this.video.show) {
+        this.video.index = index
+        this.video.show = true
+        this.video.hash = playUrl
+        this.$refs.mydplayer.play(video)
+      } else {
+        this.video.index = index
+        this.$refs.mydplayer.switch(video)
+        this.video.hash = playUrl
+      }
+    },
+    playAudio (playUrl, index) {
+      const audio = {
+        url: playUrl
+      }
+      if (!this.audio.show) {
+        this.audio.index = index
+        this.audio.show = true
+        this.audio.hash = playUrl
+        this.$refs.myaplayer.play(audio)
+      } else {
+        this.audio.index = index
+        this.$refs.myaplayer.switch(audio)
+        this.audio.hash = playUrl
+      }
+    },
+    closeV () {
+      this.video.show = false
+      this.video.index = -1
+    },
+    closeA () {
+      this.audio.show = false
+      this.audio.index = -1
     }
+  }
+}
 </script>
 <style>
 	/* #ifndef H5 */

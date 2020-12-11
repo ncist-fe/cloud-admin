@@ -29,26 +29,26 @@
 </template>
 
 <script>
-    import {
-        mapState
-    } from 'vuex'
-    import config from '@/admin.config.js'
-    const debugOptions = config.navBar.debug || {}
-    export default {
-        data() {
-            return {
-                engines: debugOptions.engine || []
-            };
-        },
-        computed: {
-            ...mapState('error', ['logs'])
-        },
-        methods: {
-            search(engine, log) {
-
-            }
-        }
+import {
+  mapState
+} from 'vuex'
+import config from '@/admin.config.js'
+const debugOptions = config.navBar.debug || {}
+export default {
+  data () {
+    return {
+      engines: debugOptions.engine || []
     }
+  },
+  computed: {
+    ...mapState('error', ['logs'])
+  },
+  methods: {
+    search (engine, log) {
+
+    }
+  }
+}
 </script>
 
 <style>

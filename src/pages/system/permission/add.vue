@@ -20,77 +20,77 @@
 </template>
 
 <script>
-    import validator from '@/js_sdk/validator/uni-id-permissions.js';
+import validator from '@/js_sdk/validator/uni-id-permissions.js'
 
-    const db = uniCloud.database();
-    const dbCmd = db.command;
-    const dbCollectionName = 'uni-id-permissions';
+const db = uniCloud.database()
+const dbCmd = db.command
+const dbCollectionName = 'uni-id-permissions'
 
-    function getValidator(fields) {
-        let reuslt = {}
-        for (let key in validator) {
-            if (fields.includes(key)) {
-                reuslt[key] = validator[key]
-            }
-        }
-        return reuslt
+function getValidator (fields) {
+  const reuslt = {}
+  for (const key in validator) {
+    if (fields.includes(key)) {
+      reuslt[key] = validator[key]
     }
+  }
+  return reuslt
+}
 
-    export default {
-        data() {
-            return {
-                formData: {
-                    "permission_id": "",
-                    "permission_name": "",
-                    "comment": ""
-                },
-                rules: {
-                    ...getValidator(["permission_id", "permission_name", "comment"])
-                }
-            }
-        },
-        methods: {
-            /**
+export default {
+  data () {
+    return {
+      formData: {
+        permission_id: '',
+        permission_name: '',
+        comment: ''
+      },
+      rules: {
+        ...getValidator(['permission_id', 'permission_name', 'comment'])
+      }
+    }
+  },
+  methods: {
+    /**
              * 触发表单提交
              */
-            submitForm() {
-                this.$refs.form.submit();
-            },
+    submitForm () {
+      this.$refs.form.submit()
+    },
 
-            /**
+    /**
              * 表单提交
              * @param {Object} event 回调参数 Function(callback:{value,errors})
              */
-            submit(event) {
-                const {
-                    value,
-                    errors
-                } = event.detail
+    submit (event) {
+      const {
+        value,
+        errors
+      } = event.detail
 
-                // 表单校验失败页面会提示报错 ，要停止表单提交逻辑
-                if (errors) {
-                    return
-                }
-                uni.showLoading({
-                    title: '提交中...',
-                    mask: true
-                })
-                // 使用 uni-clientDB 提交数据
-                db.collection(dbCollectionName).add(value).then((res) => {
-                    uni.showToast({
-                        title: '新增成功'
-                    })
-                    this.getOpenerEventChannel().emit('refreshData')
-                    setTimeout(() => uni.navigateBack(), 500)
-                }).catch((err) => {
-                    uni.showModal({
-                        content: err.message || '请求服务失败',
-                        showCancel: false
-                    })
-                }).finally(() => {
-                    uni.hideLoading()
-                })
-            }
-        }
+      // 表单校验失败页面会提示报错 ，要停止表单提交逻辑
+      if (errors) {
+        return
+      }
+      uni.showLoading({
+        title: '提交中...',
+        mask: true
+      })
+      // 使用 uni-clientDB 提交数据
+      db.collection(dbCollectionName).add(value).then((res) => {
+        uni.showToast({
+          title: '新增成功'
+        })
+        this.getOpenerEventChannel().emit('refreshData')
+        setTimeout(() => uni.navigateBack(), 500)
+      }).catch((err) => {
+        uni.showModal({
+          content: err.message || '请求服务失败',
+          showCancel: false
+        })
+      }).finally(() => {
+        uni.hideLoading()
+      })
     }
+  }
+}
 </script>

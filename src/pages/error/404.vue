@@ -17,19 +17,19 @@
 </template>
 
 <script>
-    export default {
-        data() {
-            return {
+export default {
+  data () {
+    return {
 
-            }
-        },
-        onLoad(query) {
-            this.errMsg = query.errMsg || ''
-        },
-        methods: {
-
-        }
     }
+  },
+  onLoad (query) {
+    this.errMsg = query.errMsg || ''
+  },
+  methods: {
+
+  }
+}
 </script>
 
 <style>

@@ -3,7 +3,7 @@
 </template>
 
 <script>
-	/**
+/**
 	 * Badge 数字角标
 	 * @description 数字角标一般和其它控件（列表、9宫格等）配合使用，用于进行数量提示，默认为实心灰色背景
 	 * @tutorial https://ext.dcloud.net.cn/plugin?id=21
@@ -21,48 +21,48 @@
 	 * @event {Function} click 点击 Badge 触发事件
 	 * @example <uni-badge text="1"></uni-badge>
 	 */
-	export default {
-		name: 'UniBadge',
-		props: {
-			type: {
-				type: String,
-				default: 'default'
-			},
-			inverted: {
-				type: Boolean,
-				default: false
-			},
-			text: {
-				type: [String, Number],
-				default: ''
-			},
-			size: {
-				type: String,
-				default: 'normal'
-			}
-		},
-		data() {
-			return {
-				badgeStyle: ''
-			};
-		},
-		watch: {
-			text() {
-				this.setStyle()
-			}
-		},
-		mounted() {
-			this.setStyle()
-		},
-		methods: {
-			setStyle() {
-				this.badgeStyle = `width: ${String(this.text).length * 8 + 12}px`
-			},
-			onClick() {
-				this.$emit('click');
-			}
-		}
-	};
+export default {
+  name: 'UniBadge',
+  props: {
+    type: {
+      type: String,
+      default: 'default'
+    },
+    inverted: {
+      type: Boolean,
+      default: false
+    },
+    text: {
+      type: [String, Number],
+      default: ''
+    },
+    size: {
+      type: String,
+      default: 'normal'
+    }
+  },
+  data () {
+    return {
+      badgeStyle: ''
+    }
+  },
+  watch: {
+    text () {
+      this.setStyle()
+    }
+  },
+  mounted () {
+    this.setStyle()
+  },
+  methods: {
+    setStyle () {
+      this.badgeStyle = `width: ${String(this.text).length * 8 + 12}px`
+    },
+    onClick () {
+      this.$emit('click')
+    }
+  }
+}
 </script>
 
 <style scoped>
