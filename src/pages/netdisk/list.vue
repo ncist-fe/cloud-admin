@@ -1,27 +1,27 @@
 <template>
     <view>
-    <view class="uni-header">
-      <button @click="showCreateFolder" class="uni-button" type="primary">新增文件夹</button>
-      <view ref="input" class="input"></view>
-      <button @click="uploadFile" class="uni-button" type="primary">上传文件</button>
-      <uni-popup ref="folderPopup" type="dialog">
-        <uni-popup-dialog mode="input" title="新增文件夹" placeholder="请输入文件夹名称" @confirm="confirmCreate"></uni-popup-dialog>
-      </uni-popup>
-    </view>
-        <view class="uni-header">
-      <view class="uni-group">
-        <view class="title-icon">
-            <uni-icons size="16" type="home-filled"/>
-            <span
-            v-for="(item, index) in pathStack"
-            :key="item"
-            @click="toPreviousFolder(index)">
-            <span class="folder-name">{{ item === "/" || item === "" ? " 首页 " : item }}</span>
-            <span v-if="item || item !== '/'">/</span>
-            </span>
+      <view class="uni-header">
+        <button @click="showCreateFolder" class="uni-button" type="primary">新增文件夹</button>
+        <view ref="input" class="input"></view>
+        <button @click="uploadFile" class="uni-button" type="primary">上传文件</button>
+        <uni-popup ref="folderPopup" type="dialog">
+          <uni-popup-dialog mode="input" title="新增文件夹" placeholder="请输入文件夹名称" @confirm="confirmCreate"></uni-popup-dialog>
+        </uni-popup>
+      </view>
+      <view class="uni-header">
+        <view class="uni-group">
+          <view class="title-icon">
+              <uni-icons size="16" type="home-filled"/>
+              <span
+              v-for="(item, index) in pathStack"
+              :key="item"
+              @click="toPreviousFolder(index)">
+              <span class="file-name">{{ item === "/" || item === "" ? " 首页 " : item }}</span>
+              <span v-if="item || item !== '/'">/</span>
+              </span>
+          </view>
         </view>
       </view>
-        </view>
         <view class="uni-container">
             <uni-clientdb ref="dataQuery" :collection="collectionName" :options="options" :where="where" page-data="replace"
                 :orderby="orderby" :getcount="true" :page-size="options.pageSize" :page-current="options.pageCurrent"
@@ -30,20 +30,20 @@
                     <uni-tr>
                         <uni-th min-width="50" align="left">文件名</uni-th>
                         <uni-th width="100" align="center">上传人</uni-th>
-            <uni-th width="100" align="center">文件大小</uni-th>
+                        <uni-th width="100" align="center">文件大小</uni-th>
                         <uni-th width="160" align="center">添加时间</uni-th>
                         <uni-th width="160" align="center">操作</uni-th>
                     </uni-tr>
                     <uni-tr v-for="(item,index) in data" :key="index">
                         <uni-td align="left" v-if="item.isFolder">
-              <span class="iconfont file-icon icon-folder"></span><a class="folder-name" @click="enterFolder(item.name)">{{item.name}}</a>
-            </uni-td>
-            <uni-td align="left" v-else>
-              <span :class="['iconfont','file-icon', getFileType(item.name)]"></span>
-              <span @click="fileClick(item.name, item.link, index)">{{item.name}}</span>
-            </uni-td>
+                          <span class="iconfont file-icon icon-folder"></span><a class="file-name" @click="enterFolder(item.name)">{{item.name}}</a>
+                        </uni-td>
+                        <uni-td align="left" v-else>
+                          <span :class="['iconfont','file-icon', getFileType(item.name)]"></span>
+                          <a @click="fileClick(item.name, item.link, index)" class="file-name">{{item.name}}</a>
+                        </uni-td>
                         <uni-td align="center">{{item.createBy}}</uni-td>
-            <uni-td align="center">{{item.isFolder ? '-': formatSize(item.size)}}</uni-td>
+                        <uni-td align="center">{{item.isFolder ? '-': formatSize(item.size)}}</uni-td>
                         <uni-td align="center">
                             <uni-dateformat :date="item.createOn" :threshold = "[0,0]" format="yyyy-MM-dd hh:mm:ss"/>
                         </uni-td>
@@ -54,20 +54,20 @@
                             </view>
                         </uni-td>
                     </uni-tr>
-                </uni-table>
+                  </uni-table>
                 <view class="uni-pagination-box">
                     <uni-pagination show-icon :page-size="pagination.size" v-model="pagination.current" :total="pagination.count"
                         @change="onPageChanged" />
                 </view>
-            </uni-clientdb>
-        </view>
+        </uni-clientdb>
+    </view>
     <!-- #ifndef H5 -->
     <fix-window />
     <!-- #endif -->
     <D-Player v-on:closeVideo="closeV" ref="mydplayer" v-show="video.show"></D-Player>
     <A-Player v-on:closeAudio="closeA" ref="myaplayer" v-show="audio.show"></A-Player>
     <uni-popup ref="imagePopup">
-      <image :src="popUpImg" alt="" style="width:100%;height:100%" />
+      <img :src="popUpImg" alt="" style="width:100%;height:100%" />
     </uni-popup>
     </view>
 </template>
@@ -201,7 +201,6 @@ export default {
       console.log('file info', fileInfo)
     },
     uploadApi (filePath, fileInfo) {
-      console.log()
       uniCloud.uploadFile({
         cloudPath: fileInfo.name,
         filePath: filePath
@@ -277,6 +276,10 @@ export default {
         this.downloadFile(fileName, downloadUrl)
       }
     },
+    showImage(downloadUrl) {
+      this.popUpImg = downloadUrl
+      this.$refs.imagePopup.open()
+    },
     playVideo (playUrl, index) {
       const video = {
         playUrl: playUrl
@@ -329,7 +332,7 @@ export default {
     padding-right: 2px;
     font-weight: bold;
   }
-  .folder-name:hover {
+  .file-name:hover {
     color: #007AFF;
     cursor:pointer;
   }
