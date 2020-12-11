@@ -46,7 +46,7 @@
                         <uni-td align="center">
                             <view class="uni-group">
                                 <button size="mini" @click="navigateTo('./edit?id='+item._id)" class="uni-button" type="primary">修改</button>
-                                <button size="mini" @click="confirmDelete(item.permission_id)" class="uni-button" type="warn">删除</button>
+                                <button size="mini" @click="confirmDelete(item._id)" class="uni-button" type="warn">删除</button>
                             </view>
                         </uni-td>
                     </uni-tr>
@@ -121,8 +121,13 @@
                     })
                 }).finally(() => {
                     uni.hideLoading()
-					this.$refs.dataQuery.loadData()
+					this.loadData()
                 })
+			},
+			loadData(clear = true) {
+			    this.$refs.dataQuery.loadData({
+			        clear
+			    })
 			},
 			enterFolder(name) {
 				this.pathStack.push(name)
@@ -142,6 +147,34 @@
 				  })
 			  }
 			},
+			confirmDelete(id) {
+			    uni.showModal({
+			        title: '提示',
+			        content: '确认删除该文件夹？',
+			        success: (res) => {
+			            res.confirm && this.delete(id)
+			        }
+			    })
+			},
+			async delete(id) {
+			    uni.showLoading({
+			        mask: true
+			    })
+				await db.collection(dbCollectionName).doc(id).remove()
+				    .then(res => {
+						uni.showToast({
+							title: '删除成功'
+						})
+				    }).catch(err => {
+						uni.showModal({
+							content: err.message || '请求服务失败',
+							showCancel: false
+						})
+					}).finally(err => {
+				        uni.hideLoading()
+				    })
+			    this.loadData(false)
+			}
         }
     }
 </script>
@@ -157,7 +190,6 @@
 	}
 	.folder-name:hover {
 		color: #007AFF;
-		
-cursor:pointer;
+		cursor:pointer;
 	}
 </style>
