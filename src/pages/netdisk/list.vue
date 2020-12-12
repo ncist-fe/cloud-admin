@@ -155,10 +155,26 @@ export default {
     },
     confirmCreate (done, value) {
       done()
+      const folderName = value.trim()
+      if (folderName === '') {
+        uni.showModal({
+          content: '文件夹名称不能为空',
+          showCancel: false
+        })
+        return
+      }
+      var reg=/[\\/:*?"<>|]/
+      if (reg.test(folderName)) {
+        uni.showModal({
+          content: '文件夹名称不合法:' + folderName,
+          showCancel: false
+        })
+        return
+      }
       for (const _item of this.$refs.udb.dataList) {
-        if (_item.isFolder && _item.name === value) {
+        if (_item.isFolder && _item.name === folderName) {
           uni.showModal({
-            content: '当前目录已存在同名文件夹:' + value,
+            content: '当前目录已存在同名文件夹:' + folderName,
             showCancel: false
           })
           return
@@ -168,7 +184,7 @@ export default {
         title: '创建中'
       })
       this.saveFileInfo({
-        name: value,
+        name: folderName,
         isFolder: true
       }).then(() => {
         uni.hideLoading()
@@ -283,11 +299,13 @@ export default {
           uni.showToast({
             title: '删除成功'
           })
-          uniCloud.deleteFile({
-            fileList:[file.link]
-          }).then(resp => {
-            console.log('cloud delete file:', resp)
-          })
+          if (!file.isFolder) {
+            uniCloud.deleteFile({
+              fileList:[file.link]
+            }).then(resp => {
+              console.log('cloud delete file:', resp)
+            })
+          }
         }).catch(err => {
           uni.hideLoading()
           uni.showModal({
