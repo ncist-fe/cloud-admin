@@ -14,7 +14,7 @@
               <uni-icons size="16" type="home-filled"/>
               <span
               v-for="(item, index) in pathStack"
-              :key="item"
+              :key="index"
               @click="toPreviousFolder(index)">
               <span class="file-name">{{ item === "/" || item === "" ? " 首页 " : item }}</span>
               <span v-if="item || item !== '/'">/</span>
@@ -348,24 +348,68 @@ export default {
         title: '重命名中'
       })
       if (file.isFolder) {
-        
+        await Promise.allSettled([this.updateFolderNameOfChild(file),this.updateSingleName(file)]).then(res => {
+            uni.hideLoading()
+            uni.showToast({
+              title: '重命名成功'
+            })
+          }).catch(err => {
+            uni.hideLoading()
+            uni.showModal({
+              content: err.message || '请求服务失败',
+              showCancel: false
+            })
+          })
+        this.loadData(false)
       } else {
-        await db.collection(dbCollectionName).doc(file._id).update({
-          name: this.editFileName
-        }).then(res => {
+        await this.updateSingleName(file).then(res => {
+          uni.hideLoading()
           uni.showToast({
             title: '重命名成功'
           })
         }).catch(err => {
+          uni.hideLoading()
           uni.showModal({
             content: err.message || '请求服务失败',
             showCancel: false
           })
-        }).finally(err => {
-          uni.hideLoading()
         })
         this.loadData(false)
       }
+    },
+    updateSingleName(file) {
+      return db.collection(dbCollectionName).doc(file._id).update({
+        name: this.editFileName
+      })
+    },
+    async updateFolderNameOfChild (file) {
+      let currentPath = this.where.parent
+      if (currentPath === '/') {
+        currentPath = ''
+      }
+      const beforeParent = currentPath + '/' + file.name
+      const afterParent = currentPath + '/' + this.editFileName
+      const $ = db.command.aggregate
+      let countResp = await db.collection(dbCollectionName).aggregate()
+        .match({
+          parent: new RegExp('^' + beforeParent)
+        })
+        .group({
+          _id: '$parent',
+          num: $.sum(1)
+        })
+        .end()
+      const tasks = []  
+      for (const _item of countResp.result.data) {
+        const _from = _item._id
+        const _to = _item._id.replace(beforeParent, afterParent)
+        tasks.push(db.collection(dbCollectionName).where({
+          parent: _from
+        }).update({
+          parent: _to
+        }))
+      }
+      return tasks
     }
   }
 }
