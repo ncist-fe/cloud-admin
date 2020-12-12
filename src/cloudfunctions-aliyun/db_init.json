@@ -70,5 +70,8 @@
 	},
 	"opendb-netdisk-files": {
 		"data": []
-	}
+	},
+  "opendb-netdisk-logs": {
+  	"data": []
+  }
 }

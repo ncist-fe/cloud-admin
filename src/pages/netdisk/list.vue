@@ -46,7 +46,7 @@
                           </view>
                           <view v-else class="flex-item">
                             <a v-if="item.isFolder" class="folder-name" @click="enterFolder(item.name)">{{item.name}}</a>
-                            <a v-else @click="fileClick(item.name, item.link, index)" class="file-name">{{item.name}}</a>
+                            <a v-else @click="fileClick(item, index)" class="file-name">{{item.name}}</a>
                           </view>
                         </view>
                       </uni-td>
@@ -91,11 +91,12 @@ import {
 } from 'vuex'
 const db = uniCloud.database()
 // 表查询配置
-const dbCollectionName = 'opendb-netdisk-files'
+const fileCollectionName = 'opendb-netdisk-files'
 const dbOrderBy = 'isFolder desc, createOn desc'
 // 分页配置
 const pageSize = 20
 const pageCurrent = 1
+const logCollectionName = 'opendb-netdisk-logs'
 
 export default {
   computed: {
@@ -114,7 +115,7 @@ export default {
   data  () {
     return {
       orderby: dbOrderBy,
-      collectionName: dbCollectionName,
+      collectionName: fileCollectionName,
       options: {
         pageSize,
         pageCurrent
@@ -153,32 +154,49 @@ export default {
     getFileType (name) {
       return 'icon-' + checkFileType(name)
     },
+    isNameIllegal (targetName, isFolder) {
+      if (targetName === '') {
+        uni.showModal({
+          content: isFolder? '文件夹' :'文件' + '名称不能为空',
+          showCancel: false
+        })
+        return true
+      }
+      const reg=/[\\/:*?"<>|]/
+      if (reg.test(targetName)) {
+        uni.showModal({
+          content: isFolder? '文件夹' :'文件' + '名称不合法:' + targetName,
+          showCancel: false
+        })
+        this.saveActionLog('illegal-name', {
+          name: targetName,
+          parent: this.where.parent
+        })
+        return true
+      }
+      if (!isFolder) {
+        return false
+      }
+      for (const _item of this.$refs.udb.dataList) {
+        if (_item.isFolder && _item.name === targetName) {
+          uni.showModal({
+            content: '当前目录已存在同名文件夹:' + targetName,
+            showCancel: false
+          })
+          this.saveActionLog('duplicate-folder', {
+            name: targetName,
+            parent: this.where.parent
+          })
+          return true
+        }
+      }
+      return false
+    },
     confirmCreate (done, value) {
       done()
       const folderName = value.trim()
-      if (folderName === '') {
-        uni.showModal({
-          content: '文件夹名称不能为空',
-          showCancel: false
-        })
+      if (this.isNameIllegal(folderName, true)) {
         return
-      }
-      var reg=/[\\/:*?"<>|]/
-      if (reg.test(folderName)) {
-        uni.showModal({
-          content: '文件夹名称不合法:' + folderName,
-          showCancel: false
-        })
-        return
-      }
-      for (const _item of this.$refs.udb.dataList) {
-        if (_item.isFolder && _item.name === folderName) {
-          uni.showModal({
-            content: '当前目录已存在同名文件夹:' + folderName,
-            showCancel: false
-          })
-          return
-        }
       }
       uni.showLoading({
         title: '创建中'
@@ -191,14 +209,24 @@ export default {
         uni.showToast({
           title: '创建成功'
         })
+        this.saveActionLog('create_folder', {
+          name: folderName,
+          parent: this.where.parent
+        })
+      })
+    },
+    saveActionLog(type, detail) {
+      db.collection(logCollectionName).add({
+        actionBy: this.userInfo.username,
+        actionDetail: detail,
+        actionType: type
       })
     },
     saveFileInfo (file) {
       const fileObj = Object.assign({}, file)
       fileObj.parent = this.where.parent
-      fileObj.createOn = new Date().toISOString()
       fileObj.createBy = this.userInfo.username
-      return db.collection(dbCollectionName).add(fileObj).catch(err => {
+      return db.collection(fileCollectionName).add(fileObj).catch(err => {
         uni.showModal({
           content: err.message || '请求服务失败',
           showCancel: false
@@ -246,17 +274,20 @@ export default {
       }).then(res => {
         console.log('upload resut:', res)
         if (res.success) {
-          this.saveFileInfo({
+          const fileObj = {
             name: fileInfo.name,
             size: fileInfo.size,
             link: res.fileID,
             isFolder: false,
             fileType: checkFileType(fileInfo.name)
-          }).then(resp => {
+          }
+          this.saveFileInfo(fileObj).then(resp => {
             uni.hideLoading()
             uni.showToast({
               title: '上传成功'
             })
+            fileObj.parent = this.where.parent
+            this.saveActionLog('upload-file', fileObj)
           })
         }
       })
@@ -293,7 +324,7 @@ export default {
         title: '删除中',
         mask: true
       })
-      await db.collection(dbCollectionName).doc(file._id).remove()
+      await db.collection(fileCollectionName).doc(file._id).remove()
         .then(res => {
           uni.hideLoading()
           uni.showToast({
@@ -305,6 +336,9 @@ export default {
             }).then(resp => {
               console.log('cloud delete file:', resp)
             })
+            this.saveActionLog('delete-file', file)
+          } else {
+            this.saveActionLog('delete-folder', file)
           }
         }).catch(err => {
           uni.hideLoading()
@@ -315,14 +349,19 @@ export default {
         })
       this.loadData(false)
     },
-    fileClick (fileName, downloadUrl, index) {
+    fileClick (file, index) {
+      const fileName = file.name
+      const downloadUrl = file.link
       const fileType = checkFileType(fileName)
       if (fileType === 'video') {
         this.playVideo(downloadUrl, index)
+        this.saveActionLog('play-video', file)
       } else if (fileType === 'image') {
         this.showImage(downloadUrl, index)
+        this.saveActionLog('show-image', file)
       } else if (fileType === 'audio') {
         this.playAudio(downloadUrl, index)
+        this.saveActionLog('play-audio', file)
       } else {
         this.downloadFile(fileName, downloadUrl)
       }
@@ -385,6 +424,9 @@ export default {
       this.editFileIndex = -1
     },
     async confirmFileName (file, index) {
+      if (this.isNameIllegal(this.editFileName.trim(), file.isFolder)) {
+        return
+      }
       uni.showLoading({
         title: '重命名中'
       })
@@ -419,19 +461,15 @@ export default {
       }
     },
     updateSingleName(file) {
-      return db.collection(dbCollectionName).doc(file._id).update({
-        name: this.editFileName
+      return db.collection(fileCollectionName).doc(file._id).update({
+        name: this.editFileName.trim()
       })
     },
     async updateFolderNameOfChild (file) {
-      let currentPath = this.where.parent
-      if (currentPath === '/') {
-        currentPath = ''
-      }
-      const beforeParent = currentPath + '/' + file.name
-      const afterParent = currentPath + '/' + this.editFileName
+      const beforeParent = this.getAbsoluteName(file.name)
+      const afterParent = this.getAbsoluteName(this.editFileName.trim())
       const $ = db.command.aggregate
-      let countResp = await db.collection(dbCollectionName).aggregate()
+      let countResp = await db.collection(fileCollectionName).aggregate()
         .match({
           parent: new RegExp('^' + beforeParent)
         })
@@ -444,13 +482,20 @@ export default {
       for (const _item of countResp.result.data) {
         const _from = _item._id
         const _to = _item._id.replace(beforeParent, afterParent)
-        tasks.push(db.collection(dbCollectionName).where({
+        tasks.push(db.collection(fileCollectionName).where({
           parent: _from
         }).update({
           parent: _to
         }))
       }
       return tasks
+    },
+    getAbsoluteName(name) {
+      let currentPath = this.where.parent
+      if (currentPath === '/') {
+        currentPath = ''
+      }
+      return currentPath + '/' + name
     }
   }
 }
