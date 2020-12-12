@@ -3,24 +3,26 @@ export function checkFileType (name) {
   name = name.toLowerCase()
   if (/\.(mkv|mp4|webm|avi|mpg|mpeg|rm|rmvb|mov|wmv|asf|ts|flv)$/.test(name)) {
     type = 'video'
-  } else if (/\.(wav|mp3|ogg|acc|webm|m4a|flac|aac)$/.test(name)) {
+  } else if (/\.(wav|mp3|ogg|acc|m4a|flac|aac)$/.test(name)) {
     type = 'audio'
   } else if (/\.(rar|zip)$/.test(name)) {
     type = 'archive'
-  } else if (/\.(png|jpg|jpeg|gif|bmp)$/.test(name)) {
+  } else if (/\.(png|jpg|jpeg|gif|bmp|svg)$/.test(name)) {
     type = 'image'
   } else if (/\.pdf$/.test(name)) {
     type = 'pdf'
-  } else if (/\.(excel|xls|csv)$/.test(name)) {
+  } else if (/\.(excel|xls|csv|xlsx)$/.test(name)) {
     type = 'excel'
   } else if (/\.(ppt|pptx)$/.test(name)) {
     type = 'powerpoint'
   } else if (/\.(doc|docx)$/.test(name)) {
     type = 'word'
-  } else if (/\.(c|cpp|java|js|py|css|html|php|ipynb|ts)$/.test(name)) {
+  } else if (/\.(c|cpp|java|js|py|css|html|php|ipynb)$/.test(name)) {
     type = 'code'
-  } else {
+  } else if (/\.(txt|text)$/.test(name)) {
     type = 'text'
+  } else {
+    type = 'other'
   }
   return type
 }

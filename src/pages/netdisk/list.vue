@@ -23,7 +23,7 @@
         </view>
       </view>
         <view class="uni-container">
-            <uni-clientdb ref="dataQuery" :collection="collectionName" :options="options" :where="where" page-data="replace"
+            <uni-clientdb ref="udb" :collection="collectionName" :options="options" :where="where" page-data="replace"
                 :orderby="orderby" :getcount="true" :page-size="options.pageSize" :page-current="options.pageCurrent"
                 v-slot:default="{data,pagination,loading,error}">
                 <uni-table :loading="loading" :emptyText="error.message || '没有更多数据'" stripe>
@@ -35,24 +35,32 @@
                         <uni-th width="160" align="center">操作</uni-th>
                     </uni-tr>
                     <uni-tr v-for="(item,index) in data" :key="index">
-                        <uni-td align="left" v-if="item.isFolder">
-                          <span class="iconfont file-icon icon-folder"></span><a class="file-name" @click="enterFolder(item.name)">{{item.name}}</a>
-                        </uni-td>
-                        <uni-td align="left" v-else>
-                          <span :class="['iconfont','file-icon', getFileType(item.name)]"></span>
-                          <a @click="fileClick(item.name, item.link, index)" class="file-name">{{item.name}}</a>
-                        </uni-td>
-                        <uni-td align="center">{{item.createBy}}</uni-td>
-                        <uni-td align="center">{{item.isFolder ? '-': formatSize(item.size)}}</uni-td>
-                        <uni-td align="center">
-                            <uni-dateformat :date="item.createOn" :threshold = "[0,0]" format="yyyy-MM-dd hh:mm:ss"/>
-                        </uni-td>
-                        <uni-td align="center">
-                            <view class="uni-group">
-                                <button size="mini" @click="navigateTo('./edit?id='+item._id)" class="uni-button" type="primary">修改</button>
-                                <button size="mini" @click="confirmDelete(item)" class="uni-button" type="warn">删除</button>
-                            </view>
-                        </uni-td>
+                      <uni-td align="left">
+                        <view class="uni-flex uni-row">
+                          <span v-if="item.isFolder" class="flex-item iconfont file-icon icon-folder"></span>
+                          <span v-else :class="['iconfont','file-icon', getFileType(item.name)]"></span>
+                          <view v-if="item.editMode" class="flex-item uni-flex uni-row">
+                            <input class="edit-input uni-input" v-model="editFileName"/>
+                            <uni-icons type="checkmarkempty" class="edit-icon" size="24" color="#09AAFF" @click="confirmFileName(item, index)"></uni-icons>
+                            <uni-icons type="closeempty" class="edit-icon" size="24" color="#09AAFF" @click="cancelFileName(index)"></uni-icons>
+                          </view>
+                          <view v-else class="flex-item">
+                            <a v-if="item.isFolder" class="folder-name" @click="enterFolder(item.name)">{{item.name}}</a>
+                            <a v-else @click="fileClick(item.name, item.link, index)" class="file-name">{{item.name}}</a>
+                          </view>
+                        </view>
+                      </uni-td>
+                      <uni-td align="center">{{item.createBy}}</uni-td>
+                      <uni-td align="center">{{item.isFolder ? '-': formatSize(item.size)}}</uni-td>
+                      <uni-td align="center">
+                          <uni-dateformat :date="item.createOn" :threshold = "[0,0]" format="yyyy-MM-dd hh:mm:ss"/>
+                      </uni-td>
+                      <uni-td align="center">
+                          <view class="uni-group">
+                              <button size="mini" @click="triggerRename(item, index)" class="uni-button" type="primary">重命名</button>
+                              <button size="mini" @click="promoteDelete(item)" class="uni-button" type="warn">删除</button>
+                          </view>
+                      </uni-td>
                     </uni-tr>
                   </uni-table>
                 <view class="uni-pagination-box">
@@ -69,7 +77,7 @@
     <uni-popup ref="imagePopup">
       <img :src="popUpImg" alt="" style="width:100%;height:100%" />
     </uni-popup>
-    </view>
+  </view>
 </template>
 
 <script>
@@ -123,7 +131,9 @@ export default {
         index: -1,
         hash: ''
       },
-      popUpImg: ''
+      popUpImg: '',
+      editFileName: '',
+      editFileIndex: -1
     }
   },
   mounted () {
@@ -169,12 +179,12 @@ export default {
       })
     },
     loadData (clear = true) {
-      this.$refs.dataQuery.loadData({
+      this.$refs.udb.loadData({
         clear
       })
     },
     onPageChanged (e) {
-      this.$refs.dataQuery.loadData({
+      this.$refs.udb.loadData({
         current: e.current
       })
     },
@@ -211,7 +221,8 @@ export default {
             name: fileInfo.name,
             size: fileInfo.size,
             link: res.fileID,
-            isFolder: false
+            isFolder: false,
+            fileType: checkFileType(fileInfo.name)
           })
         }
       })
@@ -225,7 +236,6 @@ export default {
     toPreviousFolder (index) {
       if (index + 1 !== this.pathStack.length) {
         const target = this.pathStack.slice(0, index + 1)
-        console.log('to target folder', target, 'index', index)
         this.pathStack = target
       } else {
         uni.showToast({
@@ -234,7 +244,7 @@ export default {
         })
       }
     },
-    confirmDelete (file) {
+    promoteDelete (file) {
       const tip = '确认删除' + (file.isFolder ? '文件夹' : '文件') + ':[' + file.name + ']?'
       uni.showModal({
         title: '提示',
@@ -317,6 +327,45 @@ export default {
     closeA () {
       this.audio.show = false
       this.audio.index = -1
+    },
+    triggerRename (file, index) {
+      if (this.editFileIndex !== -1) {
+        this.cancelFileName(this.editFileIndex)
+      }
+      file.editMode = true
+      this.editFileIndex = index
+      this.editFileName = file.name
+      this.$set(this.$refs.udb.dataList, index, file)
+    },
+    cancelFileName(index) {
+      let previousFile = this.$refs.udb.dataList[index]
+      previousFile.editMode = false
+      this.$set(this.$refs.udb.dataList, index, previousFile)
+      this.editFileIndex = -1
+    },
+    async confirmFileName (file, index) {
+      uni.showLoading({
+        title: '重命名中'
+      })
+      if (file.isFolder) {
+        
+      } else {
+        await db.collection(dbCollectionName).doc(file._id).update({
+          name: this.editFileName
+        }).then(res => {
+          uni.showToast({
+            title: '重命名成功'
+          })
+        }).catch(err => {
+          uni.showModal({
+            content: err.message || '请求服务失败',
+            showCancel: false
+          })
+        }).finally(err => {
+          uni.hideLoading()
+        })
+        this.loadData(false)
+      }
     }
   }
 }
@@ -327,16 +376,41 @@ export default {
     padding-top: 85px;
   }
   /* #endif */
-  .folder-name {
+  .folder-name, .file-name {
     padding-left: 2px;
     padding-right: 2px;
+    height: 26px;
+    line-height: 26px;
+  }
+  .folder-name {
     font-weight: bold;
   }
-  .file-name:hover {
+  .file-name:hover, .folder-name:hover {
     color: #007AFF;
     cursor:pointer;
   }
   .file-icon {
     margin-right: 5px;
+    height: 26px;
+    line-height: 26px;
+  }
+  .edit-input {
+    padding: 0 0 0 5px;
+    width: 200px;
+    height: 24px;
+    vertical-align: middle;
+    border: 1px solid #09aaff;
+    background: #fff;
+    border-radius: 2px;
+    color: #666;
+    font-size: 14px;
+    line-height: 1.7;
+  }
+  .edit-icon {
+    height: 24px;
+    width: 24px;
+    border: #09aaff 1px solid;
+    cursor: pointer;
+    margin: 0 5px;
   }
 </style>

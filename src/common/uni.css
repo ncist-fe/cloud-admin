@@ -277,3 +277,36 @@ html {
 	min-height: 30px;
 	line-height: 30px;
 }
+
+.uni-flex {
+	display: flex;
+	flex-direction: row;
+}
+.uni-flex-item {
+	flex: 1;
+}
+.uni-row {
+	flex-direction: row;
+}
+.uni-column {
+	flex-direction: column;
+}
+.uni-link{
+	color:#576B95;
+	font-size:26rpx;
+}
+.uni-center{
+	text-align:center;
+}
+.uni-inline-item{
+	display: flex;
+	flex-direction: row;
+	align-items:center;
+}
+.uni-inline-item text{
+	margin-right: 20rpx;
+}
+.uni-inline-item text:last-child{
+	margin-right: 0rpx;
+	margin-left: 20rpx;
+}
