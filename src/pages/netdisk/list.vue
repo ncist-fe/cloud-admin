@@ -157,15 +157,15 @@ export default {
     isNameIllegal (targetName, isFolder) {
       if (targetName === '') {
         uni.showModal({
-          content: isFolder? '文件夹' :'文件' + '名称不能为空',
+          content: isFolder ? '文件夹' : '文件' + '名称不能为空',
           showCancel: false
         })
         return true
       }
-      const reg=/[\\/:*?"<>|]/
+      const reg = /[\\/:*?"<>|]/
       if (reg.test(targetName)) {
         uni.showModal({
-          content: isFolder? '文件夹' :'文件' + '名称不合法:' + targetName,
+          content: isFolder ? '文件夹' : '文件' + '名称不合法:' + targetName,
           showCancel: false
         })
         this.saveActionLog('illegal-name', {
@@ -215,7 +215,7 @@ export default {
         })
       })
     },
-    saveActionLog(type, detail) {
+    saveActionLog (type, detail) {
       db.collection(logCollectionName).add({
         actionBy: this.userInfo.username,
         actionDetail: detail,
@@ -332,7 +332,7 @@ export default {
           })
           if (!file.isFolder) {
             uniCloud.deleteFile({
-              fileList:[file.link]
+              fileList: [file.link]
             }).then(resp => {
               console.log('cloud delete file:', resp)
             })
@@ -366,7 +366,7 @@ export default {
         this.downloadFile(fileName, downloadUrl)
       }
     },
-    showImage(downloadUrl) {
+    showImage (downloadUrl) {
       this.popUpImg = downloadUrl
       this.$refs.imagePopup.open()
     },
@@ -417,8 +417,8 @@ export default {
       this.editFileName = file.name
       this.$set(this.$refs.udb.dataList, index, file)
     },
-    cancelFileName(index) {
-      let previousFile = this.$refs.udb.dataList[index]
+    cancelFileName (index) {
+      const previousFile = this.$refs.udb.dataList[index]
       previousFile.editMode = false
       this.$set(this.$refs.udb.dataList, index, previousFile)
       this.editFileIndex = -1
@@ -435,18 +435,18 @@ export default {
           before: this.getAbsoluteName(file.name),
           after: this.getAbsoluteName(this.editFileName)
         })
-        await Promise.allSettled([this.updateFolderNameOfChild(file),this.updateSingleName(file)]).then(res => {
-            uni.hideLoading()
-            uni.showToast({
-              title: '重命名成功'
-            })
-          }).catch(err => {
-            uni.hideLoading()
-            uni.showModal({
-              content: err.message || '请求服务失败',
-              showCancel: false
-            })
+        await Promise.allSettled([this.updateFolderNameOfChild(file), this.updateSingleName(file)]).then(res => {
+          uni.hideLoading()
+          uni.showToast({
+            title: '重命名成功'
           })
+        }).catch(err => {
+          uni.hideLoading()
+          uni.showModal({
+            content: err.message || '请求服务失败',
+            showCancel: false
+          })
+        })
         this.loadData(false)
       } else {
         this.saveActionLog('rename-file', {
@@ -468,7 +468,7 @@ export default {
         this.loadData(false)
       }
     },
-    updateSingleName(file) {
+    updateSingleName (file) {
       return db.collection(fileCollectionName).doc(file._id).update({
         name: this.editFileName.trim()
       })
@@ -477,7 +477,7 @@ export default {
       const beforeParent = this.getAbsoluteName(file.name)
       const afterParent = this.getAbsoluteName(this.editFileName.trim())
       const $ = db.command.aggregate
-      let countResp = await db.collection(fileCollectionName).aggregate()
+      const countResp = await db.collection(fileCollectionName).aggregate()
         .match({
           parent: new RegExp('^' + beforeParent)
         })
@@ -486,7 +486,7 @@ export default {
           num: $.sum(1)
         })
         .end()
-      const tasks = []  
+      const tasks = []
       for (const _item of countResp.result.data) {
         const _from = _item._id
         const _to = _item._id.replace(beforeParent, afterParent)
@@ -498,7 +498,7 @@ export default {
       }
       return tasks
     },
-    getAbsoluteName(name) {
+    getAbsoluteName (name) {
       let currentPath = this.where.parent
       if (currentPath === '/') {
         currentPath = ''

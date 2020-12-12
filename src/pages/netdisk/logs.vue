@@ -1,11 +1,5 @@
 <template>
     <view>
-        <view class="uni-header">
-            <view class="uni-group">
-                <view class="uni-title">操作日志</view>
-                <view class="uni-sub-title"></view>
-            </view>
-        </view>
         <view class="uni-container">
             <uni-clientdb ref="dataQuery" :collection="collectionName" :options="options" :where="where" page-data="replace"
                 :orderby="orderby" :getcount="true" :page-size="options.pageSize" :page-current="options.pageCurrent"
