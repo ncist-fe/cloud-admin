@@ -9,7 +9,7 @@
                         <uni-th width="100" align="center">操作人</uni-th>
                         <uni-th width="120" align="center">操作类型</uni-th>
                         <uni-th min-width="170" align="center">操作细节</uni-th>
-                        <uni-th width="160" align="center">操作时间</uni-th>
+                        <uni-th width="170" align="center">操作时间</uni-th>
                     </uni-tr>
                     <uni-tr v-for="(item,index) in data" :key="index">
                         <uni-td align="center">{{item.actionBy}}</uni-td>

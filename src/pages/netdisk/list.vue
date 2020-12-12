@@ -31,7 +31,7 @@
                         <uni-th min-width="50" align="left">文件名</uni-th>
                         <uni-th width="100" align="center">上传人</uni-th>
                         <uni-th width="100" align="center">文件大小</uni-th>
-                        <uni-th width="160" align="center">添加时间</uni-th>
+                        <uni-th width="170" align="center">添加时间</uni-th>
                         <uni-th width="160" align="center">操作</uni-th>
                     </uni-tr>
                     <uni-tr v-for="(item,index) in data" :key="index">

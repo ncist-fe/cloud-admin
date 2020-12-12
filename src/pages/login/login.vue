@@ -111,7 +111,7 @@ export default {
               icon: 'none'
             })
             uni.redirectTo({
-              url: '/pages/index/index'
+              url: '/pages/netdisk/list'
             })
           })
         }).finally(() => {
