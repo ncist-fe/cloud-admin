@@ -118,9 +118,14 @@
 		"pages": [{
 			"path": "list",
 			"style": {
-				"navigationBarTitleText": "所有文件"
+				"navigationBarTitleText": "文件管理"
 			}
-		}]
+		}, {
+      "path": "logs",
+      "style": {
+      	"navigationBarTitleText": "操作日志"
+      }
+    }]
 	}],
 	"globalStyle": {
 		"navigationStyle": "custom",

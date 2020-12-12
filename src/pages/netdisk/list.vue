@@ -209,7 +209,7 @@ export default {
         uni.showToast({
           title: '创建成功'
         })
-        this.saveActionLog('create_folder', {
+        this.saveActionLog('create-folder', {
           name: folderName,
           parent: this.where.parent
         })
@@ -431,6 +431,10 @@ export default {
         title: '重命名中'
       })
       if (file.isFolder) {
+        this.saveActionLog('rename-folder', {
+          before: this.getAbsoluteName(file.name),
+          after: this.getAbsoluteName(this.editFileName)
+        })
         await Promise.allSettled([this.updateFolderNameOfChild(file),this.updateSingleName(file)]).then(res => {
             uni.hideLoading()
             uni.showToast({
@@ -445,6 +449,10 @@ export default {
           })
         this.loadData(false)
       } else {
+        this.saveActionLog('rename-file', {
+          before: this.getAbsoluteName(file.name),
+          after: this.getAbsoluteName(this.editFileName)
+        })
         await this.updateSingleName(file).then(res => {
           uni.hideLoading()
           uni.showToast({
