@@ -33,7 +33,6 @@
 </template>
 
 <script>
-const db = uniCloud.database()
 // 表查询配置
 const dbCollectionName = 'opendb-netdisk-logs'
 const dbOrderBy = 'actionOn desc'

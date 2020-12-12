@@ -34,8 +34,6 @@
 import validator from '@/js_sdk/validator/uni-id-users.js'
 
 const db = uniCloud.database()
-const dbCmd = db.command
-const dbCollectionName = 'uni-id-users'
 
 function getValidator (fields) {
   const reuslt = {}
@@ -109,7 +107,7 @@ export default {
             content: err.message || '请求服务失败',
             showCancel: false
           })
-        }).finally(err => {
+        }).finally(() => {
           uni.hideLoading()
         })
     },

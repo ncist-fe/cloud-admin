@@ -65,7 +65,6 @@ import {
   mapState
 } from 'vuex'
 
-const db = uniCloud.database()
 // 表查询配置
 const dbCollectionName = 'uni-id-users,uni-id-roles'
 const dbOrderBy = '' // 排序字段

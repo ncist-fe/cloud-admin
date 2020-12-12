@@ -45,7 +45,6 @@
 import validator from '@/js_sdk/validator/opendb-admin-menus.js'
 
 const db = uniCloud.database()
-const dbCmd = db.command
 const dbCollectionName = 'opendb-admin-menus'
 
 function getValidator (fields) {

@@ -19,7 +19,7 @@
                 </uni-td>
                 <uni-td>
                     <!-- #ifdef H5 -->
-                    <a v-for="engine in engines" :href="engine.url.replace('ERR_MSG',encodeURIComponent(log.err))"
+                    <a v-for="(engine, index) in engines" :key="index" :href="engine.url.replace('ERR_MSG',encodeURIComponent(log.err))"
                         target="_blank" class="err-search">{{engine.name}}</a>
                     <!-- #endif -->
                 </uni-td>

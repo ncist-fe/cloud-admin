@@ -48,9 +48,9 @@ export default {
       {
         format: 'string'
       },
-	  {
-	    format: 'email'
-	  }
+      {
+        format: 'email'
+      }
     ],
     label: '邮箱'
   },

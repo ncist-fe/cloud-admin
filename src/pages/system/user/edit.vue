@@ -35,7 +35,6 @@
 import validator from '@/js_sdk/validator/uni-id-users.js'
 
 const db = uniCloud.database()
-const dbCmd = db.command
 const dbCollectionName = 'uni-id-users'
 
 function getValidator (fields) {

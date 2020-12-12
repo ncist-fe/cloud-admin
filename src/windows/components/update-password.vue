@@ -120,7 +120,6 @@ export default {
       this.$refs.form.submit()
     },
     save (formData) {
-      const that = this
       this.isLoading = true
       this.$request('self/changePwd', formData).then(res => {
         this.isLoading = false
@@ -146,9 +145,7 @@ export default {
             duration: 2000
           })
         }
-      }).catch(res => {
-
-      }).finally(err => {
+      }).finally(() => {
         this.isLoading = false
       })
     },

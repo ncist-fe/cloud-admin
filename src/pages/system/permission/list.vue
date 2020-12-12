@@ -53,7 +53,6 @@
 </template>
 
 <script>
-const db = uniCloud.database()
 // 表查询配置
 const dbCollectionName = 'uni-id-permissions'
 const dbOrderBy = 'create_date desc'
@@ -154,7 +153,7 @@ export default {
             content: err.message || '请求服务失败',
             showCancel: false
           })
-        }).finally(err => {
+        }).finally(() => {
           uni.hideLoading()
         })
       this.loadData(false)

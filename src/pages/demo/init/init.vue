@@ -35,8 +35,7 @@
 </template>
 <script>
 import {
-  mapMutations,
-  mapActions
+  mapMutations
 } from 'vuex'
 import config from '@/admin.config.js'
 export default {
@@ -121,7 +120,7 @@ export default {
               }
             }
           })
-        }).catch(err => {}).finally(err => {
+        }).finally(() => {
           this.loading = false
         })
     },

@@ -114,9 +114,7 @@ export default {
               url: '/pages/index/index'
             })
           })
-        }).catch(err => {
-
-        }).finally(err => {
+        }).finally(() => {
           this.loading = false
         })
     },

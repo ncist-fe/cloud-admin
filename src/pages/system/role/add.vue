@@ -29,7 +29,6 @@
 import validator from '@/js_sdk/validator/uni-id-roles.js'
 
 const db = uniCloud.database()
-const dbCmd = db.command
 const dbCollectionName = 'uni-id-roles'
 
 function getValidator (fields) {

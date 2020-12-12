@@ -98,6 +98,22 @@ const pageSize = 20
 const pageCurrent = 1
 const logCollectionName = 'opendb-netdisk-logs'
 
+const readUploadedFileAsUrl = (inputFile) => {
+  const temporaryFileReader = new FileReader()
+
+  return new Promise((resolve, reject) => {
+    temporaryFileReader.onerror = () => {
+      temporaryFileReader.abort()
+      reject(new DOMException('Problem parsing input file.'))
+    }
+
+    temporaryFileReader.onload = () => {
+      resolve(temporaryFileReader.result)
+    }
+    temporaryFileReader.readAsDataURL(inputFile)
+  })
+}
+
 export default {
   computed: {
     ...mapState('user', ['userInfo']),
@@ -142,8 +158,9 @@ export default {
     input.type = 'file'
     input.style.display = 'none'
     input.id = 'file'
+    input.multiple = true
     input.onchange = (event) => {
-      this.upload(event.target.files[0])
+      this.upload(event.target.files)
     }
     this.$refs.input.$el.appendChild(input)
   },
@@ -248,49 +265,51 @@ export default {
     uploadFile () {
       return document.getElementById('file').click()
     },
-    upload (fileInfo) {
-      if (fileInfo.size > 100 * 1024 * 1024) {
-        uni.showModal({
-          content: '目前仅支持上传100M以内文件',
-          showCancel: false
-        })
-      } else {
-        uni.showLoading({
-          title: '上传中'
-        })
-        // 转换文件路径--异步操作
-        const reader = new FileReader()
-        reader.readAsDataURL(fileInfo)
-        reader.onload = e => {
-          this.uploadApi(e.target.result, fileInfo)
+    async upload (files) {
+      console.log('select files:', files)
+      for (const fileInfo of files) {
+        if (fileInfo.size > 100 * 1024 * 1024) {
+          uni.showModal({
+            content: '目前仅支持上传100M以内文件, 【' + fileInfo.name + '】超过限制',
+            showCancel: false
+          })
+          return
         }
       }
-      console.log('file info', fileInfo)
+      uni.showLoading({
+        title: files.length + '个文件上传中'
+      })
+      const uploadTaks = []
+      for (const file of files) {
+        const filePath = await readUploadedFileAsUrl(file)
+        uploadTaks.push(this.uploadApi(filePath, file))
+      }
+      console.log('submit tasks:', uploadTaks)
+      Promise.allSettled(uploadTaks).then(resp => {
+        uni.hideLoading()
+        uni.showToast({
+          title: files.length + '个文件上传成功'
+        })
+      })
     },
-    uploadApi (filePath, fileInfo) {
-      uniCloud.uploadFile({
+    async uploadApi (filePath, fileInfo) {
+      const uploadResp = await uniCloud.uploadFile({
         cloudPath: fileInfo.name,
         filePath: filePath
-      }).then(res => {
-        console.log('upload resut:', res)
-        if (res.success) {
-          const fileObj = {
-            name: fileInfo.name,
-            size: fileInfo.size,
-            link: res.fileID,
-            isFolder: false,
-            fileType: checkFileType(fileInfo.name)
-          }
-          this.saveFileInfo(fileObj).then(resp => {
-            uni.hideLoading()
-            uni.showToast({
-              title: '上传成功'
-            })
-            fileObj.parent = this.where.parent
-            this.saveActionLog('upload-file', fileObj)
-          })
-        }
       })
+      console.log('upload file result:', uploadResp)
+      if (uploadResp.success) {
+        const fileObj = {
+          name: fileInfo.name,
+          size: fileInfo.size,
+          link: uploadResp.fileID,
+          isFolder: false,
+          fileType: checkFileType(fileInfo.name)
+        }
+        return this.saveFileInfo(fileObj)
+      } else {
+        return Promise.reject(new Error('upload fail:' + fileInfo.name))
+      }
     },
     enterFolder (name) {
       this.pathStack.push(name)
@@ -310,7 +329,7 @@ export default {
       }
     },
     promoteDelete (file) {
-      const tip = '确认删除' + (file.isFolder ? '文件夹' : '文件') + ':[' + file.name + ']?'
+      const tip = '确认删除' + (file.isFolder ? '文件夹' : '文件') + ':【' + file.name + '】?'
       uni.showModal({
         title: '提示',
         content: tip,
