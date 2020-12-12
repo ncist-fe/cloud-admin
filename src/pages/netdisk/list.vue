@@ -155,12 +155,26 @@ export default {
     },
     confirmCreate (done, value) {
       done()
+      for (const _item of this.$refs.udb.dataList) {
+        if (_item.isFolder && _item.name === value) {
+          uni.showModal({
+            content: '当前目录已存在同名文件夹:' + value,
+            showCancel: false
+          })
+          return
+        }
+      }
       uni.showLoading({
         title: '创建中'
       })
       this.saveFileInfo({
         name: value,
         isFolder: true
+      }).then(() => {
+        uni.hideLoading()
+        uni.showToast({
+          title: '创建成功'
+        })
       })
     },
     saveFileInfo (file) {
@@ -168,13 +182,12 @@ export default {
       fileObj.parent = this.where.parent
       fileObj.createOn = new Date().toISOString()
       fileObj.createBy = this.userInfo.username
-      db.collection(dbCollectionName).add(fileObj).catch(err => {
+      return db.collection(dbCollectionName).add(fileObj).catch(err => {
         uni.showModal({
           content: err.message || '请求服务失败',
           showCancel: false
         })
       }).finally(() => {
-        uni.hideLoading()
         this.loadData()
       })
     },
@@ -223,6 +236,11 @@ export default {
             link: res.fileID,
             isFolder: false,
             fileType: checkFileType(fileInfo.name)
+          }).then(resp => {
+            uni.hideLoading()
+            uni.showToast({
+              title: '上传成功'
+            })
           })
         }
       })
@@ -250,27 +268,32 @@ export default {
         title: '提示',
         content: tip,
         success: (res) => {
-          res.confirm && this.delete(file._id)
+          res.confirm && this.delete(file)
         }
       })
     },
-    async delete (id) {
+    async delete (file) {
       uni.showLoading({
         title: '删除中',
         mask: true
       })
-      await db.collection(dbCollectionName).doc(id).remove()
+      await db.collection(dbCollectionName).doc(file._id).remove()
         .then(res => {
+          uni.hideLoading()
           uni.showToast({
             title: '删除成功'
           })
+          uniCloud.deleteFile({
+            fileList:[file.link]
+          }).then(resp => {
+            console.log('cloud delete file:', resp)
+          })
         }).catch(err => {
+          uni.hideLoading()
           uni.showModal({
             content: err.message || '请求服务失败',
             showCancel: false
           })
-        }).finally(err => {
-          uni.hideLoading()
         })
       this.loadData(false)
     },
