@@ -44,12 +44,10 @@ export default {
     play (video) {
       console.log('现在播放：', video.playUrl)
       this.name = video.name
-      this.closeNotice()
       this.dp.switchVideo({
         url: video.playUrl
       })
       this.dp.on('error', () => {
-        this.closeNotice()
         this.close()
       })
       this.dp.play()
@@ -62,13 +60,9 @@ export default {
       this.play(video)
     },
     close () {
-      this.closeNotice()
       this.dp.pause()
       // this.dp.destroy()
       this.$emit('closeVideo')
-    },
-    closeNotice () {
-
     }
   }
 }

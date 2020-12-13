@@ -74,8 +74,11 @@
     <!-- #endif -->
     <D-Player v-on:closeVideo="closeV" ref="mydplayer" v-show="video.show"></D-Player>
     <A-Player v-on:closeAudio="closeA" ref="myaplayer" v-show="audio.show"></A-Player>
-    <uni-popup ref="imagePopup">
-      <img :src="popUpImg" alt="" style="width:100%;height:100%" />
+    <uni-popup ref="imagePopup" class="popup-container">
+      <img :src="previewLink" alt="" style="width:100%;height:100%" />
+    </uni-popup>
+    <uni-popup ref="officePopup" class="office-container">
+      <iframe :src="'https://owa-box.vips100.com/op/embed.aspx?src=' + previewLink + '&wdPrint=0&wdEmbedCode=0'" :width="frameWidth" :height="frameHeight" frameborder="0"></iframe>
     </uni-popup>
   </view>
 </template>
@@ -121,6 +124,14 @@ export default {
       return {
         parent: this.pathStack.join('/').replace('//', '/')
       }
+    },
+    frameWidth () {
+      const fullWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth
+      return fullWidth * 0.9 + 'px'
+    },
+    frameHeight () {
+      const height = window.innerHeight|| document.documentElement.clientHeight|| document.body.clientHeight
+      return height * 0.8 + 'px'
     }
   },
   components: {
@@ -148,7 +159,7 @@ export default {
         index: -1,
         hash: ''
       },
-      popUpImg: '',
+      previewLink: '',
       editFileName: '',
       editFileIndex: -1
     }
@@ -381,13 +392,20 @@ export default {
       } else if (fileType === 'audio') {
         this.playAudio(downloadUrl, index)
         this.saveActionLog('play-audio', file)
+      } else if (['excel','pdf','powerpoint','word'].includes(fileType)) {
+        this.showOffice(downloadUrl, index)
+        this.saveActionLog('play-audio', file)
       } else {
         this.downloadFile(fileName, downloadUrl)
       }
     },
     showImage (downloadUrl) {
-      this.popUpImg = downloadUrl
+      this.previewLink = downloadUrl
       this.$refs.imagePopup.open()
+    },
+    showOffice (downloadUrl) {
+      this.previewLink = downloadUrl
+      this.$refs.officePopup.open()
     },
     playVideo (playUrl, index) {
       const video = {
@@ -569,5 +587,8 @@ export default {
     border: #09aaff 1px solid;
     cursor: pointer;
     margin: 0 5px;
+  }
+  .popup-container {
+    width: 80%
   }
 </style>
