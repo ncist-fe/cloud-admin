@@ -72,13 +72,17 @@
     <!-- #ifndef H5 -->
     <fix-window />
     <!-- #endif -->
-    <D-Player v-on:closeVideo="closeV" ref="mydplayer" v-show="video.show"></D-Player>
     <A-Player v-on:closeAudio="closeA" ref="myaplayer" v-show="audio.show"></A-Player>
     <uni-popup ref="imagePopup" class="popup-container">
       <img :src="previewLink" alt="" style="width:100%;height:100%" />
     </uni-popup>
     <uni-popup ref="officePopup" class="office-container">
-      <iframe :src="'https://owa-box.vips100.com/op/embed.aspx?src=' + previewLink + '&wdPrint=0&wdEmbedCode=0'" :width="frameWidth" :height="frameHeight" frameborder="0"></iframe>
+      <iframe :src="'https://owa-box.vips100.com/op/embed.aspx?src=' + previewLink + '&wdPrint=0&wdEmbedCode=0'" :width="getFrameWidth()" :height="getFrameHeight()" frameborder="0"></iframe>
+    </uni-popup>
+    <uni-popup ref="videoPopup" class="video-container">
+      <view>
+         <video id="myVideo" :src="previewLink" controls autoplay show-mute-btn :style="{'width': getFrameWidth(), 'height': getFrameHeight()}"></video>
+      </view>
     </uni-popup>
   </view>
 </template>
@@ -86,7 +90,6 @@
 <script>
 import { formatSize, checkFileType } from '@/js_sdk/netdisk/index.js'
 import uniPopupDialog from '@/components/uni-popup/uni-popup-dialog.vue'
-import DPlayer from './Dplayer.vue'
 import APlayer from './Aplayer.vue'
 
 import {
@@ -124,19 +127,10 @@ export default {
       return {
         parent: this.pathStack.join('/').replace('//', '/')
       }
-    },
-    frameWidth () {
-      const fullWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth
-      return fullWidth * 0.9 + 'px'
-    },
-    frameHeight () {
-      const height = window.innerHeight|| document.documentElement.clientHeight|| document.body.clientHeight
-      return height * 0.8 + 'px'
     }
   },
   components: {
     uniPopupDialog,
-    'D-Player': DPlayer,
     'A-Player': APlayer
   },
   data  () {
@@ -176,6 +170,14 @@ export default {
     this.$refs.input.$el.appendChild(input)
   },
   methods: {
+    getFrameWidth () {
+      const fullWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth
+      return fullWidth * 0.9 + 'px'
+    },
+    getFrameHeight () {
+      const height = window.innerHeight|| document.documentElement.clientHeight|| document.body.clientHeight
+      return height * 0.8 + 'px'
+    },
     formatSize (size) {
       return formatSize(size)
     },
@@ -390,7 +392,7 @@ export default {
         this.showImage(downloadUrl, index)
         this.saveActionLog('show-image', file)
       } else if (fileType === 'audio') {
-        this.playAudio(downloadUrl, index)
+        this.playAudio(file, index)
         this.saveActionLog('play-audio', file)
       } else if (['excel','pdf','powerpoint','word'].includes(fileType)) {
         this.showOffice(downloadUrl, index)
@@ -408,33 +410,24 @@ export default {
       this.$refs.officePopup.open()
     },
     playVideo (playUrl, index) {
-      const video = {
-        playUrl: playUrl
-      }
-      if (!this.video.show) {
-        this.video.index = index
-        this.video.show = true
-        this.video.hash = playUrl
-        this.$refs.mydplayer.play(video)
-      } else {
-        this.video.index = index
-        this.$refs.mydplayer.switch(video)
-        this.video.hash = playUrl
-      }
+      this.previewLink = playUrl
+      this.$refs.videoPopup.open()
     },
-    playAudio (playUrl, index) {
+    playAudio (file, index) {
       const audio = {
-        url: playUrl
+        url: file.link,
+        name: file.name,
+        artist: this.where.parent
       }
       if (!this.audio.show) {
         this.audio.index = index
         this.audio.show = true
-        this.audio.hash = playUrl
+        this.audio.hash = file.link
         this.$refs.myaplayer.play(audio)
       } else {
         this.audio.index = index
         this.$refs.myaplayer.switch(audio)
-        this.audio.hash = playUrl
+        this.audio.hash = file.link
       }
     },
     closeV () {
