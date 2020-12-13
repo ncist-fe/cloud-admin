@@ -1,7 +1,7 @@
 <template>
     <view>
         <view class="uni-container">
-            <uni-clientdb ref="dataQuery" :collection="collectionName" :options="options" :where="where" page-data="replace"
+            <uni-clientdb ref="dataQuery" :collection="collectionName" :options="options" where="actionType in ['create-folder', 'upload-file', 'delete-file', 'rename-folder', 'rename-file']" page-data="replace"
                 :orderby="orderby" :getcount="true" :page-size="options.pageSize" :page-current="options.pageCurrent"
                 v-slot:default="{data,pagination,loading,error}">
                 <uni-table :loading="loading" :emptyText="error.message || '没有更多数据'" border stripe>
@@ -36,7 +36,6 @@
 // 表查询配置
 const dbCollectionName = 'opendb-netdisk-logs'
 const dbOrderBy = 'actionOn desc'
-const dbSearchFields = ['permission_id', 'permission_name'] // 支持模糊搜索的字段列表
 // 分页配置
 const pageSize = 20
 const pageCurrent = 1
@@ -45,7 +44,7 @@ export default {
   data () {
     return {
       query: '',
-      where: '',
+      loading: false,
       orderby: dbOrderBy,
       collectionName: dbCollectionName,
       options: {
@@ -55,22 +54,6 @@ export default {
     }
   },
   methods: {
-    getWhere () {
-      const query = this.query.trim()
-      if (!query) {
-        return ''
-      }
-      const queryRe = `/${query}/i`
-      return dbSearchFields.map(name => queryRe + '.test(' + name + ')').join(' || ')
-    },
-    search () {
-      const newWhere = this.getWhere()
-      const isSameWhere = newWhere === this.where
-      this.where = newWhere
-      if (isSameWhere) { // 相同条件时，手动强制刷新
-        this.loadData()
-      }
-    },
     loadData (clear = true) {
       this.$refs.dataQuery.loadData({
         clear

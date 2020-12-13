@@ -297,7 +297,6 @@ export default {
         cloudPath: fileInfo.name,
         filePath: filePath
       })
-      console.log('upload file result:', uploadResp)
       if (uploadResp.success) {
         const fileObj = {
           name: fileInfo.name,
@@ -306,6 +305,7 @@ export default {
           isFolder: false,
           fileType: checkFileType(fileInfo.name)
         }
+        this.saveActionLog('upload-file', fileObj)
         return this.saveFileInfo(fileObj)
       } else {
         return Promise.reject(new Error('upload fail:' + fileInfo.name))
