@@ -5,7 +5,7 @@
         <view ref="input" class="input"></view>
         <button @click="uploadFile" class="uni-button" type="primary">上传文件</button>
         <uni-popup ref="folderPopup" type="dialog">
-          <uni-popup-dialog mode="input" title="新增文件夹" placeholder="请输入文件夹名称" @confirm="confirmCreate"></uni-popup-dialog>
+          <uni-popup-dialog mode="input" title="新增文件夹" placeholder="请输入文件夹名称" @confirm="confirmFolderCreation"></uni-popup-dialog>
         </uni-popup>
       </view>
       <view class="uni-header">
@@ -16,14 +16,14 @@
               v-for="(item, index) in pathStack"
               :key="index"
               @click="toPreviousFolder(index)">
-              <span class="file-name">{{ item === "/" || item === "" ? " 首页 " : item }}</span>
-              <span v-if="item || item !== '/'">/</span>
+              <span class="file-name">{{ item.name === "/" || item.name === "" ? " 首页 " : item.name }}</span>
+              <span v-if="item.name || item.name !== '/'">/</span>
               </span>
           </view>
         </view>
       </view>
         <view class="uni-container">
-            <uni-clientdb ref="udb" :collection="collectionName" :options="options" :where="where" page-data="replace"
+            <uni-clientdb ref="udb" :manual="true" :collection="collectionName" :options="options" :where="where" page-data="replace"
                 :orderby="orderby" :getcount="true" :page-size="options.pageSize" :page-current="options.pageCurrent"
                 v-slot:default="{data,pagination,loading,error}">
                 <uni-table :loading="loading" :emptyText="error.message || '没有更多数据'" stripe>
@@ -41,11 +41,11 @@
                           <span v-else :class="['iconfont','file-icon', getFileType(item.name)]"></span>
                           <view v-if="item.editMode" class="flex-item uni-flex uni-row">
                             <input class="edit-input uni-input" v-model="editFileName"/>
-                            <uni-icons type="checkmarkempty" class="edit-icon" size="24" color="#09AAFF" @click="confirmFileName(item, index)"></uni-icons>
+                            <uni-icons type="checkmarkempty" class="edit-icon" size="24" color="#09AAFF" @click="confirmRename(item, index)"></uni-icons>
                             <uni-icons type="closeempty" class="edit-icon" size="24" color="#09AAFF" @click="cancelFileName(index)"></uni-icons>
                           </view>
                           <view v-else class="flex-item">
-                            <a v-if="item.isFolder" class="folder-name" @click="enterFolder(item.name)">{{item.name}}</a>
+                            <a v-if="item.isFolder" class="folder-name" @click="enterFolder(item)">{{item.name}}</a>
                             <a v-else @click="fileClick(item, index)" class="file-name">{{item.name}}</a>
                           </view>
                         </view>
@@ -73,7 +73,7 @@
     <fix-window />
     <!-- #endif -->
     <uni-popup ref="imagePopup" class="popup-container">
-      <img :src="previewLink" alt="" style="width:100%;height:100%" />
+        <img :src="previewLink" class="previewImage" :style="{'max-width': getFrameWidth(), 'max-height': getFrameHeight()}"/>
     </uni-popup>
     <uni-popup ref="officePopup" class="office-container">
       <iframe :src="'https://owa-box.vips100.com/op/embed.aspx?src=' + previewLink + '&wdPrint=0&wdEmbedCode=0'" :width="getFrameWidth()" :height="getFrameHeight()" frameborder="0"></iframe>
@@ -112,7 +112,6 @@ const readUploadedFileAsUrl = (inputFile) => {
       temporaryFileReader.abort()
       reject(new DOMException('Problem parsing input file.'))
     }
-
     temporaryFileReader.onload = () => {
       resolve(temporaryFileReader.result)
     }
@@ -123,9 +122,17 @@ const readUploadedFileAsUrl = (inputFile) => {
 export default {
   computed: {
     ...mapState('user', ['userInfo']),
+    lastPath () {
+      const lastPath = this.pathStack.slice(-1).pop()
+      if (lastPath) {
+        return lastPath
+      } else {
+        return {}
+      }
+    },
     where () {
       return {
-        parent: this.pathStack.join('/').replace('//', '/')
+        parent: this.lastPath.id
       }
     },
     music () {
@@ -134,6 +141,9 @@ export default {
         title: this.audioName,
         artist: ' '
       }
+    },
+    fileCollection () {
+      return uniCloud.database().collection(fileCollectionName)
     }
   },
   components: {
@@ -147,18 +157,7 @@ export default {
         pageSize,
         pageCurrent
       },
-      pathStack: ['/'],
-      video: {
-        show: false,
-        index: -1, // 点击的元素
-        // 记录正在播放视频的文件夹
-        hash: ''
-      },
-      audio: {
-        show: false,
-        index: -1,
-        hash: ''
-      },
+      pathStack: [],
       previewLink: '',
       editFileName: '',
       editFileIndex: -1,
@@ -180,8 +179,27 @@ export default {
       this.upload(event.target.files)
     }
     this.$refs.input.$el.appendChild(input)
+    if (this.pathStack.length === 0) {
+      this.initRootPath()
+    }
   },
   methods: {
+    initRootPath () {
+      this.fileCollection.where({
+        name: '',
+        parent: null
+      }).get().then(resp => {
+        const id = resp.result.data[0]._id
+        this.pathStack.push({
+          id: id,
+          name: ''
+        })
+        console.log('final root path:', this.pathStack)
+        this.$nextTick(() => {
+          this.loadData()
+        })
+      })
+    },
     getFrameWidth () {
       const fullWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth
       return fullWidth * 0.9 + 'px'
@@ -234,7 +252,7 @@ export default {
       }
       return false
     },
-    confirmCreate (done, value) {
+    confirmFolderCreation (done, value) {
       done()
       const folderName = value.trim()
       if (this.isNameIllegal(folderName, true)) {
@@ -253,7 +271,7 @@ export default {
         })
         this.saveActionLog('create-folder', {
           name: folderName,
-          parent: this.where.parent
+          parent: this.lastPath.id
         })
       })
     },
@@ -266,9 +284,9 @@ export default {
     },
     saveFileInfo (file) {
       const fileObj = Object.assign({}, file)
-      fileObj.parent = this.where.parent
+      fileObj.parent = this.lastPath.id
       fileObj.createBy = this.userInfo.username
-      return db.collection(fileCollectionName).add(fileObj).catch(err => {
+      return this.fileCollection.add(fileObj).catch(err => {
         uni.showModal({
           content: err.message || '请求服务失败',
           showCancel: false
@@ -336,8 +354,11 @@ export default {
         return Promise.reject(new Error('upload fail:' + fileInfo.name))
       }
     },
-    enterFolder (name) {
-      this.pathStack.push(name)
+    enterFolder (file) {
+      this.pathStack.push({
+        id: file._id,
+        name: file.name
+      })
     },
     showCreateFolder () {
       this.$refs.folderPopup.open()
@@ -368,7 +389,7 @@ export default {
         title: '删除中',
         mask: true
       })
-      await db.collection(fileCollectionName).doc(file._id).remove()
+      await this.fileCollection.doc(file._id).remove()
         .then(res => {
           uni.hideLoading()
           uni.showToast({
@@ -434,14 +455,6 @@ export default {
         this.showAudio = true
       })
     },
-    closeV () {
-      this.video.show = false
-      this.video.index = -1
-    },
-    closeA () {
-      this.audio.show = false
-      this.audio.index = -1
-    },
     triggerRename (file, index) {
       if (this.editFileIndex !== -1) {
         this.cancelFileName(this.editFileIndex)
@@ -457,87 +470,33 @@ export default {
       this.$set(this.$refs.udb.dataList, index, previousFile)
       this.editFileIndex = -1
     },
-    async confirmFileName (file, index) {
+    confirmRename (file, index) {
       if (this.isNameIllegal(this.editFileName.trim(), file.isFolder)) {
         return
       }
       uni.showLoading({
         title: '重命名中'
       })
-      if (file.isFolder) {
-        this.saveActionLog('rename-folder', {
-          before: this.getAbsoluteName(file.name),
-          after: this.getAbsoluteName(this.editFileName)
-        })
-        await Promise.allSettled([this.updateFolderNameOfChild(file), this.updateSingleName(file)]).then(res => {
-          uni.hideLoading()
-          uni.showToast({
-            title: '重命名成功'
-          })
-        }).catch(err => {
-          uni.hideLoading()
-          uni.showModal({
-            content: err.message || '请求服务失败',
-            showCancel: false
-          })
-        })
-        this.loadData(false)
-      } else {
-        this.saveActionLog('rename-file', {
-          before: this.getAbsoluteName(file.name),
-          after: this.getAbsoluteName(this.editFileName)
-        })
-        await this.updateSingleName(file).then(res => {
-          uni.hideLoading()
-          uni.showToast({
-            title: '重命名成功'
-          })
-        }).catch(err => {
-          uni.hideLoading()
-          uni.showModal({
-            content: err.message || '请求服务失败',
-            showCancel: false
-          })
-        })
-        this.loadData(false)
-      }
-    },
-    updateSingleName (file) {
-      return db.collection(fileCollectionName).doc(file._id).update({
+      this.fileCollection.doc(file._id).update({
         name: this.editFileName.trim()
+      }).then(res => {
+        this.saveActionLog(file.isFolder ? 'rename-folder': 'rename-file', {
+          parent: this.lastPath,
+          before: file.name,
+          after: this.editFileName
+        })
+        uni.hideLoading()
+        uni.showToast({
+          title: '重命名成功'
+        })
+        this.loadData(false)
+      }).catch(err => {
+        uni.hideLoading()
+        uni.showModal({
+          content: err.message || '请求服务失败',
+          showCancel: false
+        })
       })
-    },
-    async updateFolderNameOfChild (file) {
-      const beforeParent = this.getAbsoluteName(file.name)
-      const afterParent = this.getAbsoluteName(this.editFileName.trim())
-      const $ = db.command.aggregate
-      const countResp = await db.collection(fileCollectionName).aggregate()
-        .match({
-          parent: new RegExp('^' + beforeParent)
-        })
-        .group({
-          _id: '$parent',
-          num: $.sum(1)
-        })
-        .end()
-      const tasks = []
-      for (const _item of countResp.result.data) {
-        const _from = _item._id
-        const _to = _item._id.replace(beforeParent, afterParent)
-        tasks.push(db.collection(fileCollectionName).where({
-          parent: _from
-        }).update({
-          parent: _to
-        }))
-      }
-      return tasks
-    },
-    getAbsoluteName (name) {
-      let currentPath = this.where.parent
-      if (currentPath === '/') {
-        currentPath = ''
-      }
-      return currentPath + '/' + name
     }
   }
 }
@@ -587,5 +546,9 @@ export default {
   }
   .popup-container {
     width: 80%
+  }
+  .previewImage {
+    margin: auto;
+    display: block;
   }
 </style>
