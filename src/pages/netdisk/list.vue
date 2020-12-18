@@ -32,7 +32,7 @@
                         <uni-th width="100" align="center">上传人</uni-th>
                         <uni-th width="100" align="center">文件大小</uni-th>
                         <uni-th width="170" align="center">添加时间</uni-th>
-                        <uni-th width="160" align="center">操作</uni-th>
+                        <uni-th width="80" align="center">操作</uni-th>
                     </uni-tr>
                     <uni-tr v-for="(item,index) in data" :key="index">
                       <uni-td align="left">
@@ -44,7 +44,7 @@
                             <uni-icons type="checkmarkempty" class="edit-icon" size="24" color="#09AAFF" @click="confirmRename(item, index)"></uni-icons>
                             <uni-icons type="closeempty" class="edit-icon" size="24" color="#09AAFF" @click="cancelFileName(index)"></uni-icons>
                           </view>
-                          <view v-else class="flex-item">
+                          <view v-else class="flex-item"  v-contextmenu:contextmenu @click.right="rightEvent(item, index)">
                             <a v-if="item.isFolder" class="folder-name" @click="enterFolder(item)">{{item.name}}</a>
                             <a v-else @click="fileClick(item, index)" class="file-name">{{item.name}}</a>
                           </view>
@@ -57,7 +57,6 @@
                       </uni-td>
                       <uni-td align="center">
                           <view class="uni-group">
-                              <button size="mini" @click="triggerRename(item, index)" class="uni-button" type="primary">重命名</button>
                               <button size="mini" @click="promoteDelete(item)" class="uni-button" type="warn">删除</button>
                           </view>
                       </uni-td>
@@ -68,6 +67,10 @@
                         @change="onPageChanged" />
                 </view>
         </uni-clientdb>
+        <v-contextmenu ref="contextmenu">
+          <v-contextmenu-item @click="handleRename">重命名</v-contextmenu-item>
+          <v-contextmenu-item @click="handleMove">移动到</v-contextmenu-item>
+        </v-contextmenu>
     </view>
     <!-- #ifndef H5 -->
     <fix-window />
@@ -455,14 +458,20 @@ export default {
         this.showAudio = true
       })
     },
-    triggerRename (file, index) {
+    handleRename () {
+      const file = this.$refs.udb.dataList[this.editFileIndex]
+      file.editMode = true
+      this.$set(this.$refs.udb.dataList, this.editFileIndex, file)
+    },
+    handleMove (vm, event) {
+      console.log('handle move', event)
+    },
+    rightEvent (file, index) {
       if (this.editFileIndex !== -1) {
         this.cancelFileName(this.editFileIndex)
       }
-      file.editMode = true
       this.editFileIndex = index
       this.editFileName = file.name
-      this.$set(this.$refs.udb.dataList, index, file)
     },
     cancelFileName (index) {
       const previousFile = this.$refs.udb.dataList[index]

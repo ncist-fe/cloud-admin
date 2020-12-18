@@ -18,6 +18,7 @@
     },
     "homepage": "https://github.com/dcloudio/uni-template-admin#readme",
     "dependencies": {
+        "v-contextmenu": "^2.8.0",
         "vue-aplayer": "^1.6.1"
     }
 }
