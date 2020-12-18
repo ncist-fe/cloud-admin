@@ -17,5 +17,7 @@
         "url": "https://github.com/dcloudio/uni-template-admin/issues"
     },
     "homepage": "https://github.com/dcloudio/uni-template-admin#readme",
-    "dependencies": {}
+    "dependencies": {
+        "vue-aplayer": "^1.6.1"
+    }
 }

@@ -72,7 +72,6 @@
     <!-- #ifndef H5 -->
     <fix-window />
     <!-- #endif -->
-    <A-Player v-on:closeAudio="closeA" ref="myaplayer" v-show="audio.show"></A-Player>
     <uni-popup ref="imagePopup" class="popup-container">
       <img :src="previewLink" alt="" style="width:100%;height:100%" />
     </uni-popup>
@@ -84,13 +83,14 @@
          <video id="myVideo" :src="previewLink" controls autoplay show-mute-btn :style="{'width': getFrameWidth(), 'height': getFrameHeight()}"></video>
       </view>
     </uni-popup>
+    <a-player v-if="showAudio" autoplay :music="music" float repeat="repeat-one" class="audio-container"></a-player>
   </view>
 </template>
 
 <script>
 import { formatSize, checkFileType } from '@/js_sdk/netdisk/index.js'
 import uniPopupDialog from '@/components/uni-popup/uni-popup-dialog.vue'
-import APlayer from './Aplayer.vue'
+import APlayer from 'vue-aplayer'
 
 import {
   mapState
@@ -127,11 +127,17 @@ export default {
       return {
         parent: this.pathStack.join('/').replace('//', '/')
       }
+    },
+    music () {
+      return {
+        src: this.audioLink,
+        title: this.audioName,
+        artist: ' '
+      }
     }
   },
   components: {
-    uniPopupDialog,
-    'A-Player': APlayer
+    uniPopupDialog, APlayer
   },
   data  () {
     return {
@@ -155,7 +161,13 @@ export default {
       },
       previewLink: '',
       editFileName: '',
-      editFileIndex: -1
+      editFileIndex: -1,
+      audioLink: '',
+      audioName: '',
+      audioAction: {
+        method: 'pause'
+      },
+      showAudio: false
     }
   },
   mounted () {
@@ -411,24 +423,16 @@ export default {
     },
     playVideo (playUrl, index) {
       this.previewLink = playUrl
+      this.showAudio = false
       this.$refs.videoPopup.open()
     },
     playAudio (file, index) {
-      const audio = {
-        url: file.link,
-        name: file.name,
-        artist: this.where.parent
-      }
-      if (!this.audio.show) {
-        this.audio.index = index
-        this.audio.show = true
-        this.audio.hash = file.link
-        this.$refs.myaplayer.play(audio)
-      } else {
-        this.audio.index = index
-        this.$refs.myaplayer.switch(audio)
-        this.audio.hash = file.link
-      }
+      this.showAudio = false
+      this.$nextTick(() => {
+        this.audioLink = file.link
+        this.audioName = file.name
+        this.showAudio = true
+      })
     },
     closeV () {
       this.video.show = false

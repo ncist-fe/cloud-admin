@@ -6,7 +6,7 @@ exports.main = async (event, context) => {
   console.log('query file in parent:', parent)
 	const filesInfo = await uniCloud.database().collection('opendb-netdisk-files').where({
     parent: parent
-  }).get()
+  }).orderBy("isFolder", "desc").orderBy("createOn","desc").get()
 	//返回数据给客户端
 	return filesInfo
 };
